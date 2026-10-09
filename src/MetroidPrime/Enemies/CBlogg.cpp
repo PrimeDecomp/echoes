@@ -99,6 +99,13 @@ static EMaterialTypes skCollisionWall = kMT_Wall;           // Guessed name
 static EMaterialTypes skCollisionFloor = kMT_Floor;         // Guessed name
 static EMaterialTypes skCollisionCharacter = kMT_Character; // Guessed name
 
+static inline bool RollChance(CStateManager& mgr, float chance) { // Guessed name
+  if (chance == 1.f) {
+    return true;
+  }
+  return mgr.Random()->Float() <= chance;
+}
+
 static float sLocomotionSpeedA; // Guessed name
 static float sLocomotionSpeedB; // Guessed name
 
@@ -1015,6 +1022,168 @@ void CBlogg::ApplyCollisionActorDamage(CStateManager& mgr, const TUniqueId& send
       }
       collisionHealth->SetHP(initialHealth);
     }
+  }
+}
+
+void CBlogg::MoveToValidPosition(CStateManager& mgr, EStateMsg msg, float dt) {
+  switch (msg) {
+  case kStateMsg_Activate: {
+    mState = kBS_MoveToValidPosition;
+    const TUniqueId hintId = FindNearestHint(mgr, GetTranslation(), true);
+    if (hintId != kInvalidUniqueId) {
+      const CEntity* hint = mgr.GetObjectById(hintId);
+      if (hint != nullptr) {
+        mPathFindNavigation.SetDestination(static_cast< const CActor* >(hint)->GetTranslation());
+        mPathFindNavigation.PathFind(mgr, msg, dt, *this);
+        mLineOfSightTracker.SetTarget(hintId);
+      }
+    }
+    mCollisionTime = 0.f;
+    break;
+  }
+  case kStateMsg_Update:
+    if (mLineOfSightTracker.HasLineOfSight()) {
+      const CVector3f move = mPathFindNavigation.GetDestinationPosition() - GetTranslation();
+      BodyController()->CommandMgr().DeliverCmd(CBCLocomotionCmd(move, CVector3f::Zero(), 1.f));
+      mCollisionTime = 0.f;
+    } else {
+      mPathFindNavigation.PathFind(mgr, msg, dt, *this);
+    }
+    break;
+  case kStateMsg_Deactivate:
+    break;
+  }
+}
+
+void CBlogg::MoveToAttackPosition(CStateManager& mgr, EStateMsg msg, float dt) {
+  switch (msg) {
+  case kStateMsg_Activate:
+    mState = kBS_MoveToAttackPosition;
+    BodyController()->SetLocomotionType(pas::kLT_Lurk);
+    JoinTeam(mgr);
+    BodyController()->CommandMgr().SetSteeringBlendMode(kSBM_FullSpeed);
+    BodyController()->CommandMgr().SetSteeringSpeedRange(1.f, 1.f);
+    mMeleePursuitEnded = false;
+    if (mIsMegaBlogg && !xbc5_27_ && !xbc5_26_ && !xbc5_30_) {
+      x951_ = 0;
+    }
+    break;
+  case kStateMsg_Update:
+    mPathFindNavigation.PathFind(mgr, msg, dt, *this);
+    if (IsAtAttackPosition() && !xbc5_26_ && !xbc5_30_) {
+      const float random = mgr.Random()->Float();
+      const CVector3f offset = mgr.GetPlayer(0)->GetTranslation() - GetTranslation();
+      if (random < mUnknown_0x800a2b0d || offset.MagSquared() < mMinAttackRange * mMinAttackRange) {
+        PathToAttackPosition(mgr, dt);
+      }
+    }
+    if (HasCollisionTimeElapsed()) {
+      PathToAttackPosition(mgr, dt);
+      mCollisionTime = 0.f;
+    }
+    break;
+  case kStateMsg_Deactivate:
+    ReleaseHints(mgr);
+    break;
+  }
+}
+
+void CBlogg::FacePlayer(CStateManager& mgr, EStateMsg msg, float dt) {
+  switch (msg) {
+  case kStateMsg_Activate:
+    BodyController()->SetLocomotionType(pas::kLT_Relaxed);
+    mState = kBS_FacePlayer;
+    if (mIsMegaBlogg) {
+      const uchar phaseIndex = GetHealthPhase();
+      if (phaseIndex < mPhases.size()) {
+        const SBloggPhaseData& phase = mPhases[phaseIndex];
+        if (xbc5_29_) {
+          xbc5_27_ = RollChance(mgr, phase.mUnknownB);
+          xbc5_29_ = false;
+        } else {
+          xbc4_25_ = RollChance(mgr, phase.mUnknownA);
+        }
+      }
+    } else {
+      xbc4_25_ = mAggressiveness == 1.f ? true : mgr.Random()->Float() <= mAggressiveness;
+    }
+    mChargeOver = false;
+    break;
+  case kStateMsg_Update: {
+    const CVector3f direction = GetDirectionToPlayer(mgr);
+    BodyController()->CommandMgr().DeliverCmd(CBCLocomotionCmd(CVector3f::Zero(), direction, 1.f));
+    CPlayer* player = GetPlayer(mgr);
+    if (player != nullptr) {
+      x97c_ = player->GetAimPosition(mgr, 0.f);
+    }
+    break;
+  }
+  case kStateMsg_Deactivate:
+    break;
+  }
+}
+
+void CBlogg::ChargeTelegraph(CStateManager& mgr, EStateMsg msg, float dt) {
+  switch (msg) {
+  case kStateMsg_Activate:
+    BodyController()->SetLocomotionType(pas::kLT_Combat);
+    mAnimationState.SetState(CAnimationState::kAS_Ready);
+    BodyController()->CommandMgr().DeliverCmd(CBCGenerateCmd(pas::kGType_Zero, -1));
+    mState = kBS_ChargeTelegraph;
+    break;
+  case kStateMsg_Update:
+    if (mAnimationState.CanIssueCommand(*BodyController(), pas::kAS_Generate)) {
+      BodyController()->CommandMgr().DeliverCmd(CBCGenerateCmd(pas::kGType_Zero, -1));
+    }
+    break;
+  case kStateMsg_Deactivate:
+    mAnimationState.SetState(CAnimationState::kAS_NotReady);
+    break;
+  }
+}
+
+void CBlogg::ProjectileAttack(CStateManager& mgr, EStateMsg msg, float dt) {
+  switch (msg) {
+  case kStateMsg_Activate:
+    if (mTeamManagerId == kInvalidUniqueId ||
+        CScriptTeamAiMgr::StartAttack(CScriptTeamAiMgr::kAT_Projectile, mgr, mTeamManagerId,
+                                      GetUniqueId())) {
+      mAnimationState.SetState(CAnimationState::kAS_Ready);
+      CPlayer* player = GetPlayer(mgr);
+      if (player != nullptr) {
+        x97c_ = player->GetAimPosition(mgr, 0.f);
+      }
+      BodyController()->CommandMgr().DeliverCmd(CBCProjectileAttackCmd(pas::kS_Zero, x97c_, false));
+      BodyController()->CommandMgr().SetTargetVector(GetDirectionToPlayer(mgr));
+      mState = kBS_ProjectileAttack;
+      ++x951_;
+    } else {
+      mAnimationState.SetState(CAnimationState::kAS_Over);
+    }
+    break;
+  case kStateMsg_Update:
+    if (mAnimationState.CanIssueCommand(*BodyController(), pas::kAS_ProjectileAttack)) {
+      CPlayer* player = GetPlayer(mgr);
+      if (player != nullptr) {
+        x97c_ = player->GetAimPosition(mgr, 0.f);
+      }
+      BodyController()->CommandMgr().DeliverCmd(CBCProjectileAttackCmd(pas::kS_Zero, x97c_, false));
+      BodyController()->CommandMgr().SetTargetVector(GetDirectionToPlayer(mgr));
+    }
+    break;
+  case kStateMsg_Deactivate: {
+    const float range = mMaxProjectileDelay - mMinProjectileDelay;
+    mProjectileDelay = mMinProjectileDelay;
+    if (mgr.IsRandomAvailable() == true) {
+      mProjectileDelay += range * mgr.Random()->Float();
+    }
+    CScriptTeamAiMgr::EndAttack(CScriptTeamAiMgr::kAT_Projectile, mgr, mTeamManagerId,
+                                GetUniqueId(), false);
+    mAnimationState.SetState(CAnimationState::kAS_NotReady);
+    mMeleePursuitEnded = false;
+    xbc5_29_ = true;
+    break;
+  }
   }
 }
 

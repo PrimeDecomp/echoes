@@ -157,6 +157,12 @@ public:
   void ComputeTauntProbability(CStateManager& mgr, float dt);
   void EndMeleePursuit(CStateManager& mgr, float dt);
 
+  void MoveToValidPosition(CStateManager& mgr, EStateMsg msg, float dt);
+  void MoveToAttackPosition(CStateManager& mgr, EStateMsg msg, float dt);
+  void FacePlayer(CStateManager& mgr, EStateMsg msg, float dt);
+  void ChargeTelegraph(CStateManager& mgr, EStateMsg msg, float dt);
+  void ProjectileAttack(CStateManager& mgr, EStateMsg msg, float dt);
+
   bool ShouldPatrol(CStateManager& mgr, const CTriggerData& data) const;
   bool AnimOver(CStateManager& mgr, const CTriggerData& data) const;
   bool ShouldPrepareToAttack(CStateManager& mgr, const CTriggerData& data) const;
