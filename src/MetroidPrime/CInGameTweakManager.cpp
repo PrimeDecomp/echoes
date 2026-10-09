@@ -40,39 +40,7 @@ static const char* const skTweakFileText[] = {
     "Value:",
     " \t\n\r\"",
 };
-
-rstl::string CInGameTweakManager::GetIdentifierForMusicEvent(CAssetId area,
-                                                             const rstl::string& name) {
-  return rstl::string(CBasics::Stringize("Area %8.8x MusicObject: %s", area, name.c_str()));
-}
-
-rstl::string CInGameTweakManager::GetIdentifierForMidiEvent(CAssetId world, CAssetId area,
-                                                            const rstl::string& name) {
-  // The retail formatter swaps the world and area IDs.
-  return rstl::string(
-      CBasics::Stringize("World %8.8x Area %8.8x MidiObject: %s", area, world, name.c_str()));
-}
-
-rstl::string CInGameTweakManager::GetIdentifierForWorldDefaultMusic(CAssetId world) {
-  return rstl::string(CBasics::Stringize("WorldDefault: %8.8x", world));
-}
-
-rstl::vector< rstl::pair< rstl::string, SObjectTag > >
-CResFactory::GetResourceIdToNameList() const {
-  return mResLoader.GetResourceIdToNameList();
-}
-
-bool CInGameTweakManager::ReadFromMemoryCard(const rstl::string&) { return false; }
-
-const CTweakValue* CInGameTweakManager::GetTweakValue(const rstl::string& name) const {
-  for (AUTO(it, mValues.begin()); it != mValues.end(); ++it) {
-    if (rstl::operator==(rstl::istring(it->GetName().c_str()), rstl::istring(name.c_str()))) {
-      return &*it;
-    }
-  }
-
-  return nullptr;
-}
+CInGameTweakManager::CInGameTweakManager() {}
 
 bool CInGameTweakManager::HasTweakValue(const rstl::string& name) const {
   for (AUTO(it, mValues.begin()); it != mValues.end(); ++it) {
@@ -84,4 +52,36 @@ bool CInGameTweakManager::HasTweakValue(const rstl::string& name) const {
   return false;
 }
 
-CInGameTweakManager::CInGameTweakManager() {}
+const CTweakValue* CInGameTweakManager::GetTweakValue(const rstl::string& name) const {
+  for (AUTO(it, mValues.begin()); it != mValues.end(); ++it) {
+    if (rstl::operator==(rstl::istring(it->GetName().c_str()), rstl::istring(name.c_str()))) {
+      return &*it;
+    }
+  }
+
+  return nullptr;
+}
+bool CInGameTweakManager::ReadFromMemoryCard(const rstl::string&) { return false; }
+
+rstl::vector< rstl::pair< rstl::string, SObjectTag > >
+CResFactory::GetResourceIdToNameList() const {
+  return mResLoader.GetResourceIdToNameList();
+}
+
+rstl::string CInGameTweakManager::GetIdentifierForWorldDefaultMusic(CAssetId world) {
+  return rstl::string(CBasics::Stringize("WorldDefault: %8.8x", world));
+}
+
+
+rstl::string CInGameTweakManager::GetIdentifierForMidiEvent(CAssetId world, CAssetId area,
+                                                            const rstl::string& name) {
+  // The retail formatter swaps the world and area IDs.
+  return rstl::string(
+      CBasics::Stringize("World %8.8x Area %8.8x MidiObject: %s", area, world, name.c_str()));
+}
+
+
+rstl::string CInGameTweakManager::GetIdentifierForMusicEvent(CAssetId area,
+                                                             const rstl::string& name) {
+  return rstl::string(CBasics::Stringize("Area %8.8x MusicObject: %s", area, name.c_str()));
+}
