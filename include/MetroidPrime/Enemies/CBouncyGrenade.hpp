@@ -99,6 +99,7 @@ public:
     return mHealthInfo.valid() ? &*mHealthInfo : nullptr;
   }
   uint GetFlags() const { return mFlags; }
+  bool HasExploded() const { return mExploded; } // Guessed name
   rstl::optional_object< CAABox > GetTouchBounds() const override;
   void Touch(CActor& act, CStateManager& mgr) override;
 
@@ -106,8 +107,10 @@ public:
   void CollidedWith(const TUniqueId& id, const CCollisionInfoList& list,
                     CStateManager& mgr) override;
 
-private:
+protected:
   void UpdateGrenadeFX(float dt, CStateManager& mgr);
+
+private:
   void Explode(CStateManager& mgr, TUniqueId uid = kInvalidUniqueId);
   void UpdateExplodeChecks(float dt, CStateManager& mgr);
   void Bounce(CStateManager& mgr, const CVector3f& normal, bool consumeBounce, bool home);

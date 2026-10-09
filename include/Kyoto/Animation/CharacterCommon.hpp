@@ -136,7 +136,7 @@ enum EGetupType { kGetup_Invalid = -1, kGetup_Zero = 0, kGetup_One = 1, kGetup_T
 
 enum ELoopState { kLS_Invalid = -1, kLS_Begin, kLS_Loop, kLS_End };
 
-enum ELoopAttackType { kLAT_Invalid = -1, kLAT_Zero, kLAT_One, kLAT_Two, kLAT_Three };
+enum ELoopAttackType { kLAT_Invalid = -1, kLAT_Zero, kLAT_One, kLAT_Two, kLAT_Three, kLAT_Four };
 
 enum EGenerateType {
   kGType_Invalid = -1,
@@ -159,7 +159,8 @@ enum ETauntType {
   kTT_One,
   kTT_Two,
   kTT_Three, // Guessed name
-  kTT_Four   // Guessed name; Rezbit alert taunt.
+  kTT_Four,  // Guessed name; Rezbit alert taunt.
+  kTT_Five   // Guessed name
 };
 
 enum ECoverState { kCS_Invalid = -1, kCS_IntoCover, kCS_Cover, kCS_Lean, kCS_OutOfCover };

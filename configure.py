@@ -1788,6 +1788,13 @@ config.libs = [
         extra_cflags=["-pool off"],
     ),
     Rel(
+        "DarkCommando",
+        [
+            Object(NonMatching, "MetroidPrime/Enemies/CDarkCommando.cpp"),
+        ],
+        extra_cflags=["-pool off"],
+    ),
+    Rel(
         "DarkTrooper",
         [
             Object(NonMatching, "MetroidPrime/Enemies/CDarkTrooper.cpp"),

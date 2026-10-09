@@ -37,6 +37,7 @@ enum EPatternedAI {
   kPAI_AtomicAlpha = 0, // Guessed name; AtomicAlpha REL constructor.
   kPAI_AtomicBeta = 1,  // Guessed name; AtomicBeta REL constructor.
   kPAI_ChozoGhost = 4,  // Guessed name; ChozoGhost REL constructor.
+  kPAI_DarkCommando = 6, // Guessed name; DarkCommando REL constructor.
   kPAI_DarkSamus = 7,
   kPAI_DarkTrooper = 8, // Guessed name; DarkTrooper REL constructor.
   kPAI_EmperorIngStage2Tentacle = 0xe, // Guessed name; EmperorIngStage2Tentacle REL constructor.

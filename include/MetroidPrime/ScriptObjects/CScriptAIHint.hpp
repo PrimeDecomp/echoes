@@ -10,6 +10,7 @@ public:
     kHT_Unknown0 = 0,
     kHT_Hop = 1,         // Guessed name
     kHT_SunlightHop = 2, // Guessed name
+    kHT_ShadowDashPoint = 19, // Guessed name; DarkCommando shadow dash destinations.
     kHT_GrenadeLauncherRaisedAim = 23,
   };
 
@@ -33,9 +34,9 @@ public:
   float GetValueParm() const;
   float GetValueParm2() const;
   void SetInUse(bool inUse);
+  void SetTimeRemaining(float time) { mTimeRemaining = time; } // Guessed name
   bool GetInUse(TUniqueId uid) const;
   bool GetInUseIgnoreLock(TUniqueId uid) const;
-  void SetTimeRemaining(float time) { mTimeRemaining = time; } // Guessed name
 
 private:
   EHintType mHintType;
