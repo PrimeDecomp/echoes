@@ -83,6 +83,12 @@ public:
   , mSeverity(severity)
   , mAnimId(-1)
   , mForceRestart(false) {}
+  CBCKnockBackCmd(const CVector3f& dir, pas::ESeverity severity, int animId)
+  : CBodyStateCmd(kBSC_KnockBack)
+  , mDir(dir)
+  , mSeverity(severity)
+  , mAnimId(animId)
+  , mForceRestart(false) {}
 
   const CVector3f& GetHitDirection() const { return mDir; }
   pas::ESeverity GetHitSeverity() const { return mSeverity; }

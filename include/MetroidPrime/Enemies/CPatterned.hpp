@@ -206,6 +206,8 @@ public:
   bool IsBeingSnatched() const;
   bool IsIngPossessed() const;
 
+  int GetIngPossessionAnimation() const { return mIngPossessionData.unknown_0x2befc1bf; }
+
   float GetIngPossessedDamageMultiplier() const {
     return mIngPossessionData.ingPossessedDamageMultiplier;
   }
