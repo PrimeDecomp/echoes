@@ -7,6 +7,9 @@
 #include "MetroidPrime/CStateManager.hpp"
 #include "MetroidPrime/Player/CPlayer.hpp"
 #include "MetroidPrime/Player/CPlayerState.hpp"
+#include "MetroidPrime/SFX/SamusDeath.h"
+#include "MetroidPrime/SFX/Weapons3_MP.h"
+#include "MetroidPrime/SFX/Weapons5.h"
 #include "MetroidPrime/TCastTo.hpp"
 
 CColor CPowerBomb::kFadeColor(0xffffff7f);
@@ -128,14 +131,16 @@ void CPowerBomb::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
     if (ownerDead) {
       if (CPlayer* player = TCastToPtr< CPlayer >(mgr.ObjectById(GetOwnerId()))) {
         player->ApplySubmergedPitchBend(
-            CSfxManager::SfxStart(mgr.ReturnFirstIfSingleElseSecond(0x245c, 0x25b8), 127,
-                                  player->GetSoundPan(CPlayer::kMSP_4), CSfxManager::kAllAreas,
+            CSfxManager::SfxStart(mgr.ReturnFirstIfSingleElseSecond(SFXsam_r_diemorph_00_oneshot,
+                                                                    SFXsa2_r_diemorph_00_oneshot),
+                                  127, player->GetSoundPan(CPlayer::kMSP_4), CSfxManager::kAllAreas,
                                   false, false, CSfxManager::kMedPriority));
       }
     } else {
       mExplosionSound =
-          CSfxManager::AddEmitter(mgr.ReturnFirstIfSingleElseSecond(0xec, 0x25c1), GetTranslation(),
-                                  GetCurrentAreaId().Value(), true, false);
+          CSfxManager::AddEmitter(mgr.ReturnFirstIfSingleElseSecond(SFXsam_a_powexpl_00_oneshot,
+                                                                    SFXsa2_a_powexpl_00_oneshot),
+                                  GetTranslation(), GetCurrentAreaId().Value(), true, false);
       mgr.InformListeners(GetTranslation(), kLNT_BombExplode);
     }
 

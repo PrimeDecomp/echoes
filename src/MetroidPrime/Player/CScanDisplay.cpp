@@ -28,6 +28,8 @@
 #include "MetroidPrime/HUD/CSamusHud.hpp"
 #include "MetroidPrime/Player/CGameState.hpp"
 #include "MetroidPrime/Player/CPlayer.hpp"
+#include "MetroidPrime/SFX/UI.h"
+#include "MetroidPrime/SFX/UI3.h"
 #include "MetroidPrime/ScriptObjects/CScriptPointOfInterest.hpp"
 #include "MetroidPrime/TCastTo.hpp"
 #include "MetroidPrime/Tweaks/CTweakGui.hpp"
@@ -226,7 +228,7 @@ void CScanDisplay::UpdateAPulse(float dt) {
   if (mAPulse > 1.f) {
     mAPulse -= 2.f;
     if (mAPulseCount < 1) {
-      CSfxManager::SfxStart(0x5aa, 127, 63);
+      CSfxManager::SfxStart(SFXui_x_abutton_00_oneshot, 127, 63);
     }
     ++mAPulseCount;
   }
@@ -372,7 +374,7 @@ void CScanDisplay::Update(float dt, float scanningTime, const CStateManager& mgr
           mState = kSS_ViewingScan;
           mXAlpha = 1.f;
           mAPulse = 1.f;
-          CSfxManager::SfxStart(0x41b, 127, 64);
+          CSfxManager::SfxStart(SFXui_x_scandone_00_oneshot, 127, 64);
         } else {
           mState = kSS_DownloadComplete;
           mXAlpha = 1.f;
@@ -382,7 +384,7 @@ void CScanDisplay::Update(float dt, float scanningTime, const CStateManager& mgr
           message.append(gpStringTable->GetString("DownloadedLogBookMsgRightPart"), -1);
           mMessage->TextSupport().SetText(message);
           SetScanMessageTypeEffect(mMessage, true);
-          CSfxManager::SfxStart(0xdb0, 127, 64);
+          CSfxManager::SfxStart(SFXui_x_newlog_00_oneshot, 127, 64);
         }
         if (mScanString->GetObject()->GetStringCount() > 2) {
           mScrollMessage->TextSupport().SetText(mScanString->GetObject()->GetString(1), true);
@@ -451,7 +453,7 @@ void CScanDisplay::ProcessInput(const CFinalInput& input) {
       } else {
         mState = kSS_ViewingScan;
         mXAlpha = 1.f;
-        CSfxManager::SfxStart(0x10c9, 127, 64);
+        CSfxManager::SfxStart(SFXui_x_textscr_00_oneshot, 127, 64);
       }
     }
   } else if (mState == kSS_ViewingScan) {
@@ -467,7 +469,7 @@ void CScanDisplay::ProcessInput(const CFinalInput& input) {
       }
     }
     if (mPageCounter != oldCounter) {
-      CSfxManager::SfxStart(0x10c9, 127, 64);
+      CSfxManager::SfxStart(SFXui_x_textscr_00_oneshot, 127, 64);
       if (mPageCounter == 0) {
         mMessage->SetIsVisible(true);
         mScrollMessage->SetIsVisible(false);

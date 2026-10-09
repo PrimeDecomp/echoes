@@ -11,6 +11,7 @@
 #include "Kyoto/Text/CStringTable.hpp"
 #include "MetroidPrime/CGameGlobalObjects.hpp"
 #include "MetroidPrime/Player/CGameState.hpp"
+#include "MetroidPrime/SFX/UI.h"
 #include "MetroidPrime/Tweaks/CTweakGuiColors.hpp"
 #include "rstl/math.hpp"
 
@@ -115,7 +116,7 @@ void CMessageScreen::ProcessControllerInput(const CFinalInput& input) {
 
     text.SetTypeWriteEffectOptions(false, 0.1f, 30.f);
     text.SetText(mMsg.GetObject()->GetString(mPage));
-    CSfxManager::SfxStart(0x522, 127, 64);
+    CSfxManager::SfxStart(SFXui_x_override_02_oneshot, 127, 64);
     mDelayTime = 0.8f;
   }
 }

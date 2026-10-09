@@ -38,6 +38,10 @@
 #include "MetroidPrime/Player/CPlayerCameraBob.hpp"
 #include "MetroidPrime/Player/CPlayerGun.hpp"
 #include "MetroidPrime/Player/CPlayerState.hpp"
+#include "MetroidPrime/SFX/UI.h"
+#include "MetroidPrime/SFX/UI2.h"
+#include "MetroidPrime/SFX/UI3.h"
+#include "MetroidPrime/SFX/UI_MP.h"
 #include "MetroidPrime/ScriptObjects/CScriptDynamicLight.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptTrigger.hpp"
 #include "MetroidPrime/TCastTo.hpp"
@@ -748,7 +752,8 @@ void CSamusHud::UpdateEnergyLow(float dt, const CStateManager& mgr) {
                                                                      mEnergyLowFade));
   }
   if (!cineCam && mEnergyLow && mEnergyLowTimer < oldTimer) {
-    CSfxManager::SfxStart(0x37, 127, mgr.GetPlayer(mPlayerIndex)->GetSoundPan(CPlayer::kMSP_4),
+    CSfxManager::SfxStart(SFXui_x_warning_02_oneshot, 127,
+                          mgr.GetPlayer(mPlayerIndex)->GetSoundPan(CPlayer::kMSP_4),
                           CSfxManager::kAllAreas, false, false, CSfxManager::kMedPriority);
   }
 }
@@ -839,11 +844,11 @@ void CSamusHud::UpdateFreeLook(float dt, const CStateManager& mgr) {
   const bool lookHeld = player.GetFreeLookStickState();
   if (mInFreeLook != inFreeLook) {
     if (inFreeLook) {
-      CSfxManager::SfxStart(0x1b3, 127, player.GetSoundPan(CPlayer::kMSP_4), CSfxManager::kAllAreas,
-                            false, false, CSfxManager::kMedPriority);
+      CSfxManager::SfxStart(SFXui_x_freeon_00_oneshot, 127, player.GetSoundPan(CPlayer::kMSP_4),
+                            CSfxManager::kAllAreas, false, false, CSfxManager::kMedPriority);
     } else {
-      CSfxManager::SfxStart(0x1b2, 127, player.GetSoundPan(CPlayer::kMSP_4), CSfxManager::kAllAreas,
-                            false, false, CSfxManager::kMedPriority);
+      CSfxManager::SfxStart(SFXui_x_freeoff_00_oneshot, 127, player.GetSoundPan(CPlayer::kMSP_4),
+                            CSfxManager::kAllAreas, false, false, CSfxManager::kMedPriority);
     }
     mInFreeLook = inFreeLook;
   }
@@ -888,9 +893,9 @@ void CSamusHud::UpdateFreeLook(float dt, const CStateManager& mgr) {
     if (mFreeLookSoundCycle == 0.05f) {
       if (mFreeLookDirectionDot < threshold) {
         if (!mFreeLookSound) {
-          mFreeLookSound =
-              CSfxManager::SfxStart(0x19b, 127, player.GetSoundPan(CPlayer::kMSP_4),
-                                    CSfxManager::kAllAreas, true, true, CSfxManager::kMedPriority);
+          mFreeLookSound = CSfxManager::SfxStart(
+              SFXui_x_samrot_lp_00_looped, 127, player.GetSoundPan(CPlayer::kMSP_4),
+              CSfxManager::kAllAreas, true, true, CSfxManager::kMedPriority);
         }
       } else {
         CSfxManager::SfxStop(mFreeLookSound);
@@ -934,10 +939,14 @@ void CSamusHud::UpdateStaticInterference(float dt, const CStateManager& mgr) {
   } else if (mStaticInterference > interference) {
     mStaticInterference = rstl::max_val(interference, mStaticInterference - dt);
   }
-  UpdateStaticSfx(mgr, mStaticSoundLow, mStaticCycleLow,
-                  mgr.ReturnFirstIfSingleElseSecond(0x275, 0x265c), dt, oldInterference, 0.1f);
-  UpdateStaticSfx(mgr, mStaticSoundHigh, mStaticCycleHigh,
-                  mgr.ReturnFirstIfSingleElseSecond(0x275, 0x265d), dt, oldInterference, 0.5f);
+  UpdateStaticSfx(
+      mgr, mStaticSoundLow, mStaticCycleLow,
+      mgr.ReturnFirstIfSingleElseSecond(SFXui_x_static_lp_00_looped, SFXui2_x_static_lp_00_looped),
+      dt, oldInterference, 0.1f);
+  UpdateStaticSfx(
+      mgr, mStaticSoundHigh, mStaticCycleHigh,
+      mgr.ReturnFirstIfSingleElseSecond(SFXui_x_static_lp_00_looped, SFXui2_x_static_lp_01_looped),
+      dt, oldInterference, 0.5f);
   if (mStaticInterference > 0.f) {
     mStaticFilter.SetFilter(CCameraFilterPass::kFT_Blend, CCameraFilterPass::kFS_RandomStatic, 0.f,
                             CColor::White().WithAlphaOf(mStaticInterference), kInvalidAssetId);
@@ -1001,8 +1010,8 @@ void CSamusHud::UpdateEnergy(float dt, const CStateManager& mgr, bool init) {
         mEnergyWarning->TextSupport().SetText(warning);
       }
       if (energyLow) {
-        CSfxManager::SfxStart(0x37, 127, 64, CSfxManager::kAllAreas, false, false,
-                              CSfxManager::kMedPriority);
+        CSfxManager::SfxStart(SFXui_x_warning_02_oneshot, 127, 64, CSfxManager::kAllAreas, false,
+                              false, CSfxManager::kMedPriority);
       }
       mEnergyLow = energyLow;
     }
@@ -2110,8 +2119,8 @@ void CSamusHud::UpdateHudMemo(float dt, const CStateManager& mgr) {
                             mMessageRoot->GetIsVisible() &&
                             (mMessageTime == 0.f || mMessageTime >= 1.f);
     if (pulseSound) {
-      CSfxManager::SfxStart(0x111f, 127, 64, CSfxManager::kAllAreas, false, false,
-                            CSfxManager::kMedPriority);
+      CSfxManager::SfxStart(SFXui_x_hintflas_00_oneshot, 127, 64, CSfxManager::kAllAreas, false,
+                            false, CSfxManager::kMedPriority);
     }
   }
   float messageAlpha = 1.f;
@@ -2146,7 +2155,7 @@ void CSamusHud::UpdateHudMemo(float dt, const CStateManager& mgr) {
     mLastMessageSoundChars += charsPerSound;
     if ((mMessageRoot->GetIsVisible() || mMessagePane->GetIsVisible()) &&
         !mgr.GetCameraManager(mPlayerIndex)->IsInCinematicCamera()) {
-      CSfxManager::SfxStart(0x3fe, 127, 64, CSfxManager::kAllAreas, false, false,
+      CSfxManager::SfxStart(SFXui_x_type_00_oneshot, 127, 64, CSfxManager::kAllAreas, false, false,
                             CSfxManager::kMedPriority);
     }
   }
@@ -2633,7 +2642,8 @@ void CSamusHud::ShowDamage(CVector3f position, float damage, float previousDamag
       if (!mDamageSound && mgr.GetPendingDockArea() == kInvalidAreaId &&
           player.GetDamageWeaponType() != kWT_AreaDark) {
         mDamageSound =
-            CSfxManager::AddEmitter(mgr.ReturnFirstIfSingleElseSecond(0x955, 0x264d),
+            CSfxManager::AddEmitter(mgr.ReturnFirstIfSingleElseSecond(SFXsam_r_damage_lp_00_looped,
+                                                                      SFXsa2_r_damage_lp_00_looped),
                                     player.GetTransform().GetTranslation(), CSfxManager::kAllAreas,
                                     false, true, CSfxManager::kMaxPriority);
       }
@@ -2745,8 +2755,8 @@ void CSamusHud::SetMessage(const rstl::wstring& text, const CHUDMemoParms& info)
     if (info.IsFadeOutOnly()) {
       mMessageTime = 1.f;
       if (info.IsHintMemo() && visible) {
-        CSfxManager::SfxStart(0x12ac, 127, 64, CSfxManager::kAllAreas, false, false,
-                              CSfxManager::kMedPriority);
+        CSfxManager::SfxStart(SFXui_x_hintoff_00_oneshot, 127, 64, CSfxManager::kAllAreas, false,
+                              false, CSfxManager::kMedPriority);
       }
       return;
     }
@@ -2774,8 +2784,8 @@ void CSamusHud::SetMessage(const rstl::wstring& text, const CHUDMemoParms& info)
     if (info.IsHintMemo()) {
       if (!visible) {
         mAButtonPulse = 0.f;
-        CSfxManager::SfxStart(0x1286, 127, 64, CSfxManager::kAllAreas, false, false,
-                              CSfxManager::kMedPriority);
+        CSfxManager::SfxStart(SFXui_x_hinton_00_oneshot, 127, 64, CSfxManager::kAllAreas, false,
+                              false, CSfxManager::kMedPriority);
       }
     } else {
       mMessageRoot->SetO2PTransform(mMessageRoot->GetIdleXform());

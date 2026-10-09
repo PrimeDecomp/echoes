@@ -34,6 +34,9 @@
 #include "MetroidPrime/Player/CPlayerCameraBob.hpp"
 #include "MetroidPrime/Player/CPlayerGun.hpp"
 #include "MetroidPrime/Player/CPlayerRagDoll.hpp"
+#include "MetroidPrime/SFX/SamusJump.h"
+#include "MetroidPrime/SFX/SamusJump_MP.h"
+#include "MetroidPrime/SFX/SamusMorphball.h"
 
 static const CMaterialList BallTransitionInclude = CMaterialList(kMT_Solid);
 static const CMaterialList BallTransitionExclude =
@@ -224,8 +227,9 @@ void CPlayer::BeginSidewaysDash(float strafeInput, CStateManager& mgr) {
     if (!mSlidingOnWall) {
       SetVelocityWR(velocity);
       mDashSfx =
-          CSfxManager::SfxStart(mgr.ReturnFirstIfSingleElseSecond(0x5c6, 0x2826), 127,
-                                GetSoundPan(kMSP_4), GetCurrentAreaId().Value(), true, false);
+          CSfxManager::SfxStart(mgr.ReturnFirstIfSingleElseSecond(SFXsam_b_sidejump_00_oneshot,
+                                                                  SFXsa2_b_sidejump_00_oneshot),
+                                127, GetSoundPan(kMSP_4), GetCurrentAreaId().Value(), true, false);
       CSfxManager::SetIgnoreAreaLowPass(mDashSfx, true);
       ApplySubmergedPitchBend(mDashSfx);
       mgr.RumbleManager(GetPlayerIndex())->Rumble(mgr, kRFX_PlayerBump, 0.24375f, kRP_One);
@@ -676,9 +680,9 @@ void CPlayer::SetMoveState(NPlayer::EPlayerMovementState state, CStateManager& m
   switch (state) {
   case NPlayer::kMS_Jump:
     if (mMovementState == NPlayer::kMS_ApplyJump) {
-      const CSfxHandle sound =
-          CSfxManager::SfxStart(mgr.ReturnFirstIfSingleElseSecond(0x89, 0x2824), 127,
-                                GetSoundPan(kMSP_4), GetCurrentAreaId().Value(), true, false);
+      const CSfxHandle sound = CSfxManager::SfxStart(
+          mgr.ReturnFirstIfSingleElseSecond(SFXsam_b_jump_00_oneshot, SFXsa2_b_jump_00_oneshot),
+          127, GetSoundPan(kMSP_4), GetCurrentAreaId().Value(), true, false);
       CSfxManager::SetIgnoreAreaLowPass(sound, true);
       ApplySubmergedPitchBend(sound);
       mgr.RumbleManager(GetPlayerIndex())->Rumble(mgr, kRFX_PlayerBump, 0.2015f, kRP_One);
@@ -691,9 +695,9 @@ void CPlayer::SetMoveState(NPlayer::EPlayerMovementState state, CStateManager& m
         SetOrbitRequestForOtherPlayers(kOR_BoostBall, mgr);
       }
     } else if (mMovementState != NPlayer::kMS_Jump) {
-      const CSfxHandle sound =
-          CSfxManager::SfxStart(mgr.ReturnFirstIfSingleElseSecond(0x8a, 0x2825), 127,
-                                GetSoundPan(kMSP_4), GetCurrentAreaId().Value(), true, false);
+      const CSfxHandle sound = CSfxManager::SfxStart(
+          mgr.ReturnFirstIfSingleElseSecond(SFXsam_b_jump_01_oneshot, SFXsa2_b_jump_01_oneshot),
+          127, GetSoundPan(kMSP_4), GetCurrentAreaId().Value(), true, false);
       CSfxManager::SetIgnoreAreaLowPass(sound, true);
       ApplySubmergedPitchBend(sound);
       mAirborneTimer = 0.01f;
@@ -948,8 +952,9 @@ void CPlayer::BombJump(const CVector3f& position, CStateManager& mgr) {
           mBombJumpCheckDelayFrames = 2;
         }
       }
-      ApplySubmergedPitchBend(CSfxManager::AddEmitter(0x87, GetTranslation(),
-                                                      GetCurrentAreaId().Value(), false, false));
+      ApplySubmergedPitchBend(CSfxManager::AddEmitter(SFXsam_b_bombjump_00_oneshot,
+                                                      GetTranslation(), GetCurrentAreaId().Value(),
+                                                      false, false));
     }
   }
 }
@@ -1605,8 +1610,9 @@ void CPlayer::StartGravityBoost(CStateManager& mgr) {
     velocity[kDZ] *= 0.1f;
     SetVelocityWR(velocity);
     mGravityBoostSfx =
-        CSfxManager::SfxStart(mgr.ReturnFirstIfSingleElseSecond(0x123, 0x30e), 127,
-                              GetSoundPan(kMSP_4), GetCurrentAreaId().Value(), true, true);
+        CSfxManager::SfxStart(mgr.ReturnFirstIfSingleElseSecond(SFXsam_b_gravboost_lp_00_looped,
+                                                                SFXsa2_b_gravboost_lp_looped),
+                              127, GetSoundPan(kMSP_4), GetCurrentAreaId().Value(), true, true);
     CSfxManager::SetIgnoreAreaLowPass(mGravityBoostSfx, true);
     ApplySubmergedPitchBend(mGravityBoostSfx);
     mGravityBoostUsed = true;
@@ -1636,9 +1642,9 @@ void CPlayer::EndGravityBoost(CStateManager& mgr) {
   if (mGravityBoostSfx) {
     CSfxManager::SfxStop(mGravityBoostSfx);
   }
-  mGravityBoostEndSfx =
-      CSfxManager::SfxStart(mgr.ReturnFirstIfSingleElseSecond(0x360, 0x35f), 127,
-                            GetSoundPan(kMSP_4), GetCurrentAreaId().Value(), true, false);
+  mGravityBoostEndSfx = CSfxManager::SfxStart(
+      mgr.ReturnFirstIfSingleElseSecond(SFXsam_b_gravfall_00_oneshot, SFXsa2_b_gravfall_00_oneshot),
+      127, GetSoundPan(kMSP_4), GetCurrentAreaId().Value(), true, false);
   CSfxManager::SetIgnoreAreaLowPass(mGravityBoostEndSfx, true);
   ApplySubmergedPitchBend(mGravityBoostEndSfx);
 }

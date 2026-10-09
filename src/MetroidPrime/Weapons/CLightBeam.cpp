@@ -13,6 +13,8 @@
 #include "MetroidPrime/Enemies/CPatterned.hpp"
 #include "MetroidPrime/Player/CPlayer.hpp"
 #include "MetroidPrime/Player/CPlayerGun.hpp"
+#include "MetroidPrime/SFX/Weapons3.h"
+#include "MetroidPrime/SFX/Weapons3_MP.h"
 #include "MetroidPrime/TCastTo.hpp"
 #include "MetroidPrime/Weapons/CGameProjectile.hpp"
 
@@ -22,8 +24,8 @@ static const uint skSuppressRecoilAttribute = 1 << 23;
 static const uint skSuppressShootAnimAttribute = 1 << 24;
 
 static const ushort kChargeSoundIds[2][2] = {
-    {0x1fca, 0x1fe1},
-    {0x25c9, 0x25c4},
+    {SFXsam_a_litfire_00_oneshot, SFXsam_a_litchfire_00_oneshot},
+    {SFXsa2_a_litfire_00_oneshot, SFXsa2_a_litchfire_00_oneshot},
 };
 
 CLightBeam::CLightBeam(TUniqueId playerId, const CVector3f& scale, int flags)

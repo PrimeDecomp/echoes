@@ -37,6 +37,8 @@
 #include "MetroidPrime/Player/CGameState.hpp"
 #include "MetroidPrime/Player/CPlayer.hpp"
 #include "MetroidPrime/Player/CWorldState.hpp"
+#include "MetroidPrime/SFX/UI.h"
+#include "MetroidPrime/SFX/UI3.h"
 #include "MetroidPrime/Tweaks/CTweakAutoMapper.hpp"
 #include "MetroidPrime/Tweaks/CTweakGui.hpp"
 #include "MetroidPrime/Tweaks/CTweakPlayerRes.hpp"
@@ -549,13 +551,13 @@ bool CAutoMapper::TryLeaveMapScreen(CStateManager& mgr) {
 bool CAutoMapper::SwitchLightDarkWorld() {
   if (mDarkWorldBlend == 0.f) {
     mTransitionState = kTS_SwitchToDarkWorld;
-    CSfxManager::SfxStart(0x21fe, 127, 64);
+    CSfxManager::SfxStart(SFXmap_x_darkin_00_oneshot, 127, 64);
     if (mTextpaneLabel != nullptr) {
       mTextpaneLabel->TextSupport().SetText(gpStringTable->GetString("MapScreenTitleDark"));
     }
   } else if (mDarkWorldBlend == 1.f) {
     mTransitionState = kTS_SwitchToLightWorld;
-    CSfxManager::SfxStart(0x21fd, 127, 64);
+    CSfxManager::SfxStart(SFXmap_x_darkout_00_oneshot, 127, 64);
     if (mTextpaneLabel != nullptr) {
       mTextpaneLabel->TextSupport().SetText(gpStringTable->GetString("MapScreenTitle"));
     }
@@ -623,9 +625,9 @@ void CAutoMapper::UpdateHintNavigation(float dt, CStateManager& mgr) {
     float& beaconTime = beaconData.mFloat;
     if (!wasProcessing) {
       if (mCurAreaId == mgr.GetNextAreaId() && mWorld == mgr.GetWorld()) {
-        CSfxManager::SfxStart(0xdae, 127, 64);
+        CSfxManager::SfxStart(SFXui_x_hint_00_oneshot, 127, 64);
       } else {
-        CSfxManager::SfxStart(0xdaf, 127, 64);
+        CSfxManager::SfxStart(SFXui_x_hint_01_oneshot, 127, 64);
       }
     }
 
@@ -802,26 +804,26 @@ void CAutoMapper::ProcessControllerInput(const CFinalInput& input, CStateManager
       switch (paneMode) {
       case 1:
         paneMode = 2;
-        CSfxManager::SfxStart(0x13b8, 127, 64);
+        CSfxManager::SfxStart(SFXui_x_legoff_01_oneshot, 127, 64);
         break;
       case 2:
         paneMode = 1;
-        CSfxManager::SfxStart(0x13b7, 127, 64);
+        CSfxManager::SfxStart(SFXui_x_legon_00_oneshot, 127, 64);
         break;
       }
     } else {
       switch (paneMode) {
       case 0:
         paneMode = 2;
-        CSfxManager::SfxStart(0x13b6, 127, 64);
+        CSfxManager::SfxStart(SFXui_x_legoff_00_oneshot, 127, 64);
         break;
       case 1:
         paneMode = 0;
-        CSfxManager::SfxStart(0x13b8, 127, 64);
+        CSfxManager::SfxStart(SFXui_x_legoff_01_oneshot, 127, 64);
         break;
       case 2:
         paneMode = 1;
-        CSfxManager::SfxStart(0x13b7, 127, 64);
+        CSfxManager::SfxStart(SFXui_x_legon_00_oneshot, 127, 64);
         break;
       }
     }
@@ -1976,13 +1978,13 @@ void CAutoMapper::BeginMapperStateTransition(EAutoMapperState state, CStateManag
     ResetInterpolationTimer(gpTweakAutoMapper->GetCloseMapScreenTime());
     mHintLocations.clear();
   } else if (mState == kAMS_MapScreen && state == kAMS_MapScreenUniverse) {
-    CSfxManager::SfxStart(0x679, 127, 64);
+    CSfxManager::SfxStart(SFXui_x_univmap_00_oneshot, 127, 64);
     mRenderState1 =
         BuildMapScreenUniverseRenderState(mgr, mRenderState0.mCamOrientation, mCurAreaId.Value());
     TransformRenderStatesWorldToUniverse();
     ResetInterpolationTimer(gpTweakAutoMapper->GetSwitchToFromUniverseTime());
   } else if (mState == kAMS_MapScreenUniverse && state == kAMS_MapScreen) {
-    CSfxManager::SfxStart(0x67a, 127, 64);
+    CSfxManager::SfxStart(SFXui_x_univmap_01_oneshot, 127, 64);
     mRenderState1 = BuildMapScreenWorldRenderState(mgr, mRenderState0.mCamOrientation,
                                                    mCurAreaId.Value(), mHintSteps.size() > 0);
     TransformRenderStateWorldToUniverse(mRenderState1);
@@ -2146,7 +2148,8 @@ CAutoMapper::BuildMapScreenUniverseRenderState(const CStateManager& mgr, const C
 void CAutoMapper::SetShouldPanningSoundBePlaying(bool shouldBePlaying) {
   if (shouldBePlaying) {
     if (!mPanningSfx) {
-      mPanningSfx = CSfxManager::SfxStart(0x12c, 127, 64, CSfxManager::kAllAreas, false, true);
+      mPanningSfx = CSfxManager::SfxStart(SFXmap_x_pan_lp_00_looped, 127, 64,
+                                          CSfxManager::kAllAreas, false, true);
     }
   } else {
     CSfxManager::SfxStop(mPanningSfx);
@@ -2157,7 +2160,8 @@ void CAutoMapper::SetShouldPanningSoundBePlaying(bool shouldBePlaying) {
 void CAutoMapper::SetShouldZoomingSoundBePlaying(bool shouldBePlaying) {
   if (shouldBePlaying) {
     if (!mZoomingSfx) {
-      mZoomingSfx = CSfxManager::SfxStart(0x78, 127, 64, CSfxManager::kAllAreas, false, true);
+      mZoomingSfx = CSfxManager::SfxStart(SFXmap_x_zoom_lp_00_looped, 127, 64,
+                                          CSfxManager::kAllAreas, false, true);
     }
   } else {
     CSfxManager::SfxStop(mZoomingSfx);
@@ -2168,7 +2172,8 @@ void CAutoMapper::SetShouldZoomingSoundBePlaying(bool shouldBePlaying) {
 void CAutoMapper::SetShouldRotatingSoundBePlaying(bool shouldBePlaying) {
   if (shouldBePlaying) {
     if (!mRotatingSfx) {
-      mRotatingSfx = CSfxManager::SfxStart(0x77, 127, 64, CSfxManager::kAllAreas, false, true);
+      mRotatingSfx = CSfxManager::SfxStart(SFXmap_x_rotate_00_looped, 127, 64,
+                                           CSfxManager::kAllAreas, false, true);
     }
   } else {
     CSfxManager::SfxStop(mRotatingSfx);
@@ -2498,9 +2503,9 @@ void CAutoMapper::SetCurAreaId(int areaId) {
       (close_enough(mDarkWorldBlend, 0.f) || close_enough(mDarkWorldBlend, 1.f)) &&
       mState != kAMS_MiniMap) {
     if (mTransitionState == kTS_Idle) {
-      CSfxManager::SfxStart(0x2200, 127, 64);
+      CSfxManager::SfxStart(SFXmap_x_blink_00_oneshot, 127, 64);
     } else {
-      CSfxManager::SfxStart(0x21ff, 127, 64);
+      CSfxManager::SfxStart(SFXmap_x_blip_00_oneshot, 127, 64);
     }
   }
   mCurAreaId = areaId;

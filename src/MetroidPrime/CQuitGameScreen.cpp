@@ -9,6 +9,7 @@
 #include "Kyoto/Input/CFinalInput.hpp"
 #include "Kyoto/Text/CStringTable.hpp"
 #include "MetroidPrime/Cameras/CCameraFilterPass.hpp"
+#include "MetroidPrime/SFX/UIMemory.h"
 
 static const char* const skTitleNames[] = {"QuitGame", "Continue", "QuitMPConfirmation"};
 
@@ -34,8 +35,8 @@ void CQuitGameScreen::ProcessUserInput(const CFinalInput& input) {
     mLoadedFrame->ProcessUserInput(input);
     if (input.PB() && mType != kQT_ContinueFromLastSave) {
       mAction = kQA_No;
-      CSfxManager::SfxStart(0xbfc, 127, 63, CSfxManager::kAllAreas, false, false,
-                            CSfxManager::kMedPriority);
+      CSfxManager::SfxStart(SFXui_x_invback_00_oneshot, 127, 63, CSfxManager::kAllAreas, false,
+                            false, CSfxManager::kMedPriority);
     }
   }
 }
@@ -61,11 +62,11 @@ EQuitAction CQuitGameScreen::Update(float dt) {
 
 void CQuitGameScreen::DoAdvance(CGuiTableGroup* caller) {
   if (caller->GetUserSelection() == 0) {
-    CSfxManager::SfxStart(0x5e3, 127, 64, CSfxManager::kAllAreas, false, false,
+    CSfxManager::SfxStart(SFXui_x_quitsel_00_oneshot, 127, 64, CSfxManager::kAllAreas, false, false,
                           CSfxManager::kMedPriority);
     mAction = kQA_Yes;
   } else {
-    CSfxManager::SfxStart(0x5e3, 127, 64, CSfxManager::kAllAreas, false, false,
+    CSfxManager::SfxStart(SFXui_x_quitsel_00_oneshot, 127, 64, CSfxManager::kAllAreas, false, false,
                           CSfxManager::kMedPriority);
     mAction = kQA_No;
   }
@@ -73,7 +74,7 @@ void CQuitGameScreen::DoAdvance(CGuiTableGroup* caller) {
 
 void CQuitGameScreen::DoSelectionChange(CGuiTableGroup*, int) {
   SetColors();
-  CSfxManager::SfxStart(0x5e1, 127, 64, CSfxManager::kAllAreas, false, false,
+  CSfxManager::SfxStart(SFXui_x_quitaff_00_oneshot, 127, 64, CSfxManager::kAllAreas, false, false,
                         CSfxManager::kMedPriority);
 }
 

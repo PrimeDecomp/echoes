@@ -27,6 +27,8 @@
 #include "MetroidPrime/Player/CGameState.hpp"
 #include "MetroidPrime/Player/CPlayer.hpp"
 #include "MetroidPrime/Player/CPlayerState.hpp"
+#include "MetroidPrime/SFX/Elevators.h"
+#include "MetroidPrime/SFX/UI3.h"
 #include "MetroidPrime/Tweaks/CTweakGame.hpp"
 #include "MetroidPrime/Tweaks/CTweakGui.hpp"
 #include "MetroidPrime/Tweaks/CTweakPlayerRes.hpp"
@@ -79,7 +81,7 @@ NESTED_CHECK_SIZEOF(CWorldTransManager, SModelDatas, 0x2b0)
 CWorldTransManager::CWorldTransManager()
 : mCurTime(0.f)
 , mRandom(99)
-, mSfx(0x258b)
+, mSfx(SFXele_x_elevator_lp_00_looped)
 , mVolume(127)
 , mPanning(64)
 , mTransType(kTT_Disabled)
@@ -718,7 +720,7 @@ void CWorldTransManager::UpdateText(float dt) {
     const float charsPerSfx = gpTweakGui->GetWorldTransManagerCharsPerSfx();
     if (printed >= mSfxInterval + charsPerSfx) {
       mSfxInterval += charsPerSfx;
-      CSfxManager::SfxStart(0x618, 127, 64);
+      CSfxManager::SfxStart(SFXui_x_type_01_oneshot, 127, 64);
     }
   }
 

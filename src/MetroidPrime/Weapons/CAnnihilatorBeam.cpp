@@ -18,13 +18,17 @@
 #include "MetroidPrime/Cameras/CFirstPersonCamera.hpp"
 #include "MetroidPrime/Player/CPlayer.hpp"
 #include "MetroidPrime/Player/CPlayerState.hpp"
+#include "MetroidPrime/SFX/Weapons4.h"
+#include "MetroidPrime/SFX/Weapons4_MP.h"
 #include "MetroidPrime/Tweaks/CTweakPlayerGun.hpp"
 #include "MetroidPrime/Weapons/CAnnihilatorProjectile.hpp"
 #include "MetroidPrime/Weapons/WeaponSound.hpp"
 #include "Weapons/CWeaponDescription.hpp"
 #include "rstl/math.hpp"
 
-static const ushort kSoundIds[2][2] = {{0x1FCC, 0x1FDC}, {0x25BF, 0x25BA}};
+static const ushort kSoundIds[2][2] = {
+    {SFXsam_a_nilfire_00_oneshot, SFXsam_a_nilchfire_00_oneshot},
+    {SFXsa2_a_nilfire_00_oneshot, SFXsa2_a_nilchfire_00_oneshot}};
 
 CAnnihilatorBeam::CAnnihilatorBeam(TUniqueId playerId, const CVector3f& scale, int flags)
 : CGunWeapon(kWT_Annihilator, playerId, scale, flags)

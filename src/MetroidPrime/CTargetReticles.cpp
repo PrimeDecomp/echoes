@@ -25,6 +25,8 @@
 #include "MetroidPrime/Player/CPlayer.hpp"
 #include "MetroidPrime/Player/CPlayerGun.hpp"
 #include "MetroidPrime/Player/CPlayerTargeting.hpp"
+#include "MetroidPrime/SFX/UI.h"
+#include "MetroidPrime/SFX/UI_MP.h"
 #include "MetroidPrime/ScriptObjects/CScriptGrapplePoint.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptHUDHint.hpp"
 #include "MetroidPrime/TCastTo.hpp"
@@ -407,10 +409,12 @@ void CCompoundTargetReticle::UpdateCurrLockOnGroup(float dt, const CStateManager
   if (targetId != mTargetId) {
     if (mTargetId != targetId && targetId != kInvalidUniqueId) {
       if (TCastToConstPtr< CScriptGrapplePoint >(mgr.GetObjectById(targetId))) {
-        CSfxManager::SfxStart(0x1db, 127, player->GetSoundPan(CPlayer::kMSP_4));
-      } else {
-        CSfxManager::SfxStart(mgr.ReturnFirstIfSingleElseSecond(0x79, 0x2654), 127,
+        CSfxManager::SfxStart(SFXui_x_graplock_00_oneshot, 127,
                               player->GetSoundPan(CPlayer::kMSP_4));
+      } else {
+        CSfxManager::SfxStart(mgr.ReturnFirstIfSingleElseSecond(SFXui_x_lockon_00_oneshot,
+                                                                SFXui2_x_lockon_00_oneshot),
+                              127, player->GetSoundPan(CPlayer::kMSP_4));
       }
     }
 

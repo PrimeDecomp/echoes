@@ -11,6 +11,7 @@
 #include "MetroidPrime/CMain.hpp"
 #include "MetroidPrime/CMemoryCard.hpp"
 #include "MetroidPrime/CMemoryCardDriver.hpp"
+#include "MetroidPrime/SFX/UIMemory.h"
 #include "rstl/StringExtras.hpp"
 
 static const char* const skSaveBanner = "TXTR_SaveBanner";
@@ -198,9 +199,9 @@ CSaveGameScreen::CSaveGameScreen(ESaveContext saveContext, u64 cardSerial)
 , mLoadedFrame(nullptr)
 , mCardDriver(nullptr)
 , mIowRet(CIOWin::kMR_Normal)
-, mNavConfirmSfx(0x5e3)
-, mNavMoveSfx(0x5e1)
-, mNavBackSfx(0x5e3)
+, mNavConfirmSfx(SFXui_x_quitsel_00_oneshot)
+, mNavMoveSfx(SFXui_x_quitaff_00_oneshot)
+, mNavBackSfx(SFXui_x_quitsel_00_oneshot)
 , mNeedsDriverReset(false)
 , mUiTextDirty(false)
 , mSavingDisabled(false)

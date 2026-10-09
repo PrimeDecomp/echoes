@@ -16,6 +16,11 @@
 #include "MetroidPrime/CWorld.hpp"
 #include "MetroidPrime/Enemies/CPatterned.hpp"
 #include "MetroidPrime/Player/CPlayer.hpp"
+#include "MetroidPrime/SFX/CreatureAshFX.h"
+#include "MetroidPrime/SFX/CreatureFireFX.h"
+#include "MetroidPrime/SFX/SamusDeath_MP.h"
+#include "MetroidPrime/SFX/SamusFireHit.h"
+#include "MetroidPrime/SFX/SamusFireHit_MP.h"
 #include "MetroidPrime/TCastTo.hpp"
 
 #include "rstl/string.hpp"
@@ -457,11 +462,12 @@ bool CActorModelParticles::CItem::UpdateOnFire(float dt, CActor* actor, CStateMa
           }
         }
         if (!mSfx) {
-          short sfx = IsMediumOrLarge(*actor) ? 0x1ce1 : 0x1ce2;
+          short sfx =
+              IsMediumOrLarge(*actor) ? SFXeff_x_fire_lp_00_looped : SFXeff_x_fire_lp_01_looped;
           if (mgr.IsMultiplayer()) {
-            sfx = IsMediumOrLarge(*actor) ? 0x2689 : 0x268a;
+            sfx = IsMediumOrLarge(*actor) ? SFXef2_x_fire_lp_00_looped : SFXef2_x_fire_lp_01_looped;
           } else if (TCastToPtr< CPlayer >(actor)) {
-            sfx = 0x9b;
+            sfx = SFXsam_r_firehit_lp_00_looped;
           }
           mSfx = CSfxManager::AddEmitter(sfx, actor->GetTranslation(),
                                          actor->GetCurrentAreaId().Value(), true, true);
@@ -940,12 +946,14 @@ void CActorModelParticles::UpdateSystemTypes() {
 
 void CActorModelParticles::StartBurnDeath(CActor& actor, CStateManager& mgr) {
   rstl::list< CItem >::iterator it = FindOrCreateSystem(actor);
-  ushort sfx = IsMediumOrLarge(actor) ? 0x1d61 : 0x1d62;
+  ushort sfx = IsMediumOrLarge(actor) ? SFXeff_x_ashbig_00_oneshot : SFXeff_x_ashsmall_01_oneshot;
   if (mgr.IsMultiplayer()) {
     if (CPlayer* player = TCastToPtr< CPlayer >(&actor)) {
-      sfx = player->GetMorphballTransitionState() == CPlayer::kMS_Unmorphed ? 0x2581 : 0x2582;
+      sfx = player->GetMorphballTransitionState() == CPlayer::kMS_Unmorphed
+                ? SFXef2_x_ashbig_00_oneshot
+                : SFXef2_x_ashsmall_01_oneshot;
     } else {
-      sfx = IsMediumOrLarge(actor) ? 0x2581 : 0x2582;
+      sfx = IsMediumOrLarge(actor) ? SFXef2_x_ashbig_00_oneshot : SFXef2_x_ashsmall_01_oneshot;
     }
   }
   CSfxManager::AddEmitter(sfx, actor.GetTranslation(), actor.GetCurrentAreaId().Value(), true,

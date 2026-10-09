@@ -32,6 +32,7 @@
 #include "MetroidPrime/Decode.hpp"
 #include "MetroidPrime/Player/CGameMode.hpp"
 #include "MetroidPrime/Player/CGameState.hpp"
+#include "MetroidPrime/SFX/FrontEnd.h"
 #include "MetroidPrime/Tweaks/CTweakGui.hpp"
 #include "MetroidPrime/Tweaks/CTweakPlayerRes.hpp"
 #include "rstl/StringExtras.hpp"
@@ -425,7 +426,7 @@ CIOWin::EMessageReturn CGameResultsScreen::OnMessage(const CArchitectureMessage&
       mInputEnabled = false;
       mPhase = kP_FadeOut;
       mTime = 0.f;
-      CSfxManager::SfxStart(0x277b, 0x7f, 0x40);
+      CSfxManager::SfxStart(SFXfn2_x_bigboxdown_00_oneshot, 0x7f, 0x40);
       CStreamAudioManager::StopSoftwareAudio(CStreamAudioManager::kSC_Default, mMusicPath);
     }
     return kMR_Exit;
@@ -540,12 +541,12 @@ void CGameResultsScreen::UpdateIntro(float dt) {
   const float oldTitleFade = mTitleFade;
   mTitleFade = CalculateFade(0.5f, 0.25f, mTime);
   if (oldTitleFade == 0.f && mTitleFade > 0.f) {
-    CSfxManager::SfxStart(0x277c, 0x69, 0x40);
+    CSfxManager::SfxStart(SFXfn2_x_bigboxup_00_oneshot, 0x69, 0x40);
   }
   const float oldWinnerFade = mWinnerFade;
   mWinnerFade = CalculateFade(3.5f, 0.25f, mTime);
   if (oldWinnerFade == 0.f && mWinnerFade > 0.f) {
-    CSfxManager::SfxStart(0x2780, 0x5f, 0x40);
+    CSfxManager::SfxStart(SFXfn2_x_wins_00_oneshot, 0x5f, 0x40);
   }
   if (mTime > 5.f) {
     mPhase = kP_Results;
