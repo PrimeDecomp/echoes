@@ -1519,7 +1519,7 @@ MetroidPrime/Cameras/CBallCamera.cpp:
 	.ctors      start:0x803A5560 end:0x803A5564
 	.rodata     start:0x803AA558 end:0x803AA570
 	.data       start:0x803B6478 end:0x803B6580
-	.bss        start:0x803DB488 end:0x803DB4D0
+	.bss        start:0x803DB488 end:0x803DB4A0
 	.sdata      start:0x80418578 end:0x80418620
 	.sbss       start:0x80419268 end:0x80419280
 	.sdata2     start:0x8041CBD8 end:0x8041CCD8
@@ -1527,6 +1527,7 @@ MetroidPrime/Cameras/CBallCamera.cpp:
 MetroidPrime/Cameras/CBallCameraTransitions.cpp:
 	.text       start:0x801A8B78 end:0x801AA4C4
 	.ctors      start:0x803A5564 end:0x803A5568
+	.bss        start:0x803DB4A0 end:0x803DB4B8
 	.sdata      start:0x80418620 end:0x80418638
 	.sbss       start:0x80419280 end:0x80419290
 	.sdata2     start:0x8041CCD8 end:0x8041CD1C
@@ -1562,6 +1563,7 @@ MetroidPrime/Cameras/CInterpolationCamera.cpp:
 	.ctors      start:0x803A5568 end:0x803A556C
 	.rodata     start:0x803AA5D8 end:0x803AA5F0
 	.data       start:0x803B6730 end:0x803B67D8
+	.bss        start:0x803DB4B8 end:0x803DB4D0
 	.sdata      start:0x80418658 end:0x80418678
 	.sbss       start:0x804192A0 end:0x804192B0
 	.sdata2     start:0x8041CE10 end:0x8041CE58
