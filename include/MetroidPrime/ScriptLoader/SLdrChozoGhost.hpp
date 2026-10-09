@@ -99,7 +99,7 @@ struct SLdrChozoGhost {
   int sound_PhazeOut;                    // 0x58b8ec5d
   int unknown_0xec76940c;                // 0xec76940c
   float projectileStopHomingRange;       // 0x723542bb
-  int unknown_0xfe9eac26;                // 0xfe9eac26
+  int startStyle;                        // 0xfe9eac26
   float hurlRecoverTime;                 // 0x96feb75d
   CAssetId projectileVisorEffect;        // 0x8f8c64a0
   int sound_ProjectileVisor;             // 0xe15b4f4a
@@ -161,7 +161,7 @@ inline SLdrChozoGhost::SLdrChozoGhost()
   sound_PhazeOut = 0;
   unknown_0xec76940c = 0;
   projectileStopHomingRange = 8.0f;
-  unknown_0xfe9eac26 = 0;
+  startStyle = 0;
   hurlRecoverTime = 1.5f;
   sound_ProjectileVisor = 0;
   nearToMidDistance = 20.0f;

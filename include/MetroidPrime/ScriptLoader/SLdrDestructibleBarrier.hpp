@@ -41,7 +41,7 @@ struct SLdrDestructibleBarrier {
   float unknown_0x605847b9;              // 0x605847b9
   float unknown_0xcd9c67fe;              // 0xcd9c67fe
   float unknown_0x0af428b4;              // 0x0af428b4
-  bool unknown_0x4d3109e3;               // 0x4d3109e3
+  bool barrierStartsDown;                // 0x4d3109e3
   SLdrHealthInfo health;                 // 0xcf90d15e
   SLdrDamageVulnerability vulnerability; // 0x7b71ae90
   SLdrActorParameters actorInformation;  // 0x7e397fed
@@ -79,7 +79,7 @@ inline SLdrDestructibleBarrier::SLdrDestructibleBarrier()
   unknown_0x605847b9 = 50.0f;
   unknown_0xcd9c67fe = 10.0f;
   unknown_0x0af428b4 = 10.0f;
-  unknown_0x4d3109e3 = false;
+  barrierStartsDown = false;
 }
 
 inline SLdrDestructibleBarrier::~SLdrDestructibleBarrier() {}

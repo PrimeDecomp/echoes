@@ -213,7 +213,7 @@ CColor CTweakTargeting::GetCrosshairsColor() const { return mData->crosshairsCol
 
 float CTweakTargeting::GetCrosshairsFadeInOutTime() const { return mData->crosshairsFadeInOutTime; }
 
-bool CTweakTargeting::GetDrawOrbitPoint() const { return mData->unknown_0x8a548cc9; }
+bool CTweakTargeting::GetDrawOrbitPoint() const { return mData->isDrawOrbitPointDefault; }
 
 CColor CTweakTargeting::GetChargeGaugeGlowColorB() const { return mData->chargeGaugeGlowColorB; }
 

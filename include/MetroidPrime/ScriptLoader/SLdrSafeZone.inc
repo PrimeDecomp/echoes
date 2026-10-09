@@ -46,7 +46,7 @@ for (int i = 0; i < propertyCount; ++i) {
     break;
   }
   case 0x414379ea: {
-    sldrThis.unknown_0x414379ea = input.ReadInt32();
+    sldrThis.filterCutoffFrequency = input.ReadInt32();
     break;
   }
   case 0x62bac460: {
@@ -122,11 +122,11 @@ for (int i = 0; i < propertyCount; ++i) {
     break;
   }
   case 0x8a09f99a: {
-    LoadTypedefSafeZoneStructA(sldrThis.safeZoneStructA, input);
+    LoadTypedefSafeZoneFog(sldrThis.fogEntering, input);
     break;
   }
   case 0xafb855b8: {
-    LoadTypedefSafeZoneStructA(sldrThis.safeZoneStructA_0xafb855b8, input);
+    LoadTypedefSafeZoneFog(sldrThis.fogLeaving, input);
     break;
   }
   case 0x4476bed8: {

@@ -30,11 +30,11 @@ for (int i = 0; i < propertyCount; ++i) {
     break;
   }
   case 0x72439b39: {
-    sldrThis.unknown_0x72439b39 = input.ReadFloat();
+    sldrThis.energyDrainPerSec = input.ReadFloat();
     break;
   }
   case 0x3af75fcc: {
-    sldrThis.unknown_0x3af75fcc = input.ReadFloat();
+    sldrThis.maxEnergyDrainAllowed = input.ReadFloat();
     break;
   }
   case 0xa97edc02: {
@@ -70,7 +70,7 @@ for (int i = 0; i < propertyCount; ++i) {
     break;
   }
   case 0x5f3f294c: {
-    sldrThis.unknown_0x5f3f294c = input.ReadFloat();
+    sldrThis.explosionGrowthEnergy = input.ReadFloat();
     break;
   }
   case 0x06b460f4: {

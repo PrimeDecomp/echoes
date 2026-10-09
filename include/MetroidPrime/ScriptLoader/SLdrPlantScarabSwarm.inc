@@ -58,7 +58,7 @@ for (int i = 0; i < propertyCount; ++i) {
     break;
   }
   case 0x454f16b1: {
-    sldrThis.unknown_0x454f16b1 = input.ReadInt32();
+    sldrThis.grenadeNumBounces = input.ReadInt32();
     break;
   }
   case 0x14d1a3a8: {

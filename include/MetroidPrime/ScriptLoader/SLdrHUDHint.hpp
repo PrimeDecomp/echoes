@@ -12,8 +12,8 @@ struct SLdrHUDHint {
 
   SLdrEditorProperties editorProperties; // 0x255a4580
   CAssetId hudTexture;                   // 0xd80447e0
-  float unknown_0x6078a651;              // 0x6078a651
-  float unknown_0xf00bb6bb;              // 0xf00bb6bb
+  float hUDIconMinSize;                  // 0x6078a651
+  float hUDIconMaxSize;                  // 0xf00bb6bb
   float iconScale;                       // 0x1ad247a1
   float animationTime;                   // 0x2a53245a
   int animationFrames;                   // 0x6e88d6ad
@@ -21,8 +21,8 @@ struct SLdrHUDHint {
 };
 
 inline SLdrHUDHint::SLdrHUDHint() : editorProperties(), hudTexture(kInvalidAssetId) {
-  unknown_0x6078a651 = 15.0f;
-  unknown_0xf00bb6bb = 16.0f;
+  hUDIconMinSize = 15.0f;
+  hUDIconMaxSize = 16.0f;
   iconScale = 1.0f;
   animationTime = 0.0f;
   animationFrames = 0;

@@ -206,7 +206,7 @@ struct SLdrTweakTargeting {
   CColor orbitPointModelColor;                                                 // 0x3523a47f
   CColor crosshairsColor;                                                      // 0x27358b4d
   float crosshairsFadeInOutTime;                                               // 0x2ff52290
-  bool unknown_0x8a548cc9;                                                     // 0x8a548cc9
+  bool isDrawOrbitPointDefault;                                                // 0x8a548cc9
   CColor chargeGaugeGlowColorB;                                                // 0x65d449e1
   float unknown_0x42c7fbe4;                                                    // 0x42c7fbe4
   float xRaySeekerMinRadiusViewport;                                           // 0x13820c03

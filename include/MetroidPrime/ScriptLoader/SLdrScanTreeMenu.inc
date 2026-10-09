@@ -19,7 +19,7 @@ for (int i = 0; i < propertyCount; ++i) {
     break;
   }
   case 0x0261a4e0: {
-    sldrThis.unknown_0x0261a4e0 = input.ReadInt32();
+    sldrThis.gameOption = input.ReadInt32();
     break;
   }
   case 0xa6a874e9: {

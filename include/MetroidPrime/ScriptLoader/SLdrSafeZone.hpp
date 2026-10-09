@@ -164,9 +164,9 @@ inline void LoadTypedefSafeZoneAttributes(SLdrSafeZoneAttributes& sldrThis, CInp
   }
 }
 
-struct SLdrSafeZoneStructA {
-  SLdrSafeZoneStructA();
-  ~SLdrSafeZoneStructA();
+struct SLdrSafeZoneFog {
+  SLdrSafeZoneFog();
+  ~SLdrSafeZoneFog();
 
   bool enabled;              // 0x29c77d27
   int mode;                  // 0x09ad63de
@@ -176,17 +176,16 @@ struct SLdrSafeZoneStructA {
   SLdrVector2f distanceRate; // 0xcc8e0f98
 };
 
-inline SLdrSafeZoneStructA::SLdrSafeZoneStructA()
-: color(CColor::Green()), nearFarPlane(), distanceRate() {
+inline SLdrSafeZoneFog::SLdrSafeZoneFog() : color(CColor::Green()), nearFarPlane(), distanceRate() {
   enabled = true;
   mode = 0;
   nearFarPlane.x = 1.0f;
   colorRate = 0.0f;
 }
 
-inline SLdrSafeZoneStructA::~SLdrSafeZoneStructA() {}
+inline SLdrSafeZoneFog::~SLdrSafeZoneFog() {}
 
-inline void LoadTypedefSafeZoneStructA(SLdrSafeZoneStructA& sldrThis, CInputStream& input) {
+inline void LoadTypedefSafeZoneFog(SLdrSafeZoneFog& sldrThis, CInputStream& input) {
   const int propertyCount = input.ReadUint16();
   for (int i = 0; i < propertyCount; ++i) {
     const uint propertyId = input.Get< uint >();
@@ -227,38 +226,38 @@ struct SLdrSafeZone {
   SLdrSafeZone();
   ~SLdrSafeZone();
 
-  SLdrEditorProperties editorProperties;          // 0x255a4580
-  SLdrTriggerInfo trigger;                        // 0x77a27411
-  bool deactivateOnEnter;                         // 0x8d33465f
-  bool deactivateOnExit;                          // 0x1c453986
-  float activationTime;                           // 0xead3e22e
-  float deactivationTime;                         // 0xb5cdf196
-  float lifetime;                                 // 0x32dc67f6
-  float randomLifetimeOffset;                     // 0xde169db0
-  CAssetId impactEffect;                          // 0x9be4bbd8
-  bool filterSoundEffects;                        // 0x822118b4
-  int unknown_0x414379ea;                         // 0x414379ea
-  bool ignoreCinematicCamera;                     // 0x62bac460
-  SLdrSafeZoneAttributes normalAttributes;        // 0xb4a293c7
-  SLdrSafeZoneAttributes hurtfulAttributes;       // 0xdae8c14e
-  SLdrSafeZoneAttributes echoAttributes;          // 0x6471d643
-  SLdrDamageInfo normalDamage;                    // 0xeee2b188
-  SLdrDamageInfo hurtfulDamage;                   // 0x78a13ca0
-  float insideFadeStart;                          // 0x08ccffd0
-  float insideFadeTime;                           // 0x7febbfe7
-  float insideFadeMinAlpha;                       // 0x6c14904c
-  float flashTime;                                // 0x48b4b865
-  float flashBrightness;                          // 0x452f7876
-  int flashSound;                                 // 0x4faac896
-  int safezoneShape;                              // 0xd5869b0b
-  bool mobile;                                    // 0x222a258e
-  bool generateMobileLight;                       // 0x6c90e396
-  CVector3f mobileLightOffset;                    // 0xa7963e03
-  CColor unknown_0xe71b43e1;                      // 0xe71b43e1
-  float unknown_0x9f638987;                       // 0x9f638987
-  SLdrSafeZoneStructA safeZoneStructA;            // non-matching name, 0x8a09f99a
-  SLdrSafeZoneStructA safeZoneStructA_0xafb855b8; // non-matching name, 0xafb855b8
-  SLdrEchoParameters echoParameters;              // 0x4476bed8
+  SLdrEditorProperties editorProperties;    // 0x255a4580
+  SLdrTriggerInfo trigger;                  // 0x77a27411
+  bool deactivateOnEnter;                   // 0x8d33465f
+  bool deactivateOnExit;                    // 0x1c453986
+  float activationTime;                     // 0xead3e22e
+  float deactivationTime;                   // 0xb5cdf196
+  float lifetime;                           // 0x32dc67f6
+  float randomLifetimeOffset;               // 0xde169db0
+  CAssetId impactEffect;                    // 0x9be4bbd8
+  bool filterSoundEffects;                  // 0x822118b4
+  int filterCutoffFrequency;                // 0x414379ea
+  bool ignoreCinematicCamera;               // 0x62bac460
+  SLdrSafeZoneAttributes normalAttributes;  // 0xb4a293c7
+  SLdrSafeZoneAttributes hurtfulAttributes; // 0xdae8c14e
+  SLdrSafeZoneAttributes echoAttributes;    // 0x6471d643
+  SLdrDamageInfo normalDamage;              // 0xeee2b188
+  SLdrDamageInfo hurtfulDamage;             // 0x78a13ca0
+  float insideFadeStart;                    // 0x08ccffd0
+  float insideFadeTime;                     // 0x7febbfe7
+  float insideFadeMinAlpha;                 // 0x6c14904c
+  float flashTime;                          // 0x48b4b865
+  float flashBrightness;                    // 0x452f7876
+  int flashSound;                           // 0x4faac896
+  int safezoneShape;                        // 0xd5869b0b
+  bool mobile;                              // 0x222a258e
+  bool generateMobileLight;                 // 0x6c90e396
+  CVector3f mobileLightOffset;              // 0xa7963e03
+  CColor unknown_0xe71b43e1;                // 0xe71b43e1
+  float unknown_0x9f638987;                 // 0x9f638987
+  SLdrSafeZoneFog fogEntering;              // 0x8a09f99a
+  SLdrSafeZoneFog fogLeaving;               // 0xafb855b8
+  SLdrEchoParameters echoParameters;        // 0x4476bed8
 };
 
 inline SLdrSafeZone::SLdrSafeZone()
@@ -272,8 +271,8 @@ inline SLdrSafeZone::SLdrSafeZone()
 , hurtfulDamage()
 , mobileLightOffset(CVector3f::Zero())
 , unknown_0xe71b43e1(CColor::Green())
-, safeZoneStructA()
-, safeZoneStructA_0xafb855b8()
+, fogEntering()
+, fogLeaving()
 , echoParameters() {
   deactivateOnEnter = false;
   deactivateOnExit = false;
@@ -282,7 +281,7 @@ inline SLdrSafeZone::SLdrSafeZone()
   lifetime = 0.0f;
   randomLifetimeOffset = 0.0f;
   filterSoundEffects = true;
-  unknown_0x414379ea = 300;
+  filterCutoffFrequency = 300;
   ignoreCinematicCamera = false;
   hurtfulAttributes.shell1AnimatedHorizRate = 0.039999999f;
   hurtfulAttributes.shell1AnimatedVertRate = 0.0f;
@@ -311,22 +310,22 @@ inline SLdrSafeZone::SLdrSafeZone()
   generateMobileLight = false;
   unknown_0xe71b43e1 = CColor(0.73725498f, 1.0f, 1.0f, 0.247059f);
   unknown_0x9f638987 = 0.2f;
-  safeZoneStructA.enabled = false;
-  safeZoneStructA.mode = 1;
-  safeZoneStructA.color = CColor(0.73725498f, 1.0f, 1.0f, 1.0f);
-  safeZoneStructA.nearFarPlane.x = 0.0f;
-  safeZoneStructA.nearFarPlane.y = 750.0f;
-  safeZoneStructA.colorRate = 5.0f;
-  safeZoneStructA.distanceRate.x = 5000.0f;
-  safeZoneStructA.distanceRate.y = 5000.0f;
-  safeZoneStructA_0xafb855b8.enabled = false;
-  safeZoneStructA_0xafb855b8.mode = 1;
-  safeZoneStructA_0xafb855b8.color = CColor(0.0f, 0.098039001f, 0.0f, 0.0f);
-  safeZoneStructA_0xafb855b8.nearFarPlane.x = 0.0f;
-  safeZoneStructA_0xafb855b8.nearFarPlane.y = 1000.0f;
-  safeZoneStructA_0xafb855b8.colorRate = 5.0f;
-  safeZoneStructA_0xafb855b8.distanceRate.x = 5000.0f;
-  safeZoneStructA_0xafb855b8.distanceRate.y = 5000.0f;
+  fogEntering.enabled = false;
+  fogEntering.mode = 1;
+  fogEntering.color = CColor(0.73725498f, 1.0f, 1.0f, 1.0f);
+  fogEntering.nearFarPlane.x = 0.0f;
+  fogEntering.nearFarPlane.y = 750.0f;
+  fogEntering.colorRate = 5.0f;
+  fogEntering.distanceRate.x = 5000.0f;
+  fogEntering.distanceRate.y = 5000.0f;
+  fogLeaving.enabled = false;
+  fogLeaving.mode = 1;
+  fogLeaving.color = CColor(0.0f, 0.098039001f, 0.0f, 0.0f);
+  fogLeaving.nearFarPlane.x = 0.0f;
+  fogLeaving.nearFarPlane.y = 1000.0f;
+  fogLeaving.colorRate = 5.0f;
+  fogLeaving.distanceRate.x = 5000.0f;
+  fogLeaving.distanceRate.y = 5000.0f;
 }
 
 inline SLdrSafeZone::~SLdrSafeZone() {}

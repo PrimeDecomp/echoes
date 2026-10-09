@@ -1115,7 +1115,7 @@ CScanTreeMenu* LoadScanTreeMenu(int* id, CInputStream& input) {
 
   return rs_new CScanTreeMenu(
       *id & 0xffff, sldrThis.editorProperties.transform, sldrThis.nodeName, sldrThis.stringName,
-      static_cast< CScanTreeMenu::ESetting >(sldrThis.unknown_0x0261a4e0), sldrThis.menuStringTable,
+      static_cast< CScanTreeMenu::ESetting >(sldrThis.gameOption), sldrThis.menuStringTable,
       sldrThis.stringTableOption1, sldrThis.menuValue1, sldrThis.stringTableOption2,
       sldrThis.menuValue2, sldrThis.stringTableOption3, sldrThis.menuValue3,
       sldrThis.stringTableOption4, sldrThis.menuValue4);
@@ -1125,7 +1125,7 @@ CScanTreeSlider* LoadScanTreeSlider(int* id, CInputStream& input) {
   SLdrScanTreeSlider sldrThis;
 #include "MetroidPrime/ScriptLoader/SLdrScanTreeSlider.inc"
 
-  return rs_new CScanTreeSlider(
-      *id & 0xffff, sldrThis.editorProperties.transform, sldrThis.nodeName, sldrThis.stringName,
-      static_cast< CScanTreeSlider::ESetting >(sldrThis.unknown_0x0261a4e0));
+  return rs_new CScanTreeSlider(*id & 0xffff, sldrThis.editorProperties.transform,
+                                sldrThis.nodeName, sldrThis.stringName,
+                                static_cast< CScanTreeSlider::ESetting >(sldrThis.gameOption));
 }

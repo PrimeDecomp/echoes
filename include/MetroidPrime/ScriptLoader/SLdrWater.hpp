@@ -127,7 +127,7 @@ struct SLdrWater {
   float lightMapOffsetY;                 // 0xedd49573
   bool unknown_0xc71c0d63;               // 0xc71c0d63
   bool filterSoundEffects;               // 0x822118b4
-  int unknown_0x414379ea;                // 0x414379ea
+  int filterCutoffFrequency;             // 0x414379ea
 };
 
 inline SLdrWater::SLdrWater()
@@ -216,7 +216,7 @@ inline SLdrWater::SLdrWater()
   lightMapOffsetY = 0.0f;
   unknown_0xc71c0d63 = false;
   filterSoundEffects = true;
-  unknown_0x414379ea = 300;
+  filterCutoffFrequency = 300;
 }
 
 inline SLdrWater::~SLdrWater() {}

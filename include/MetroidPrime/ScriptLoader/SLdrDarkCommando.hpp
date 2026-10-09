@@ -26,7 +26,7 @@ struct SLdrDarkCommandoEMPData {
   float unknown_0xed086ce0;     // 0xed086ce0
   float grenadeMinLaunchSpeed;  // 0x00fc6646
   float grenadeMaxLaunchSpeed;  // 0xa7c8e63f
-  int unknown_0x454f16b1;       // 0x454f16b1
+  int grenadeNumBounces;        // 0x454f16b1
   float eMPDuration;            // 0x2d4706e8
   int sound_GrenadeBounce;      // 0x258c3e1b
   int sound_GrenadeExplode;     // 0xaf6aad88
@@ -47,7 +47,7 @@ inline SLdrDarkCommandoEMPData::SLdrDarkCommandoEMPData()
   unknown_0xed086ce0 = 0.40000001f;
   grenadeMinLaunchSpeed = 20.0f;
   grenadeMaxLaunchSpeed = 50.0f;
-  unknown_0x454f16b1 = 0;
+  grenadeNumBounces = 0;
   eMPDuration = 8.0f;
   sound_GrenadeBounce = 0;
   sound_GrenadeExplode = 0;
@@ -106,7 +106,7 @@ inline void LoadTypedefDarkCommandoEMPData(SLdrDarkCommandoEMPData& sldrThis, CI
       break;
     }
     case 0x454f16b1: {
-      sldrThis.unknown_0x454f16b1 = input.ReadInt32();
+      sldrThis.grenadeNumBounces = input.ReadInt32();
       break;
     }
     case 0x2d4706e8: {

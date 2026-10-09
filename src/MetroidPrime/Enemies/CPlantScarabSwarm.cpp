@@ -341,7 +341,7 @@ CEntity* LoadPlantScarabSwarm(CStateManager& mgr, CInputStream& input, CEntityIn
       sldrThis.attackAnimation, sldrThis.maxAttackAngle, sldrThis.intoAttackSpeed,
       sldrThis.attackSpeed, sldrThis.grenadeMass, sldrThis.grenadeLaunchSpeed,
       sldrThis.unknown_0xed086ce0, LdrToDamageInfo(sldrThis.grenadeDamage),
-      sldrThis.grenadeExplosionProximity, sldrThis.unknown_0x454f16b1,
+      sldrThis.grenadeExplosionProximity, sldrThis.grenadeNumBounces,
       sldrThis.grenadeExplosionEffect, sldrThis.grenadeExplosionXRayEffect,
       sldrThis.grenadeTrailEffect, sldrThis.grenadeEffect, sldrThis.grenadeBounceSound,
       sldrThis.grenadeExplosionSound, sldrThis.grenadeBounceSoundFallOff,

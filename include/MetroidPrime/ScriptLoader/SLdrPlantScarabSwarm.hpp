@@ -27,7 +27,7 @@ struct SLdrPlantScarabSwarm {
   float grenadeMass;                             // 0x9a6bb47f
   float grenadeLaunchSpeed;                      // 0x16962c9b
   float unknown_0xed086ce0;                      // 0xed086ce0
-  int unknown_0x454f16b1;                        // 0x454f16b1
+  int grenadeNumBounces;                         // 0x454f16b1
   SLdrDamageInfo grenadeDamage;                  // 0x14d1a3a8
   float grenadeExplosionProximity;               // 0x6c7ca121
   CAssetId grenadeExplosionEffect;               // 0xea500e8b
@@ -61,7 +61,7 @@ inline SLdrPlantScarabSwarm::SLdrPlantScarabSwarm()
   grenadeMass = 1.0f;
   grenadeLaunchSpeed = 1.0f;
   unknown_0xed086ce0 = 0.5f;
-  unknown_0x454f16b1 = 3;
+  grenadeNumBounces = 3;
   grenadeExplosionProximity = 0.5f;
   grenadeBounceSound = 0;
   grenadeBounceSoundFallOff = 0.0f;

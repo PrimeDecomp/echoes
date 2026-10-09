@@ -58,19 +58,19 @@ for (int i = 0; i < propertyCount; ++i) {
     break;
   }
   case 0x81d14be8: {
-    sldrThis.unknown_0x81d14be8 = input.ReadInt32();
+    sldrThis.animation_Anim0 = input.ReadInt32();
     break;
   }
   case 0x6e1320d6: {
-    sldrThis.unknown_0x6e1320d6 = input.ReadInt32();
+    sldrThis.animation_Anim1 = input.ReadInt32();
     break;
   }
   case 0x85249bd5: {
-    sldrThis.unknown_0x85249bd5 = input.ReadInt32();
+    sldrThis.animation_Anim2 = input.ReadInt32();
     break;
   }
   case 0x6ae6f0eb: {
-    sldrThis.unknown_0x6ae6f0eb = input.ReadInt32();
+    sldrThis.animation_Anim3 = input.ReadInt32();
     break;
   }
   case 0xe4780219: {

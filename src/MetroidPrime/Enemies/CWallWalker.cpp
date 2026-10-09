@@ -443,10 +443,10 @@ CEntity* LoadWallWalker(CStateManager& mgr, CInputStream& input, CEntityInfo& in
   TLockedToken< CWeaponDescription > projectile =
       gpSimplePool->GetObj(SObjectTag('WPSC', sldrThis.projectile));
   TLockedToken< CGenDescription > projectileVisorParticle =
-      gpSimplePool->GetObj(SObjectTag('PART', sldrThis.pART));
+      gpSimplePool->GetObj(SObjectTag('PART', sldrThis.projectileExplosionSpash));
   const CBouncyGrenadeData grenadeData(
       sldrThis.grenadeMass, sldrThis.unknown_0xed086ce0, LdrToDamageInfo(sldrThis.explodeDamage),
-      sldrThis.unknown_0x454f16b1, sldrThis.grenadeExplosion, sldrThis.grenadeExplosion,
+      sldrThis.grenadeNumBounces, sldrThis.grenadeExplosion, sldrThis.grenadeExplosion,
       sldrThis.grenadeTrail, sldrThis.grenadeEffect, sldrThis.grenadeSoundBounce,
       sldrThis.grenadeSoundExplode, 0.1f, 150.f, 0.1f, 150.f, true);
   const CWallWalkerData data(

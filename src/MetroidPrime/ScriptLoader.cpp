@@ -515,7 +515,7 @@ LdrToPowerBombGuardianStageData(const SLdrPowerBombGuardianStageProperties& data
       data.minTimeBetweenAttacks, data.maxTimeBetweenAttacks, data.minTimeBetweenShots,
       data.maxTimeBetweenShots, static_cast< uchar >(data.minShotsInABurst),
       static_cast< uchar >(data.maxShotsInABurst), data.powerBombProjectileGravityMultiplier,
-      data.waypointTargetSpreadRadius, data.doubleShotChance,
+      data.targetPointRandomVariance, data.doubleShotChance,
       static_cast< uchar >(data.minAttacksPerDoubleShot),
       static_cast< uchar >(data.maxAttacksPerDoubleShot));
 }

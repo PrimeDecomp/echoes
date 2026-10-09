@@ -231,7 +231,7 @@ CDarkCommandoGrenade::CDarkCommandoGrenade(TUniqueId uid, const rstl::string& na
                                            const SLdrDarkCommandoEMPData& data, float velocity)
 : CBouncyGrenade(uid, name, info, xf, modelData, actorParams, parentId, velocity,
                  CBouncyGrenadeData(data.grenadeMass, data.unknown_0xed086ce0,
-                                    LdrToDamageInfo(data.grenadeDamage), data.unknown_0x454f16b1,
+                                    LdrToDamageInfo(data.grenadeDamage), data.grenadeNumBounces,
                                     data.grenadeExplosion, data.grenadeExplosion, data.grenadeTrail,
                                     data.grenadeEffect, data.sound_GrenadeBounce,
                                     data.sound_GrenadeExplode, 0.1f, 150.f, 0.1f, 150.f, false),

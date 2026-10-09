@@ -82,7 +82,7 @@ for (int i = 0; i < propertyCount; ++i) {
     break;
   }
   case 0x80ce481a: {
-    sldrThis.unknown_0x80ce481a = input.ReadFloat();
+    sldrThis.maxPoleExtensionLength = input.ReadFloat();
     break;
   }
   case 0x1b67981a: {
@@ -126,7 +126,7 @@ for (int i = 0; i < propertyCount; ++i) {
     break;
   }
   case 0x45b71390: {
-    sldrThis.alwaysFF = input.ReadInt32();
+    sldrThis.pirateProjectileVisorEffect = CAssetId(input.ReadInt32());
     break;
   }
   case 0x23316032: {

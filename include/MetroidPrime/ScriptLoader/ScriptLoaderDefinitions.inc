@@ -2649,7 +2649,7 @@ SLdrPowerBombGuardianStageProperties::SLdrPowerBombGuardianStageProperties() {
   minShotsInABurst = 1;
   maxShotsInABurst = 1;
   powerBombProjectileGravityMultiplier = 1.0f;
-  waypointTargetSpreadRadius = 1.0f;
+  targetPointRandomVariance = 1.0f;
   doubleShotChance = 0.5f;
   minAttacksPerDoubleShot = 10;
   maxAttacksPerDoubleShot = 10;
@@ -2693,7 +2693,7 @@ void LoadTypedefPowerBombGuardianStageProperties(SLdrPowerBombGuardianStagePrope
       break;
     }
     case 0xd356c997: {
-      sldrThis.waypointTargetSpreadRadius = input.ReadFloat();
+      sldrThis.targetPointRandomVariance = input.ReadFloat();
       break;
     }
     case 0xca6ac43a: {

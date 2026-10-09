@@ -14,7 +14,7 @@ for (int i = 0; i < propertyCount; ++i) {
     break;
   }
   case 0xd4b29446: {
-    sldrThis.unknown_0xd4b29446 = input.ReadInt32();
+    sldrThis.splineFlagsCameraSpline = uint(input.ReadInt32());
     break;
   }
   case 0x493d6a2d: {

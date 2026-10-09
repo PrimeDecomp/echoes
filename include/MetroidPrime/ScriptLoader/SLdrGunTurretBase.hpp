@@ -32,7 +32,7 @@ struct SLdrGunTurretBase {
   float withdrawDelay;                   // 0x5aea7978
   float unknown_0x8a35b1ea;              // 0x8a35b1ea
   float unknown_0xd49bec5a;              // 0xd49bec5a
-  float unknown_0x80ce481a;              // 0x80ce481a
+  float maxPoleExtensionLength;          // 0x80ce481a
   float attackDelay;                     // 0x1b67981a
   float detectionHeightUp;               // 0xa115a5d6
   float detectionHeightDown;             // 0x2718ced1
@@ -43,7 +43,7 @@ struct SLdrGunTurretBase {
   bool isPirateTurret;                   // 0x701d65cd
   CAssetId cRSC;                         // non-matching name, 0xa33d1c6d
   CAssetId pirateProjectileEffect;       // 0x2d1c5515
-  int alwaysFF;                          // non-matching name, 0x45b71390
+  CAssetId pirateProjectileVisorEffect;  // 0x45b71390
   int gFFireShotSound;                   // 0x23316032
   int pirateFireShotSound;               // 0xa3b39766
   int lockOnSound;                       // 0x9674eff1
@@ -68,7 +68,7 @@ inline SLdrGunTurretBase::SLdrGunTurretBase()
 , attackDamage()
 , cRSC(kInvalidAssetId)
 , pirateProjectileEffect(kInvalidAssetId)
-, alwaysFF(-1)
+, pirateProjectileVisorEffect(kInvalidAssetId)
 , patterned()
 , actorInformation() {
   attackDamage.dI_WeaponType = 11;
@@ -90,7 +90,7 @@ inline SLdrGunTurretBase::SLdrGunTurretBase()
   withdrawDelay = 0.0f;
   unknown_0x8a35b1ea = 1.0f;
   unknown_0xd49bec5a = 1.0f;
-  unknown_0x80ce481a = 1.0f;
+  maxPoleExtensionLength = 1.0f;
   attackDelay = 0.0f;
   detectionHeightUp = 0.0f;
   detectionHeightDown = 0.0f;

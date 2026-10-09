@@ -20,8 +20,8 @@ struct SLdrMetroidAlpha {
   SLdrDamageVulnerability frozenVulnerability;            // 0x411938aa
   SLdrDamageVulnerability energyDrainVulnerability;       // 0xd86ee93f
   SLdrDamageVulnerability babyMetroidGrowthVulnerability; // 0x39d63082
-  float unknown_0x72439b39;                               // 0x72439b39
-  float unknown_0x3af75fcc;                               // 0x3af75fcc
+  float energyDrainPerSec;                                // 0x72439b39
+  float maxEnergyDrainAllowed;                            // 0x3af75fcc
   float telegraphAttackTime;                              // 0xa97edc02
   float babyMetroidScale;                                 // 0x0d7e7e2c
   float unknown_0x03362858;                               // 0x03362858
@@ -30,7 +30,7 @@ struct SLdrMetroidAlpha {
   CAssetId babyMetroidTransformationParticleEffect;       // 0x71a21b50
   float stage2GrowthScale;                                // 0x2fe164c4
   float stage2GrowthEnergy;                               // 0x4c1f78f3
-  float unknown_0x5f3f294c;                               // 0x5f3f294c
+  float explosionGrowthEnergy;                            // 0x5f3f294c
   float dodgeCheckTimeInterval;                           // 0x06b460f4
   float chanceToDodge;                                    // 0x23ca0676
   uint metroidFlagsMetroid;                               // 0xfa51d735
@@ -56,8 +56,8 @@ inline SLdrMetroidAlpha::SLdrMetroidAlpha()
   patterned.health.health = 1.0f;
   patterned.health.hI_KnockBackResistance = 2.0f;
   patterned.creatureSize = 1;
-  unknown_0x72439b39 = 5.0f;
-  unknown_0x3af75fcc = 40.0f;
+  energyDrainPerSec = 5.0f;
+  maxEnergyDrainAllowed = 40.0f;
   telegraphAttackTime = 1.0f;
   babyMetroidScale = 0.5f;
   unknown_0x03362858 = 10.0f;
@@ -65,7 +65,7 @@ inline SLdrMetroidAlpha::SLdrMetroidAlpha()
   unknown_0x1c783744 = 0.5f;
   stage2GrowthScale = 1.75f;
   stage2GrowthEnergy = 50.0f;
-  unknown_0x5f3f294c = 100.0f;
+  explosionGrowthEnergy = 100.0f;
   dodgeCheckTimeInterval = 5.0f;
   chanceToDodge = 0.5f;
   metroidFlagsMetroid = 0x00000000u;

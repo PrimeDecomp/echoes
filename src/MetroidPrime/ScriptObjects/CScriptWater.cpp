@@ -766,5 +766,5 @@ CEntity* LoadWater(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
       CVector2f(sldrThis.renderTileScaleX, sldrThis.renderTileScaleY), sldrThis.useDynamicLights,
       sldrThis.fogNoGravSuitDist, sldrThis.fogNoGravSuitFactor, sldrThis.fogGravSuitDist,
       sldrThis.fogGravSuitFactor, sldrThis.unknown_0xc71c0d63, sldrThis.filterSoundEffects,
-      sldrThis.unknown_0x414379ea);
+      sldrThis.filterCutoffFrequency);
 }
