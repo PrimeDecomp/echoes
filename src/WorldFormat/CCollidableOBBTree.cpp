@@ -682,18 +682,21 @@ bool CCollidableOBBTree::LineIntersectsOBBTree(const COBBTree::CNode* node,
     return false;
   }
 
+  bool ret = false;
   ++mTries;
   float time;
-  if (!node->GetOBB().LineIntersectsBox(info.GetRay(), time) || !(time < info.GetMagnitude())) {
+  if (node->GetOBB().LineIntersectsBox(info.GetRay(), time) && time < info.GetMagnitude()) {
+    if (node->IsLeaf() == true) {
+      if (LineIntersectsLeaf(*node->GetLeafData(), info) == true)
+        ret = true;
+    } else if (LineIntersectsOBBTree(node->GetLeftNode(), node->GetRightNode(), info) == true) {
+      ret = true;
+    }
+    node->SetHit(true);
+  } else {
     ++mMisses;
-    return false;
   }
-
-  const bool hit = node->IsLeaf()
-                       ? LineIntersectsLeaf(*node->GetLeafData(), info)
-                       : LineIntersectsOBBTree(node->GetLeftNode(), node->GetRightNode(), info);
-  node->SetHit(true);
-  return hit;
+  return ret;
 }
 
 bool CCollidableOBBTree::LineIntersectsOBBTree(const COBBTree::CNode* n0, const COBBTree::CNode* n1,
