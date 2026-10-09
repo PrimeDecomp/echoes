@@ -1971,7 +1971,7 @@ void CBallCamera::CheckFailSafe(float dt, CStateManager& mgr) {
 bool CBallCamera::CheckDoorProximity(const CVector3f& position, const CStateManager& mgr) const {
   const CScriptDoor* door =
       TCastToConstPtr< CScriptDoor >(mgr.GetObjectById(GetTooCloseActorId()));
-  if (door == nullptr || door->IsOpen()) {
+  if (door == nullptr || (door != nullptr && door->IsOpen())) {
     return false;
   }
 
