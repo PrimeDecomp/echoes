@@ -10,6 +10,8 @@
 #include "rstl/math.hpp"
 #include "rstl/pair.hpp"
 
+static const char* const skTextureId = "TextureId";
+
 CGuiWidget* CAuiEnergyBarT01::Create(CGuiFrame* frame, CInputStream& in, CSimplePool* sp,
                                      uint version) {
   CGuiWidgetParms parms = ReadWidgetHeader(frame, in);

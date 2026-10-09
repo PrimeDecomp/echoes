@@ -130,35 +130,45 @@ void CScriptPlatform::StopMotion() {
 void CScriptPlatform::fn_800a3d18() { StopMotion(); }
 
 void CScriptPlatform::AdvanceMotionTime(float dt) {
+  float motionTime;
+  float delta = dt;
   mPreviousMotionForward = mMotionForward;
   mPassedMotionEnd = false;
   mPassedMotionStart = false;
   if (!mMotionForward) {
-    dt = -dt;
+    delta = -dt;
   }
-  float duration = mMotionSpline.get() ? mMotionSpline->GetDuration() : 0.f;
+  float duration = 0.f;
+  if (mMotionSpline.get()) {
+    duration = mMotionSpline->GetDuration();
+  }
   if (mSplineController.get()) {
     duration = mSplineController->GetPositionSpline().GetDuration();
   }
-  const bool fixedDuration = (mMotionFlags & 0x200) != 0;
+  const uint fixedDuration = mMotionFlags & 0x200;
   if (fixedDuration) {
     duration = mMotionDuration;
   }
-  if ((mMotionActive || fixedDuration) && duration > 0.f) {
+  if (!mMotionActive && !fixedDuration) {
+    return;
+  }
+  if (duration > 0.f) {
+    mMotionTime += delta;
     const float invDuration = 1.f / duration;
-    mMotionTime += dt;
-    if (mMotionTime >= duration) {
+    motionTime = mMotionTime;
+    if (motionTime >= duration) {
       if ((mMotionFlags & 4) != 0) {
-        mMotionTime -= int(mMotionTime * invDuration) * duration;
+        const float loops = motionTime * invDuration;
+        mMotionTime = motionTime - int(loops) * duration;
         mPassedMotionEnd = true;
       } else {
         mMotionTime = duration;
         fn_800a3d18();
       }
       mMotionForward = true;
-    } else if (mMotionTime < 0.f) {
+    } else if (motionTime < 0.f) {
       if ((mMotionFlags & 4) != 0) {
-        mMotionTime = -mMotionTime;
+        mMotionTime = -motionTime;
         mPassedMotionStart = true;
       } else {
         mMotionTime = 0.f;

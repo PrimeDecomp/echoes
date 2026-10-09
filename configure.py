@@ -911,7 +911,7 @@ config.libs = [
             Object(NonMatching, "GuiSys/CGuiWidget.cpp"),
             Object(NonMatching, "GuiSys/CGuiWidgetIdDB.cpp"),
             Object(NonMatching, "GuiSys/CGuiWidgetDrawParms.cpp"),
-            Object(NonMatching, "GuiSys/CAuiEnergyBarT01.cpp"),
+            Object(MatchingFor("G2ME01"), "GuiSys/CAuiEnergyBarT01.cpp"),
             Object(NonMatching, "GuiSys/CAuiImagePane.cpp"),
             Object(MatchingFor("G2ME01"), "GuiSys/CRepeatState.cpp"),
             Object(NonMatching, "GuiSys/CAuiBitmapMeter.cpp"),
