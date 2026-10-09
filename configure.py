@@ -281,6 +281,7 @@ cflags_retro = [
 
 if config.version in ("G2ME01", "G2MP01"):
     cflags_retro.append('-pragma "inline_max_size(125)"')
+    cflags_retro.append('-pragma "inline_max_total_size(10000)"')
 
 # Relocatable code cannot use the DOL's small-data bases.
 cflags_rel = [
@@ -646,7 +647,7 @@ config.libs = [
             Object(Matching, "MetroidPrime/Cameras/CGameCamera.cpp"),
             Object(NonMatching, "MetroidPrime/Cameras/CInterpolationCamera.cpp"),
             Object(NonMatching, "MetroidPrime/Cameras/CPathCamera.cpp"),
-            Object(NonMatching, "MetroidPrime/Cameras/CSpindleCamera.cpp"),
+            Object(Matching, "MetroidPrime/Cameras/CSpindleCamera.cpp"),
             Object(Matching, "MetroidPrime/Cameras/CBallCameraTransitionState.cpp"),
             Object(MatchingFor("G2ME01", "G2MP01"), "MetroidPrime/Enemies/CAnimationState.cpp"),
             Object(NonMatching, "MetroidPrime/Enemies/CWaypointNavigation.cpp"),
