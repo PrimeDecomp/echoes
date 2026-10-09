@@ -17,9 +17,11 @@ public:
   virtual ~CNonUniformVulnerability() {}
   virtual const CDamageVulnerability*
   GetDamageVulnerability(const CDamageVulnerability*, const CVector3f&, const CVector3f&,
-                         const CDamageInfo&) const = 0; // Guessed name
+                         const CDamageInfo&) = 0; // Guessed name
   virtual bool GetCollisionResponseType(const CVector3f&, const CVector3f&, const CWeaponMode&, int,
-                                        EWeaponCollisionResponseTypes&) const = 0; // Guessed name
+                                        EWeaponCollisionResponseTypes&) {
+    return false;
+  } // Guessed name
 };
 
 class CCollisionActor : public CPhysicsActor {

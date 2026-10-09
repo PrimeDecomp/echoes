@@ -25,6 +25,7 @@
 #include "MetroidPrime/Enemies/CDarkSamusBattleStage.hpp"
 #include "MetroidPrime/Enemies/CFlyerSwarm.hpp"
 #include "MetroidPrime/Enemies/CGlowbug.hpp"
+#include "MetroidPrime/Enemies/CGrenchler.hpp"
 #include "MetroidPrime/Enemies/CGunTurretBase.hpp"
 #include "MetroidPrime/Enemies/CGunTurretTop.hpp"
 #include "MetroidPrime/Enemies/CIngBlobSwarm.hpp"
@@ -319,7 +320,7 @@ TYPES_MATCH_IMPL(CPlasmaProjectile, CBeamProjectile, kET_PlasmaProjectile)
 // 112: class not declared yet (DigitalGuardian REL); parent CPatterned
 // 113: class not declared yet (DigitalGuardian REL); parent CPatterned
 // 114: class not declared yet (ElitePirate REL); parent CPatterned
-// 115: class not declared yet (Grenchler REL); parent CPatterned
+TYPES_MATCH_IMPL(CGrenchler, CPatterned, kET_Grenchler)
 // 116: class not declared yet (Ing REL); parent CPatterned
 // 117: class not declared yet (IngBoostBallGuardian REL); parent CPatterned
 TYPES_MATCH_IMPL(CIngSpaceJumpGuardian, CPatterned, kET_IngSpaceJumpGuardian)

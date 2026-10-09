@@ -163,7 +163,9 @@ enum ETauntType {
   kTT_Two,
   kTT_Three, // Guessed name
   kTT_Four,  // Guessed name; Rezbit alert taunt.
-  kTT_Five   // Guessed name
+  kTT_Five,  // Guessed name
+  kTT_Six = 6, // Guessed name
+  kTT_Nine = 9 // Guessed name
 };
 
 enum ECoverState { kCS_Invalid = -1, kCS_IntoCover, kCS_Cover, kCS_Lean, kCS_OutOfCover };

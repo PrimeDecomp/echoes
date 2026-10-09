@@ -6,6 +6,21 @@ Sections:
 	.data       type:data align:8
 	.bss        type:bss align:8
 
+MetroidPrime/Enemies/CGrenchler.cpp:
+	.text       start:0x00000000 end:0x00014F00
+	.ctors      start:0x00000000 end:0x00000004
+	.rodata     start:0x00000000 end:0x00000868
+	.data       start:0x00000000 end:0x00000ED0
+	.bss        start:0x00000000 end:0x00000048
+	.bss        start:0x00000070 end:0x0000007C align:4 common
+
+MetroidPrime/Enemies/CGrenchlerTail.cpp:
+	.text       start:0x00014F00 end:0x00015738
+	.ctors      start:0x00000004 end:0x00000008
+	.rodata     start:0x00000868 end:0x000008C0
+	.data       start:0x00000ED0 end:0x00000F6C
+	.bss        start:0x00000048 end:0x00000070
+
 REL/global_destructor_chain.c:
 	.text       start:0x00015738 end:0x000157AC
 	.dtors      start:0x00000000 end:0x00000004 rename:.dtors$10

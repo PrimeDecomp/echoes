@@ -1824,6 +1824,14 @@ config.libs = [
         extra_cflags=["-pool off"],
     ),
     Rel(
+        "Grenchler",
+        [
+            Object(NonMatching, "MetroidPrime/Enemies/CGrenchler.cpp"),
+            Object(NonMatching, "MetroidPrime/Enemies/CGrenchlerTail.cpp"),
+        ],
+        extra_cflags=["-pool off"],
+    ),
+    Rel(
         "Kralee",
         [
             Object(NonMatching, "MetroidPrime/Enemies/CKralee.cpp"),

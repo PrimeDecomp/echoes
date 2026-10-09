@@ -28,6 +28,7 @@ public:
   const CVector3f& GetBodyOrigin() const { return mBodyOrigin; }
   uint GetPathfindingIndex() const { return mPathfindingIndex; }
   bool IsAnEncounter() const { return mIngPossessionData.isAnEncounter; } // Guessed name
+  const SLdrIngPossessionData& GetIngPossessionData() const { return mIngPossessionData; }
   float GetHeight() const { return mHeight; }
   float GetDetectionRange() const { return mDetectionRange; }
   float GetDetectionHeightRange() const { return mDetectionHeightRange; }

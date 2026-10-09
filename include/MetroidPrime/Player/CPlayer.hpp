@@ -261,6 +261,7 @@ public:
   rstl::single_ptr< CPlayerRagDoll >& PlayerRagDoll() { return mRagDoll; }
 
   EPlayerMorphBallState GetMorphballTransitionState() const { return mMorphBallState; }
+  float GetBackwardInput() const { return mBackwardInput; } // Guessed name.
   EPlayerMorphBallState GetSpawnedMorphballState() const { return mSpawnedMorphBallState; }
   int Get_x12f8() const { return mTurretState; }
 

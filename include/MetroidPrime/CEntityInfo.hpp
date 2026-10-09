@@ -118,6 +118,7 @@ enum EEntityType {
   kET_BeamProjectile = 109,
   kET_PlasmaProjectile = 110,
   kET_DarkSamus = 111,
+  kET_Grenchler = 115, // Target-derived class tag.
   kET_IngSpaceJumpGuardian = 118, // Target-derived class tag.
   kET_IngSpiderballGuardian = 119, // Target-derived class tag.
   kET_Lumite = 120, // Target-derived class tag.
