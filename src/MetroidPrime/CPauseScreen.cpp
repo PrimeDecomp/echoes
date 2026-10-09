@@ -1634,8 +1634,8 @@ void CPauseScreen::DrawSliderNode(const CTransform4f& view, const CVector3f& ori
     gpRender->SetBlendMode_AdditiveAlpha();
     mNodeText->SetText(node->GetName(), false);
     gpTweakGui->GetLogBookTextScale();
-    const float textScale = 0.02f * scale;
     const float textOffset = -mNodeText->GetTextBoundingWidth() / 2.f;
+    const float textScale = 0.02f * scale;
     const rstl::rc_ptr< CScanTreeSlider > slider(node);
     const float value = slider->GetNormalizedValue();
     const float defaultValue = slider->GetNormalizedDefaultValue();
