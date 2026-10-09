@@ -2460,7 +2460,7 @@ void CSplinter::Render(const CStateManager& mgr) const {
 
 bool CSplinter::IsMega() const { return mSpit; }
 
-CEntity* REL_LoadSplinter(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
+CEntity* LoadSplinter(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
   SLdrSplinter sldrThis;
 #include "MetroidPrime/ScriptLoader/SLdrSplinter.inc"
 
@@ -2494,12 +2494,14 @@ CEntity* REL_LoadSplinter(CStateManager& mgr, CInputStream& input, CEntityInfo& 
       sldrThis.megaSplinterSpitVisorEffect, LdrToActorParameters(sldrThis.actorInformation));
 }
 
+#ifndef MONOLITHIC
 static void SetFuncPtrs() {
   static SSplinter_FuncPtrs funcPtrs;
-  funcPtrs.mLoader = &REL_LoadSplinter;
+  funcPtrs.mLoader = &LoadSplinter;
   SetSSplinter_FuncPtrs(&funcPtrs);
 }
 
 extern "C" void RELMain() { SetFuncPtrs(); }
 
 extern "C" void RELExit() { SetSSplinter_FuncPtrs(nullptr); }
+#endif

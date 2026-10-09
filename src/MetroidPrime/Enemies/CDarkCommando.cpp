@@ -1517,7 +1517,7 @@ void CDarkCommando::LeaveTeam(CStateManager& mgr) {
   }
 }
 
-CEntity* REL_LoadDarkCommando(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
+CEntity* LoadDarkCommando(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
   SLdrDarkCommando sldrThis;
 #include "MetroidPrime/ScriptLoader/SLdrDarkCommando.inc"
 
@@ -1535,12 +1535,14 @@ CEntity* REL_LoadDarkCommando(CStateManager& mgr, CInputStream& input, CEntityIn
       LdrToPatternedInfo(sldrThis.patterned, nullptr), sldrThis.darkCommandoProperties);
 }
 
+#ifndef MONOLITHIC
 static void SetFuncPtrs() {
   static SDarkCommando_FuncPtrs funcPtrs;
-  funcPtrs.mLoader = &REL_LoadDarkCommando;
+  funcPtrs.mLoader = &LoadDarkCommando;
   SetSDarkCommando_FuncPtrs(&funcPtrs);
 }
 
 extern "C" void RELMain() { SetFuncPtrs(); }
 
 extern "C" void RELExit() { SetSDarkCommando_FuncPtrs(nullptr); }
+#endif

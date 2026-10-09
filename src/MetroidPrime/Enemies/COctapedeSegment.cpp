@@ -660,7 +660,7 @@ void COctapedeSegment::Burn(CStateManager& mgr, float duration, float damage) {
   }
 }
 
-CEntity* REL_LoadOctapedeSegment(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
+CEntity* LoadOctapedeSegment(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
   SLdrOctapedeSegment sldrThis;
 #include "MetroidPrime/ScriptLoader/SLdrOctapedeSegment.inc"
 
@@ -688,12 +688,14 @@ CEntity* REL_LoadOctapedeSegment(CStateManager& mgr, CInputStream& input, CEntit
       sldrThis.explodeSound, sldrThis.unknown_0x0c4763d7);
 }
 
+#ifndef MONOLITHIC
 static void SetFuncPtrs() {
   static SOctapedeSegment_FuncPtrs funcPtrs;
-  funcPtrs.mLoader = &REL_LoadOctapedeSegment;
+  funcPtrs.mLoader = &LoadOctapedeSegment;
   SetSOctapedeSegment_FuncPtrs(&funcPtrs);
 }
 
 extern "C" void RELMain() { SetFuncPtrs(); }
 
 extern "C" void RELExit() { SetSOctapedeSegment_FuncPtrs(nullptr); }
+#endif

@@ -7,7 +7,7 @@ void SetSIngSpiderballGuardian_FuncPtrs(SIngSpiderballGuardian_FuncPtrs* callbac
 }
 
 // Guessed loader name.
-CEntity* RelProxy_LoadIngSpiderBallGuardian(CStateManager& mgr, CInputStream& input,
+CEntity* RelProxy_LoadIngSpiderballGuardian(CStateManager& mgr, CInputStream& input,
                                             CEntityInfo& info) {
   return gLoader_IngSpiderballGuardian->mLoader(mgr, input, info);
 }

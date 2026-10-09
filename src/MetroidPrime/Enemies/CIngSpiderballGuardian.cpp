@@ -690,7 +690,7 @@ const SLdrIngSpiderballGuardianStruct& CIngSpiderballGuardian::GetPhasePropertie
   }
 }
 
-CEntity* REL_LoadIngSpiderballGuardian(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
+CEntity* LoadIngSpiderballGuardian(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
   SLdrIngSpiderballGuardian sldrThis;
 #include "MetroidPrime/ScriptLoader/SLdrIngSpiderballGuardian.inc"
 
@@ -708,12 +708,14 @@ CEntity* REL_LoadIngSpiderballGuardian(CStateManager& mgr, CInputStream& input, 
       LdrToPatternedInfo(sldrThis.patterned, nullptr), sldrThis.ingSpiderballGuardianProperties);
 }
 
+#ifndef MONOLITHIC
 static void SetFuncPtrs() {
   static SIngSpiderballGuardian_FuncPtrs funcPtrs;
-  funcPtrs.mLoader = &REL_LoadIngSpiderballGuardian;
+  funcPtrs.mLoader = &LoadIngSpiderballGuardian;
   SetSIngSpiderballGuardian_FuncPtrs(&funcPtrs);
 }
 
 extern "C" void RELMain() { SetFuncPtrs(); }
 
 extern "C" void RELExit() { SetSIngSpiderballGuardian_FuncPtrs(nullptr); }
+#endif

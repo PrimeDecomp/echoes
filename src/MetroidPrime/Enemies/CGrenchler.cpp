@@ -4130,7 +4130,7 @@ CAABox CGrenchler::GetSortingBounds(const CStateManager& mgr) const {
   return *mGuardianBounds;
 }
 
-CEntity* REL_LoadGrenchler(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
+CEntity* LoadGrenchler(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
   SLdrGrenchler sldrThis;
 #include "MetroidPrime/ScriptLoader/SLdrGrenchler.inc"
 
@@ -4176,12 +4176,14 @@ CEntity* REL_LoadGrenchler(CStateManager& mgr, CInputStream& input, CEntityInfo&
       LdrToActorParameters(sldrThis.actorInformation));
 }
 
+#ifndef MONOLITHIC
 static void SetFuncPtrs() {
   static SGrenchler_FuncPtrs funcPtrs;
-  funcPtrs.mLoader = &REL_LoadGrenchler;
+  funcPtrs.mLoader = &LoadGrenchler;
   SetSGrenchler_FuncPtrs(&funcPtrs);
 }
 
 extern "C" void RELMain() { SetFuncPtrs(); }
 
 extern "C" void RELExit() { SetSGrenchler_FuncPtrs(nullptr); }
+#endif

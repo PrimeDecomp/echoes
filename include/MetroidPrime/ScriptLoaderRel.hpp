@@ -86,7 +86,7 @@ CEntity* REL_ENTRY(LoadIngSnatchingSwarm)(CStateManager& mgr, CInputStream& inpu
                                           CEntityInfo& info);
 CEntity* REL_ENTRY(LoadIngSpaceJumpGuardian)(CStateManager& mgr, CInputStream& input,
                                              CEntityInfo& info);
-CEntity* REL_ENTRY(LoadIngSpiderBallGuardian)(CStateManager& mgr, CInputStream& input,
+CEntity* REL_ENTRY(LoadIngSpiderballGuardian)(CStateManager& mgr, CInputStream& input,
                                               CEntityInfo& info);
 CEntity* REL_ENTRY(LoadIngs)(CStateManager& mgr, CInputStream& input, CEntityInfo& info);
 CEntity* REL_ENTRY(LoadKralee)(CStateManager& mgr, CInputStream& input, CEntityInfo& info);
@@ -98,7 +98,7 @@ CEntity* REL_ENTRY(LoadMetareeSwarm)(CStateManager& mgr, CInputStream& input, CE
 CEntity* REL_ENTRY(LoadMetroidAlpha)(CStateManager& mgr, CInputStream& input, CEntityInfo& info);
 CEntity* REL_ENTRY(LoadMinorIng)(CStateManager& mgr, CInputStream& input, CEntityInfo& info);
 CEntity* REL_ENTRY(LoadMysteryFlyer)(CStateManager& mgr, CInputStream& input, CEntityInfo& info);
-CEntity* REL_ENTRY(LoadOctopedeSegment)(CStateManager& mgr, CInputStream& input, CEntityInfo& info);
+CEntity* REL_ENTRY(LoadOctapedeSegment)(CStateManager& mgr, CInputStream& input, CEntityInfo& info);
 CEntity* REL_ENTRY(LoadParasite)(CStateManager& mgr, CInputStream& input, CEntityInfo& info);
 CEntity* REL_ENTRY(LoadPillBug)(CStateManager& mgr, CInputStream& input, CEntityInfo& info);
 CEntity* REL_ENTRY(LoadPlantScarabSwarm)(CStateManager& mgr, CInputStream& input,

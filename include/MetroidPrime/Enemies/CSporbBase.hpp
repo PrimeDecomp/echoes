@@ -308,6 +308,6 @@ private:
 };
 CHECK_SIZEOF(CSporbBase, 0xa78)
 
-CEntity* REL_LoadSporbBase(CStateManager& mgr, CInputStream& input, CEntityInfo& info);
+CEntity* LoadSporbBase(CStateManager& mgr, CInputStream& input, CEntityInfo& info);
 
 #endif // _CSPORBBASE

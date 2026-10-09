@@ -1947,7 +1947,7 @@ void CSporbBase::ClearTendrilParticles() {
   }
 }
 
-CEntity* REL_LoadSporbBase(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
+CEntity* LoadSporbBase(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
   SLdrSporbBase sldrThis;
 #include "MetroidPrime/ScriptLoader/SLdrSporbBase.inc"
 
@@ -1996,15 +1996,17 @@ CEntity* REL_LoadSporbBase(CStateManager& mgr, CInputStream& input, CEntityInfo&
       sldrThis.powerBombProjectileDamageWaitTime);
 }
 
+#ifndef MONOLITHIC
 static void SetFuncPtrs() {
   static SSporb_FuncPtrs funcPtrs;
-  funcPtrs.mLoadNeedle = &REL_LoadSporbNeedle;
-  funcPtrs.mLoadProjectile = &REL_LoadSporbProjectile;
-  funcPtrs.mLoadBase = &REL_LoadSporbBase;
-  funcPtrs.mLoadTop = &REL_LoadSporbTop;
+  funcPtrs.mLoadNeedle = &LoadSporbNeedle;
+  funcPtrs.mLoadProjectile = &LoadSporbProjectile;
+  funcPtrs.mLoadBase = &LoadSporbBase;
+  funcPtrs.mLoadTop = &LoadSporbTop;
   SetSSporb_FuncPtrs(&funcPtrs);
 }
 
 extern "C" void RELMain() { SetFuncPtrs(); }
 
 extern "C" void RELExit() { SetSSporb_FuncPtrs(nullptr); }
+#endif

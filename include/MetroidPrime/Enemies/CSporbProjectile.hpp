@@ -107,6 +107,6 @@ private:
 };
 CHECK_SIZEOF(CSporbProjectile, 0x800)
 
-CEntity* REL_LoadSporbProjectile(CStateManager& mgr, CInputStream& input, CEntityInfo& info);
+CEntity* LoadSporbProjectile(CStateManager& mgr, CInputStream& input, CEntityInfo& info);
 
 #endif // _CSPORBPROJECTILE

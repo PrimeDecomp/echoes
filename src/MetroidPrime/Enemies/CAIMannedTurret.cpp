@@ -574,7 +574,7 @@ void CAIMannedTurret::Fire(CStateManager& mgr) {
   }
 }
 
-CEntity* REL_LoadAIMannedTurret(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
+CEntity* LoadAIMannedTurret(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
   SLdrAIMannedTurret sldrThis;
 #include "MetroidPrime/ScriptLoader/SLdrAIMannedTurret.inc"
 
@@ -587,12 +587,14 @@ CEntity* REL_LoadAIMannedTurret(CStateManager& mgr, CInputStream& input, CEntity
       sldrThis.patrolVerticalSpline, sldrThis.data.telegraphEffect);
 }
 
+#ifndef MONOLITHIC
 static void SetFuncPtrs() {
   static SAIMannedTurret_FuncPtrs funcPtrs;
-  funcPtrs.mLoader = &REL_LoadAIMannedTurret;
+  funcPtrs.mLoader = &LoadAIMannedTurret;
   SetSAIMannedTurret_FuncPtrs(&funcPtrs);
 }
 
 extern "C" void RELMain() { SetFuncPtrs(); }
 
 extern "C" void RELExit() { SetSAIMannedTurret_FuncPtrs(nullptr); }
+#endif

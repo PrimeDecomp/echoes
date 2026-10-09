@@ -1207,7 +1207,7 @@ void CShrieker::DeliverCommand(EStateMsg msg, pas::EAnimationState state, const 
   }
 }
 
-CEntity* REL_LoadShrieker(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
+CEntity* LoadShrieker(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
   SLdrShrieker sldrThis;
 #include "MetroidPrime/ScriptLoader/SLdrShrieker.inc"
 
@@ -1237,12 +1237,14 @@ CEntity* REL_LoadShrieker(CStateManager& mgr, CInputStream& input, CEntityInfo& 
                           LdrToActorParameters(sldrThis.actorInformation), data);
 }
 
+#ifndef MONOLITHIC
 static void SetFuncPtrs() {
   static SShrieker_FuncPtrs funcPtrs;
-  funcPtrs.mLoader = &REL_LoadShrieker;
+  funcPtrs.mLoader = &LoadShrieker;
   SetSShrieker_FuncPtrs(&funcPtrs);
 }
 
 extern "C" void RELMain() { SetFuncPtrs(); }
 
 extern "C" void RELExit() { SetSShrieker_FuncPtrs(nullptr); }
+#endif

@@ -428,7 +428,7 @@ void CSporbProjectile::ScanVisorRender(const CStateManager& mgr, const CTransfor
   }
 }
 
-CEntity* REL_LoadSporbProjectile(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
+CEntity* LoadSporbProjectile(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
   SLdrSporbProjectile sldrThis;
 #include "MetroidPrime/ScriptLoader/SLdrSporbProjectile.inc"
 

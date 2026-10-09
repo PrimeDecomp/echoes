@@ -72,6 +72,6 @@ private:
 };
 CHECK_SIZEOF(CSporbNeedle, 0x338)
 
-CEntity* REL_LoadSporbNeedle(CStateManager& mgr, CInputStream& input, CEntityInfo& info);
+CEntity* LoadSporbNeedle(CStateManager& mgr, CInputStream& input, CEntityInfo& info);
 
 #endif // _CSPORBNEEDLE
