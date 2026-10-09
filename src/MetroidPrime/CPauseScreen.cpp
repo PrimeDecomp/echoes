@@ -440,7 +440,8 @@ bool CPauseScreen::CheckLoadComplete(const CStateManager& mgr) {
       for (rstl::vector< SObjectTag >::const_iterator it = scan.GetDependencies().begin();
            it != scan.GetDependencies().end(); ++it) {
         if (it->type != FourCC('AGSC')) {
-          mDependencies.push_back(gpSimplePool->GetObj(*it));
+          const SObjectTag tag = *it;
+          mDependencies.push_back_unsafe(gpSimplePool->GetObj(tag));
           mDependencies.back().Lock();
         }
       }
@@ -458,7 +459,7 @@ bool CPauseScreen::CheckLoadComplete(const CStateManager& mgr) {
         }
       }
       mScanStrings = rs_new TCachedToken< CStringTable >(
-          gpSimplePool->GetObj(SObjectTag('STRG', scan.GetStringTableId())));
+          gpSimplePool->GetObj(SObjectTag('STRG', mScanInfo->GetObject()->GetStringTableId())));
       mScanStrings->Lock();
     }
     mLoadState = kLS_ScanText;
@@ -468,7 +469,8 @@ bool CPauseScreen::CheckLoadComplete(const CStateManager& mgr) {
       if (!mScanStrings->TryCache()) {
         return true;
       }
-      mMessage->TextSupport().SetText(rstl::wstring(mScanStrings->GetObject()->GetString(2)), true);
+      mMessage->TextSupport().SetText(rstl::wstring_l(mScanStrings->GetObject()->GetString(2)),
+                                      true);
       if (!mMessage->TextSupport().GetIsTextSupportFinishedLoading()) {
         return true;
       }
@@ -478,45 +480,54 @@ bool CPauseScreen::CheckLoadComplete(const CStateManager& mgr) {
     mLoadState = kLS_ScanModels;
   }
   if (mLoadState == kLS_ScanModels) {
-    for (int i = 0; i < mModelTokens.size(); ++i) {
-      if (mModelTokens[i].valid() && mModelTokens[i]->HasLock() && !mModelTokens[i]->IsLoaded()) {
+    for (rstl::reserved_vector< rstl::optional_object< CToken >, 11 >::iterator it =
+             mModelTokens.begin();
+         it != mModelTokens.end(); ++it) {
+      if (it->valid() && (*it)->HasLock() && !(*it)->IsLoaded()) {
         return true;
       }
     }
     for (rstl::vector< CToken >::const_iterator it = mDependencies.begin();
          it != mDependencies.end(); ++it) {
-      if (!it->IsLoaded() || !EnsureTextureLoaded(*it)) {
+      if (!it->IsLoaded()) {
+        return true;
+      }
+      if (!EnsureTextureLoaded(*it)) {
         return true;
       }
     }
     if (mModels.empty()) {
-      for (int i = 0; i < mModelTokens.size(); ++i) {
-        if (mModelTokens[i].valid() && mModelTokens[i]->HasLock() && mModelTokens[i]->IsLoaded() &&
-            !mScanInfo.null() && mScanInfo->GetObject() != nullptr) {
+      int i = 0;
+      for (rstl::reserved_vector< rstl::optional_object< CToken >, 11 >::iterator it =
+               mModelTokens.begin();
+           it != mModelTokens.end(); ++it, ++i) {
+        if (it->valid() && (*it)->HasLock() && (*it)->IsLoaded() && !mScanInfo.null() &&
+            mScanInfo->GetObject() != nullptr) {
           mModels.push_back(mScanInfo->GetObject()->CreateModel(i));
         } else {
           mModels.push_back(rstl::auto_ptr< CModelData >(nullptr));
         }
       }
     }
-    for (int i = 0; i < mModels.size(); ++i) {
-      CModelData* model = mModels[i].get();
-      if (model != nullptr) {
-        if (!model->IsNull()) {
-          model->Touch(CModelData::kWM_Normal, 0);
+    for (rstl::reserved_vector< rstl::auto_ptr< CModelData >, 11 >::iterator it = mModels.begin();
+         it != mModels.end(); ++it) {
+      if (it->get() != nullptr) {
+        if (!(*it)->IsNull()) {
+          (*it)->Touch(CModelData::kWM_Normal, 0);
         }
-        if (!model->IsLoaded(0)) {
+        if (!(*it)->IsLoaded(0)) {
           return true;
         }
-        if (!model->HasAnimation()) {
+        if (!(*it)->HasAnimation()) {
           const CCubeModel* instance =
-              model->PickStaticModel(CModelData::kWM_Normal)->GetModelInstance();
+              (*it)->PickStaticModel(CModelData::kWM_Normal)->GetModelInstance();
           if (instance != nullptr) {
             const rstl::vector< TCachedToken< CTexture > >& textures = instance->GetTextures();
             for (rstl::vector< TCachedToken< CTexture > >::const_iterator it = textures.begin();
                  it != textures.end(); ++it) {
               const TCachedToken< CTexture > texture = *it;
-              if (!EnsureTextureLoaded(CToken(texture))) {
+              const CToken token = texture;
+              if (!EnsureTextureLoaded(token)) {
                 return true;
               }
             }
@@ -525,8 +536,9 @@ bool CPauseScreen::CheckLoadComplete(const CStateManager& mgr) {
       }
     }
     CAABox bounds = CAABox::MakeMaxInvertedBox();
-    for (int i = 0; i < mModels.size(); ++i) {
-      CModelData* model = mModels[i].get();
+    for (rstl::reserved_vector< rstl::auto_ptr< CModelData >, 11 >::iterator it = mModels.begin();
+         it != mModels.end(); ++it) {
+      CModelData* model = it->get();
       if (model != nullptr && !model->IsNull()) {
         mModelFade = 0.f;
         model->Touch(CModelData::kWM_Normal, 0);
