@@ -184,15 +184,12 @@ bool CBallCamera::UpdateTransitionToBallCamera(float dt, CStateManager& mgr) {
   CPlayer& player = Player(mgr);
   const float factor = player.GetMorphBallTransitionFactor();
   const CVector3f eyePos = player.GetEyePosition();
-  const CVector3f& playerPosition = player.GetTranslation();
-  const CTransform4f& previousPlayerXf = mToBallTransition->mPlayerXf;
-  const CVector3f translationDelta(playerPosition.GetX() - previousPlayerXf.Get03(),
-                                   playerPosition.GetY() - previousPlayerXf.Get13(),
-                                   playerPosition.GetZ() - previousPlayerXf.Get23());
+  const CVector3f translationDelta =
+      player.GetTranslation() - mToBallTransition->mPlayerXf.GetTranslation();
   mToBallTransition->mSpline.Translate(translationDelta);
   if (player.GetRidingPlatform() != kInvalidUniqueId) {
-    if (fabsf(CVector3f::Dot(player.GetTransform().GetForward(),
-                             mToBallTransition->mPlayerXf.GetForward())) < 0.9999f) {
+    if (fabsf(CVector3f::Dot(mToBallTransition->mPlayerXf.GetForward(),
+                             player.GetTransform().GetForward())) < 0.9999f) {
       const CQuaternion rotation = CQuaternion::LookAt(
           CUnitVector3f(mToBallTransition->mPlayerXf.GetForward()),
           CUnitVector3f(player.GetTransform().GetForward()), CRelAngle::FromRadians(6.2831855f));
@@ -204,28 +201,33 @@ bool CBallCamera::UpdateTransitionToBallCamera(float dt, CStateManager& mgr) {
       factor * mToBallTransition->mSpline.GetDuration());
   const CTransform4f oldTransform = GetTransform();
   CPlayer& transitionPlayer = Player(mgr);
-  const float splineDistance = (splinePosition - eyePos).Magnitude();
-  const float currentDistance = (GetTranslation() - eyePos).Magnitude();
+  const CVector3f splineDelta = splinePosition - eyePos;
+  const float splineDistance = splineDelta.Magnitude();
+  const float currentDistance = CVector3f(GetTranslation() - eyePos).Magnitude();
   mBallCameraSpring.ApplyDistanceSpring(splineDistance, currentDistance, dt);
 
   CVector3f position = splinePosition;
   if (CPhysicsActor* actor = TCastToPtr< CPhysicsActor >(mgr.ObjectById(mCollisionActorId))) {
     actor->SetTranslation(GetTranslation());
-    position = MoveCollisionActor(ClampElevationToWater(position, mgr), dt, mgr);
-    CVector3f lookDirection = mLookPos - mToBallTransition->mSpline.GetPositionByTime(
-                                             mToBallTransition->mSpline.GetDuration());
+    position = ClampElevationToWater(position, mgr);
+    position = MoveCollisionActor(position, dt, mgr);
+    CVector3f lookDirection = transitionPlayer.GetTransform().GetForward();
+    lookDirection = mLookPos - position;
+    lookDirection = mLookPos - mToBallTransition->mSpline.GetPositionByTime(
+                                   mToBallTransition->mSpline.GetDuration());
     if (lookDirection.IsMagnitudeSafe()) {
       lookDirection.Normalize();
       CVector3f currentForward = GetTransform().GetForward();
       currentForward.SetZ(0.f);
       currentForward.Normalize();
-      const float dot = CMath::Limit(CVector3f::Dot(currentForward, lookDirection), 1.f);
-      if (fabsf(dot) < 0.999999f) {
-        const float rotationFactor =
-            CMath::Limit(1.15f * transitionPlayer.GetMorphBallTransitionFactor(), 1.f);
+      const float absDot =
+          CMath::AbsF(CMath::Limit(CVector3f::Dot(currentForward, lookDirection), 1.f));
+      if (absDot < 0.999999f) {
+        float rotationFactor = 1.15f * transitionPlayer.GetMorphBallTransitionFactor();
+        rotationFactor = CMath::Limit(rotationFactor, 1.f);
         const CQuaternion rotation =
             CQuaternion::LookAt(CUnitVector3f(currentForward), CUnitVector3f(lookDirection),
-                                CRelAngle::FromRadians(rotationFactor * acosf(fabsf(dot))));
+                                CRelAngle::FromRadians(rotationFactor * acosf(absDot)));
         SetTransform(rotation.BuildTransform4f() *
                      CTransform4f::LookAt(position, position + currentForward, CVector3f::Up()));
       } else {
@@ -238,8 +240,9 @@ bool CBallCamera::UpdateTransitionToBallCamera(float dt, CStateManager& mgr) {
   SetTranslation(position);
   TeleportCamera(position, mgr);
   mToBallTransition->mPlayerXf = player.GetTransform();
-  if ((mToBallTransition->mSpline.GetPositionByTime(mToBallTransition->mSpline.GetDuration()) -
-       GetTranslation())
+  if (CVector3f(
+          mToBallTransition->mSpline.GetPositionByTime(mToBallTransition->mSpline.GetDuration()) -
+          GetTranslation())
           .Magnitude() > 0.5f) {
     CVector3f direction = GetTranslation() - oldPosition;
     if (direction.CanBeNormalized()) {
@@ -249,7 +252,9 @@ bool CBallCamera::UpdateTransitionToBallCamera(float dt, CStateManager& mgr) {
     }
     const CRayCastResult hit =
         mgr.RayStaticIntersection(GetTranslation(), direction, 0.5f, skTransitionFilter);
-    return hit.IsValid();
+    if (hit.IsValid()) {
+      return true;
+    }
   }
   return false;
 }
