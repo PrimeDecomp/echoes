@@ -2092,7 +2092,7 @@ void CCubeRenderer::SetGXRegister1Color(const CColor& color) {
 }
 
 void CCubeRenderer::SetWorldLightFadeLevel(float level) {
-  const uchar value = static_cast< uchar >(level * 255.f);
+  const uchar value = CCast::ToUint8(level * 255.f);
   mWorldLightColor = CColor(value, value, value, static_cast< uchar >(255));
 }
 

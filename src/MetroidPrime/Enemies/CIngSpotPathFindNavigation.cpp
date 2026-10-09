@@ -66,8 +66,8 @@ bool CIngSpotPathFindNavigation::HasPath(const CPatterned& actor) const {
 
 bool CIngSpotPathFindNavigation::IsPathOver(const CPatterned& actor) const {
   const CPathFindPointSearch* path = actor.GetPointSearchPath();
-  if (path != nullptr && HasPath(actor)) {
-    return mCurrentWaypoint >= path->GetWaypoints().size();
+  if (path != nullptr) {
+    return HasPath(actor) && mCurrentWaypoint >= path->GetWaypoints().size();
   }
   return false;
 }
