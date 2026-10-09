@@ -43,6 +43,8 @@ void CPatterned::PathFind(CStateManager& mgr, EStateMsg msg, float) {
     return;
   }
   switch (msg) {
+  case kStateMsg_Deactivate:
+    break;
   case kStateMsg_Activate:
     fn_801524fc(mgr);
     break;
@@ -55,10 +57,9 @@ void CPatterned::PathFind(CStateManager& mgr, EStateMsg msg, float) {
       const CVector3f position = GetTranslation() + 0.3f * CVector3f::Up();
       mReflectedDestPos = position - (mDestPos - position);
       ApproachDest(mgr);
-      const float scale = GetModelData()->GetScale().GetY();
-      CVector3f point = position + scale * GetTransform().GetForward();
-      GetSearchPath()->GetSplinePointWithLookahead(point, position,
-                                                   skActorApproachDistance * scale);
+      CVector3f point = position + GetModelData()->GetScale().GetY() * GetTransform().GetForward();
+      GetSearchPath()->GetSplinePointWithLookahead(
+          point, position, skActorApproachDistance * GetModelData()->GetScale().GetY());
       SetDestPos(point);
       if (GetSearchPath()->SegmentOver(position)) {
         GetSearchPath()->Advance();
@@ -80,17 +81,16 @@ void CPatterned::fn_801524fc(CStateManager& mgr) {
 }
 
 bool CPatterned::OffLine(CStateManager&, const CTriggerData& data) const {
-  const CVector3f fromStart = GetTranslation() - mReflectedDestPos;
+  CVector3f fromStart = GetTranslation() - mReflectedDestPos;
   CVector3f segment = mDestPos - mReflectedDestPos;
-  float distanceSquared;
+  float distanceSquared = 0.f;
   if (CVector3f::Dot(segment, fromStart) <= 0.f) {
     distanceSquared = fromStart.MagSquared();
   } else {
     segment.Normalize();
+    fromStart -= CVector3f::Dot(segment, fromStart) * segment;
+    distanceSquared = fromStart.MagSquared();
     const CVector3f fromEnd = GetTranslation() - mDestPos;
-    const float along = CVector3f::Dot(segment, fromStart);
-    const CVector3f perp = fromStart - along * segment;
-    distanceSquared = perp.MagSquared();
     if (CVector3f::Dot(segment, fromEnd) > 0.f) {
       distanceSquared = fromEnd.MagSquared();
     }
@@ -148,9 +148,11 @@ bool CPatterned::SpotPlayer(CStateManager& mgr, const CTriggerData&) const {
   for (int i = 0; i < uint(mgr.GetNumPlayers()); ++i) {
     const CVector3f delta = mgr.GetPlayer(i)->GetAimPosition(mgr, 0.f) - eye;
     const float forwardDistance = CVector3f::Dot(delta, forward);
-    if (forwardDistance > 0.f &&
-        forwardDistance * forwardDistance > delta.MagSquared() * mDetectionAngle) {
-      return true;
+    if (forwardDistance > 0.f) {
+      const float distanceSquared = delta.MagSquared();
+      if (forwardDistance * forwardDistance > distanceSquared * mDetectionAngle) {
+        return true;
+      }
     }
   }
   return false;
@@ -165,6 +167,7 @@ bool CPatterned::IsOnScreen(const CStateManager& mgr) const {
 }
 
 bool CPatterned::PlayerSpot(CStateManager& mgr, const CTriggerData&) const {
+  bool result = false;
   if (mgr.GetPlayer(0)->GetMorphballTransitionState() == CPlayer::kMS_Unmorphed &&
       IsOnScreen(mgr)) {
     const CVector3f aim = mgr.GetPlayer(0)->GetAimPosition(mgr, 0.f);
@@ -173,9 +176,9 @@ bool CPatterned::PlayerSpot(CStateManager& mgr, const CTriggerData&) const {
     const float distance = direction.Magnitude();
     direction *= 1.f / distance;
     const CMaterialFilter filter = CMaterialFilter::MakeInclude(CMaterialList(kMT_Solid));
-    return CGameCollision::RayStaticLineOfSightTest(mgr, aim, direction, distance, filter);
+    result = CGameCollision::RayStaticLineOfSightTest(mgr, aim, direction, distance, filter);
   }
-  return false;
+  return result;
 }
 
 bool CPatterned::Landed(CStateManager&, const CTriggerData&) const {
@@ -230,12 +233,12 @@ bool CPatterned::HasPatrolPath(CStateManager& mgr, const CTriggerData&) const {
 
 bool CPatterned::InPosition(CStateManager&, const CTriggerData&) const { return mInPosition; }
 
-bool CPatterned::GetAnimOver(CStateManager&, const CTriggerData&) const {
-  return mAnimationState.IsOver();
-}
-
 bool CPatterned::AnimOver(CStateManager& mgr, const CTriggerData& data) const {
   return GetAnimOver(mgr, data);
+}
+
+bool CPatterned::GetAnimOver(CStateManager&, const CTriggerData&) const {
+  return mAnimationState.IsOver();
 }
 
 bool CPatterned::Stuck(CStateManager&, const CTriggerData&) const {
@@ -275,9 +278,11 @@ bool CPatterned::FixedRandom(CStateManager&, const CTriggerData&) const {
 void CPatterned::SetAttackTarget(CStateManager&, TUniqueId) {}
 
 void CPatterned::ApproachDest(CStateManager&) {
+  CVector3f face = CVector3f::Zero();
   CVector3f move = mDestPos - GetTranslation();
   if (!mVerticalMovement) {
     move.SetZ(0.f);
+    face.SetZ(0.f);
   }
   const CVector3f segment = mDestPos - mReflectedDestPos;
   if (CVector3f::Dot(segment, move) <= 0.f) {
@@ -292,9 +297,9 @@ void CPatterned::ApproachDest(CStateManager&) {
     }
     const EBodyType bodyType = mBodyController->GetBodyType();
     if (bodyType == kBT_AiMovedFlyer) {
-      mBodyController->CommandMgr().DeliverCmd(CBCLocomotionCmd(move, CVector3f::Zero(), 1.f));
+      mBodyController->CommandMgr().DeliverCmd(CBCLocomotionCmd(move, face, 1.f));
     } else if (bodyType == kBT_4WayBlended) {
-      mBodyController->CommandMgr().DeliverCmd(CBCLocomotionCmd(move, CVector3f::Zero(), 1.f));
+      mBodyController->CommandMgr().DeliverCmd(CBCLocomotionCmd(move, face, 1.f));
     } else if (!mBodyController->HasBodyState(pas::kAS_Step)) {
       mBodyController->CommandMgr().DeliverCmd(CBCLocomotionCmd(move, CVector3f::Zero(), 1.f));
     } else {
@@ -304,14 +309,15 @@ void CPatterned::ApproachDest(CStateManager&) {
       } else {
         mBodyController->CommandMgr().DeliverCmd(CBCLocomotionCmd(move, CVector3f::Zero(), 1.f));
       }
-      mBodyController->CommandMgr().SetTargetVector(CVector3f::Zero());
+      mBodyController->CommandMgr().SetTargetVector(face);
     }
   } else {
     const float maxSpeed = mBodyController->GetBodyStateInfo().GetMaxSpeed();
     if (maxSpeed > FLT_EPSILON) {
       const float speed = GetVelocityWR().Magnitude() / maxSpeed;
+      const CVector3f forwardMove = speed * GetTransform().GetForward();
       mBodyController->CommandMgr().DeliverCmd(
-          CBCLocomotionCmd(speed * GetTransform().GetForward(), CVector3f::Zero(), 1.f));
+          CBCLocomotionCmd(forwardMove, CVector3f::Zero(), 1.f));
     }
   }
 }

@@ -95,7 +95,7 @@ public:
   virtual void Update(CStateManager& mgr, T& owner, float dt);
   virtual bool HasState() const;
   virtual const char* GetName() const;
-  virtual float GetTime() const;
+  virtual float GetTime() const { return mTime; }
   virtual float GetDelay() const;
   virtual void SetDelay(float delay);
 
@@ -233,11 +233,6 @@ const char* TStateMachineState< T >::GetName() const {
 template < class T >
 bool TStateMachineState< T >::HasState() const {
   return mState != nullptr;
-}
-
-template < class T >
-float TStateMachineState< T >::GetTime() const {
-  return mTime;
 }
 
 template < class T >
