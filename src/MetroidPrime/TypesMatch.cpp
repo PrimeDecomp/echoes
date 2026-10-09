@@ -39,6 +39,7 @@
 #include "MetroidPrime/Enemies/CMetaree.hpp"
 #include "MetroidPrime/Enemies/CMetareeSwarm.hpp"
 #include "MetroidPrime/Enemies/CMetroid.hpp"
+#include "MetroidPrime/Enemies/COctapedeSegment.hpp"
 #include "MetroidPrime/Enemies/CParasite.hpp"
 #include "MetroidPrime/Enemies/CPatterned.hpp"
 #include "MetroidPrime/Enemies/CPillBug.hpp"
@@ -361,7 +362,7 @@ TYPES_MATCH_IMPL(CStoneToad, CPatterned, kET_StoneToad)
 TYPES_MATCH_IMPL(CScriptFrontEndDataNetwork, CActor, kET_ScriptFrontEndDataNetwork)
 TYPES_MATCH_IMPL(CPowerBomb, CWeapon, kET_PowerBomb)
 TYPES_MATCH_IMPL(CKrocuss, CPatterned, kET_Krocuss)
-// 158: class not declared yet (OctapedeSegment REL); parent CWallCrawler
+TYPES_MATCH_IMPL(COctapedeSegment, CWallCrawler, kET_OctapedeSegment)
 TYPES_MATCH_IMPL(CPuddleSpore, CPatterned, kET_PuddleSpore)
 TYPES_MATCH_IMPL(CScriptForgottenObject, CEntity, kET_ScriptForgottenObject)
 
@@ -651,7 +652,8 @@ CAST_TO_PTR_IMPL(CScriptFrontEndDataNetwork, kET_ScriptFrontEndDataNetwork)
 CAST_TO_REF_IMPL(CPowerBomb, kET_PowerBomb)
 CAST_TO_PTR_IMPL(CPowerBomb, kET_PowerBomb)
 // 157: class not declared yet (Krocuss REL)
-// 158: class not declared yet (OctapedeSegment REL)
+CAST_TO_REF_IMPL(COctapedeSegment, kET_OctapedeSegment)
+CAST_TO_PTR_IMPL(COctapedeSegment, kET_OctapedeSegment)
 // 159: class not declared yet (PuddleSpore REL)
 CAST_TO_REF_IMPL(CScriptForgottenObject, kET_ScriptForgottenObject)
 CAST_TO_PTR_IMPL(CScriptForgottenObject, kET_ScriptForgottenObject)

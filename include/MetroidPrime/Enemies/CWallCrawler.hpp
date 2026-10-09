@@ -13,7 +13,11 @@ class CScriptWaypoint;
 // is the closest relative. Member names follow Prime where the layout lines up.
 class CWallCrawler : public CPatterned {
 public:
-  enum EType { kT_PillBug = 5, kT_WallWalker = 9 }; // Guessed names; other values are not recovered.
+  enum EType {
+    kT_PillBug = 5,
+    kT_OctapedeSegment = 8, // Guessed name
+    kT_WallWalker = 9
+  }; // Guessed names; other values are not recovered.
 
   CWallCrawler(EPatternedAI character, TUniqueId uid, const rstl::string& name, EFlavorType flavor,
                CEntityInfo& info, const CTransform4f& xf, const CModelData& mData,
