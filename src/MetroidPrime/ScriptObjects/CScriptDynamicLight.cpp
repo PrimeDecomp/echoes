@@ -41,7 +41,7 @@ CScriptDynamicLight::CScriptDynamicLight(TUniqueId uid, TAreaId areaId, const CL
 , mFalloffTime(0.f)
 , mSpotlightTime(0.f)
 , mSplineTime(0.f)
-, mSpline(spline.GetDuration(), spline.IsClosedLoop() ? CGameSpline::kF_LoopPosition : 0,
+, mSpline(spline.GetDuration(), spline.IsClosedLoop() ? CSpline::kF_LoopPosition : 0,
           spline.GetSpline(), CMayaSpline(), spline.GetType(), spline.GetType())
 , mParentId(kInvalidUniqueId)
 , mParentLocator(CSegId::Invalid())

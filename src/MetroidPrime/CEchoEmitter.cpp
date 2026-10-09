@@ -1,8 +1,8 @@
 #include "MetroidPrime/CEchoEmitter.hpp"
 
 #include "Kyoto/Graphics/CGX.hpp"
-#include "Kyoto/Graphics/CGXTransientBuffer.hpp"
 #include "Kyoto/Graphics/CGraphics.hpp"
+#include "Kyoto/Graphics/DolphinGPUMemory.hpp"
 #include "Kyoto/Math/CMath.hpp"
 #include "MetaRender/CCubeRenderer.hpp"
 #include "MetroidPrime/CStateManager.hpp"
@@ -216,7 +216,7 @@ void CEchoEmitter::DrawWaves(const CVector3f* points, int count, int subdivision
   const int usedBytes = sizeof(SLineStripHeader) + vertexCount * sizeof(CVector3f);
   const int allocationSize = (usedBytes + 31) & ~31;
   SLineStripHeader* header =
-      static_cast< SLineStripHeader* >(CGXTransientBuffer::EnsureAllocation(allocationSize));
+      static_cast< SLineStripHeader* >(GPUMemory::EnsureAllocation(allocationSize));
   header->mNop = GX_NOP;
   header->mCommand = GX_LINESTRIP;
   header->mVertexCount = vertexCount;
@@ -282,7 +282,7 @@ void CEchoEmitter::DrawWaves(const CVector3f* points, int count, int subdivision
     CGX::CallDisplayList(header, allocationSize);
     scale += increment;
   }
-  CGXTransientBuffer::ReleaseAllocation();
+  GPUMemory::ReleaseAllocation();
   CGraphics::SetLineWidth(1.f, kTO_One);
   gpRender->SetDestinationAlpha(0);
 }

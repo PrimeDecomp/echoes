@@ -11,7 +11,7 @@
 #include "rstl/rc_ptr.hpp"
 #include "rstl/single_ptr.hpp"
 
-class CFilePreload;
+class CStreamPreloadedToken;
 class CFinalInput;
 class CGuiTextSupport;
 class CMoviePlayer;
@@ -46,7 +46,7 @@ private:
   TToken< CStringTable > mCreditsTable;
   rstl::single_ptr< CMoviePlayer > mMoviePlayer;
   rstl::string mAudioFile;
-  rstl::single_ptr< CFilePreload > mAudioPreload;
+  rstl::single_ptr< CStreamPreloadedToken > mAudioPreload;
   TextList mText;
   float mScrollPosition;
   float mTotalScrollDistance;

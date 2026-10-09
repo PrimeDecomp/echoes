@@ -12,7 +12,7 @@
 
 class CActorLights;
 class CDependencyGroupToken;
-class CFilePreload;
+class CStreamPreloadedToken;
 class CGameState;
 class CGuiTextSupport;
 class CModel;
@@ -123,7 +123,7 @@ private:
   rstl::auto_ptr< CGuiTextSupport > mResultsText;
   rstl::auto_ptr< CGuiTextSupport > mPromptText;
   rstl::string mMusicPath;
-  rstl::auto_ptr< CFilePreload > mMusicPreload;
+  rstl::auto_ptr< CStreamPreloadedToken > mMusicPreload;
   CRandom16 mRandom;
   rstl::vector< SPlayerResults > mPlayerResults;
 };

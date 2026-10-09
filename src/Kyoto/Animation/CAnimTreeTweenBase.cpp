@@ -20,9 +20,9 @@ static void GetSegData(const rstl::rc_ptr< CAnimTreeNode >& child, const CCharLa
                        CJointData_LinearStorage& data,
                        rstl::optional_object< CCharAnimTime > time) {
   if (time.valid()) {
-    child->VGetSegData(layout, data, *time);
+    child->VGetJointData_Linear(layout, data, *time);
   } else {
-    child->VGetSegData(layout, data);
+    child->VGetJointData_Linear(layout, data);
   }
 }
 
@@ -133,13 +133,14 @@ void CAnimTreeTweenBase::BlendSegData(const CCharLayoutInfo& layout, CJointData_
   --sStack;
 }
 
-void CAnimTreeTweenBase::VGetSegData(const CCharLayoutInfo& layout, CJointData_LinearStorage& data,
-                                     const CCharAnimTime& time) const {
+void CAnimTreeTweenBase::VGetJointData_Linear(const CCharLayoutInfo& layout,
+                                              CJointData_LinearStorage& data,
+                                              const CCharAnimTime& time) const {
   BlendSegData(layout, data, time);
 }
 
-void CAnimTreeTweenBase::VGetSegData(const CCharLayoutInfo& layout,
-                                     CJointData_LinearStorage& data) const {
+void CAnimTreeTweenBase::VGetJointData_Linear(const CCharLayoutInfo& layout,
+                                              CJointData_LinearStorage& data) const {
   BlendSegData(layout, data, rstl::optional_object_null());
 }
 

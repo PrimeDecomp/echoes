@@ -1,6 +1,6 @@
 #include "MetroidPrime/Enemies/CGlowbug.hpp"
 
-#include "Kyoto/Animation/CCharacterInfo.hpp"
+#include "Kyoto/Animation/CCECharacterInfo.hpp"
 #include "Kyoto/Animation/CPOINode.hpp"
 #include "Kyoto/CSimplePool.hpp"
 #include "Kyoto/Math/CMath.hpp"
@@ -99,7 +99,7 @@ CGlowbug::CGlowbug(TUniqueId uid, const rstl::string& name, const CEntityInfo& i
   if (mAttackTelegraphEffect != kInvalidAssetId) {
     particles.push_back_unsafe(mAttackTelegraphEffect);
   }
-  AnimationData()->GetParticleDB().CacheParticleDesc(CCharacterInfo::CParticleResData(
+  AnimationData()->GetParticleDB().CacheParticleDesc(CCECharacterInfo::CParticleResData(
       particles, rstl::vector< CAssetId >(), rstl::vector< CAssetId >(), rstl::vector< CAssetId >(),
       rstl::vector< CAssetId >(), rstl::vector< CAssetId >()));
 }

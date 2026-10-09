@@ -12,7 +12,7 @@
 
 class CMoviePlayer;
 class CQuitGameScreen;
-class CFilePreload;
+class CStreamPreloadedToken;
 class CStringTable;
 class CRasterFont;
 class CGuiTextSupport;
@@ -53,7 +53,7 @@ private:
   int mMovieIndex;
   rstl::single_ptr< CQuitGameScreen > mQuitScreen;
   rstl::string mAudioFile;
-  rstl::single_ptr< CFilePreload > mAudioPreload;
+  rstl::single_ptr< CStreamPreloadedToken > mAudioPreload;
   TToken< CStringTable > mCompletionScreenStrings;
   TToken< CRasterFont > mLargeFont;
   rstl::single_ptr< CGuiTextSupport > mTitleText;

@@ -929,7 +929,7 @@ void CPlayer::Update(float dt, CStateManager& mgr) {
       CAssetId modelId;
       CAssetId skinRulesId;
       if (strlen(skSuitTransitionModelNames[mTransitionSuit].first) == 0) {
-        const CCharacterInfo& character = GetModelData()->GetAnimationData()->GetCharacterInfo();
+        const CCECharacterInfo& character = GetModelData()->GetAnimationData()->GetCharacterInfo();
         modelId = character.GetModelId();
         skinRulesId = character.GetSkinRulesId();
       } else {

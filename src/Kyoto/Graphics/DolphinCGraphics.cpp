@@ -8,9 +8,9 @@
 #include "Kyoto/Basics/RAssertDolphin.hpp"
 #include "Kyoto/CFrameDelayedKiller.hpp"
 #include "Kyoto/Graphics/CGX.hpp"
-#include "Kyoto/Graphics/CGXTransientBuffer.hpp"
 #include "Kyoto/Graphics/CGraphicsSys.hpp"
 #include "Kyoto/Graphics/CTexture.hpp"
+#include "Kyoto/Graphics/DolphinGPUMemory.hpp"
 #include "Kyoto/Math/CRelAngle.hpp"
 
 #include "dolphin/types.h"
@@ -30,8 +30,8 @@ static void* sSpareAllocation;
 bool CGraphics::sIs50Hz;
 static float sFrameWaitFraction;
 static float sPreviousFrameWaitFraction;
-static int sGraphicsArenaSize;
-static int sGraphicsArenaOffset;
+static int sTotalSize;
+static int sAlloced;
 static uchar* sGraphicsArena;
 
 // clang-format off
@@ -291,17 +291,17 @@ void CGraphics::InitGraphicsFifo(GXFifoObj* obj, void* fifo, uint fifoSize) {
 // Guessed names for the graphics arena helpers.
 static void InitializeGraphicsArena(void* base, int size) {
   sGraphicsArena = static_cast< uchar* >(base);
-  sGraphicsArenaSize = size;
-  sGraphicsArenaOffset = 0;
+  sTotalSize = size;
+  sAlloced = 0;
 }
 
 static void* AllocateGraphicsArena(int size) {
-  void* result = sGraphicsArena + sGraphicsArenaOffset;
-  sGraphicsArenaOffset += size;
+  void* result = sGraphicsArena + sAlloced;
+  sAlloced += size;
   return result;
 }
 
-static void ResetGraphicsArena() { sGraphicsArenaOffset = 0; }
+static void ResetGraphicsArena() { sAlloced = 0; }
 
 bool CGraphics::Startup(const COsContext& osContext, bool progressive) {
   InitializeGraphicsArena(osContext.GetArenaBlock(), osContext.GetArenaBlockSize());
@@ -369,7 +369,7 @@ void CGraphics::ConfigureVideo(bool initial, uchar progressive) {
   mpFrameBuf2 = nullptr;
   mpFifo = nullptr;
   sSpareAllocation = nullptr;
-  CGXTransientBuffer::SetBuffer(nullptr, 0);
+  GPUMemory::SetBuffer(nullptr, 0);
   ResetGraphicsArena();
   const int frameBufferSize =
       ((mRenderModeObj.fbWidth + 15) & 0xfff0) * mRenderModeObj.xfbHeight * 2;
@@ -379,7 +379,7 @@ void CGraphics::ConfigureVideo(bool initial, uchar progressive) {
   mFifoSize = 0x60000;
   mpFifo = AllocateGraphicsArena(mFifoSize);
   sSpareAllocation = AllocateGraphicsArena(sSpareAllocationSize);
-  CGXTransientBuffer::SetBuffer(AllocateGraphicsArena(0x40000), 0x40000);
+  GPUMemory::SetBuffer(AllocateGraphicsArena(0x40000), 0x40000);
   mSpareBufferSize = sSpareAllocationSize;
   mpSpareBuffer = sSpareAllocation;
   if (!initial) {
@@ -451,7 +451,7 @@ void CGraphics::Shutdown() {
   mpFrameBuf2 = nullptr;
   mpFifo = nullptr;
   sSpareAllocation = nullptr;
-  CGXTransientBuffer::SetBuffer(nullptr, 0);
+  GPUMemory::SetBuffer(nullptr, 0);
   ResetGraphicsArena();
 }
 

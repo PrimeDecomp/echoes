@@ -84,18 +84,18 @@ public:
       kS_ReadHeader,
       kS_RepairHeader,
       kS_ReadSlotA,
-      kS_ReadSlotB,
+      kState_ReadingData1,
       kS_WriteHeader,
       kS_WriteSlot,
       kS_WriteFirstSlot,
-      kS_SetStatus,
+      kState_WritingStatus,
     };
 
     int mSlotBlocks;
-    int mSlotSize;
+    int mAlignedUserDataSize;
     int mSlot;
     int mGeneration;
-    EStatus mStatus;
+    EStatus mState;
     bool mNewFile;
     CARDFileInfo mFileInfo;
     rstl::string mFileName;
@@ -107,7 +107,7 @@ public:
     rstl::vector< uchar, rstl::aligned_allocator > mHeaderBuffer;
     rstl::reserved_vector< SSaveSlot, 2 > mSlots;
     rstl::vector< uchar > mLoadedData;
-    rstl::vector< uchar > mSaveBuffer;
+    rstl::vector< uchar > mUserDataWrite;
 
   public:
     CCardFileInfo(EMemoryCardPort port, const rstl::string& name);
@@ -126,13 +126,13 @@ public:
     ECardResult WriteFile();
     ECardResult PumpCardTransfer();
     ECardResult GetStatus(CardStat& stat);
-    EMemoryCardPort GetCardPort();
+    EMemoryCardPort GetPort();
     int GetFileNo();
-    int GetFileBlocks();
-    bool IsRepairingHeader() const { return mStatus == kS_RepairHeader; }
+    int GetTotalNumBlocks();
+    bool IsRepairingHeader() const { return mState == kS_RepairHeader; }
 
     rstl::vector< uchar >& LoadedData() { return mLoadedData; }
-    rstl::vector< uchar >& SaveBuffer() { return mSaveBuffer; }
+    rstl::vector< uchar >& SaveBuffer() { return mUserDataWrite; }
 
   private:
     ECardResult CheckHeaderCrc();

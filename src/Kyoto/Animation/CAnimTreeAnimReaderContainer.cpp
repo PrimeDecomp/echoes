@@ -72,15 +72,15 @@ void CAnimTreeAnimReaderContainer::VGetSegStatementSet(const CSegIdList& list,
   mReader->VGetSegStatementSet(list, setOut, time);
 }
 
-void CAnimTreeAnimReaderContainer::VGetSegData(const CCharLayoutInfo& layout,
-                                               CJointData_LinearStorage& data,
-                                               const CCharAnimTime& time) const {
-  mReader->VGetSegData(layout, data, time);
+void CAnimTreeAnimReaderContainer::VGetJointData_Linear(const CCharLayoutInfo& layout,
+                                                        CJointData_LinearStorage& data,
+                                                        const CCharAnimTime& time) const {
+  mReader->VGetJointData_Linear(layout, data, time);
 }
 
-void CAnimTreeAnimReaderContainer::VGetSegData(const CCharLayoutInfo& layout,
-                                               CJointData_LinearStorage& data) const {
-  mReader->VGetSegData(layout, data);
+void CAnimTreeAnimReaderContainer::VGetJointData_Linear(const CCharLayoutInfo& layout,
+                                                        CJointData_LinearStorage& data) const {
+  mReader->VGetJointData_Linear(layout, data);
 }
 
 rstl::ownership_transfer< IAnimReader > CAnimTreeAnimReaderContainer::VClone() const {

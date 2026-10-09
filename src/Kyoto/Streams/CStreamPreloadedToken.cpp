@@ -1,4 +1,4 @@
-#include "Kyoto/Streams/CFilePreload.hpp"
+#include "Kyoto/Streams/CStreamPreloadedToken.hpp"
 
 #include "Kyoto/Alloc/CMemory.hpp"
 #include "Kyoto/CDvdFile.hpp"
@@ -12,10 +12,10 @@
 
 #include <string.h>
 
-class CFilePreloadData {
+class CStreamPreloadedData {
 public:
-  CFilePreloadData(const rstl::string& path);
-  ~CFilePreloadData();
+  CStreamPreloadedData(const rstl::string& path);
+  ~CStreamPreloadedData();
 
   rstl::string GetFilename() const { return mPath; }
   bool IsReady();
@@ -27,16 +27,16 @@ public:
   rstl::vector< rstl::auto_ptr< uchar > > mBuffers;
   rstl::vector< rstl::auto_ptr< CDvdRequest > > mRequests;
 };
-CHECK_SIZEOF(CFilePreloadData, 0x38)
+CHECK_SIZEOF(CStreamPreloadedData, 0x38)
 
-static rstl::list< rstl::auto_ptr< CFilePreloadData > > sPreloadedFiles;
+static rstl::list< rstl::auto_ptr< CStreamPreloadedData > > mPreloadedDatas;
 
 static void CopyAndFlush(void* dest, const void* src, int length) {
   memcpy(dest, src, length);
   DCFlushRange(dest, length);
 }
 
-CFilePreloadData::CFilePreloadData(const rstl::string& path)
+CStreamPreloadedData::CStreamPreloadedData(const rstl::string& path)
 : mPath(path), mSize(0), mRefCount(1), mBuffers(), mRequests() {
   CDvdFile file(path.data());
   mSize = file.GetFileSize();
@@ -63,7 +63,7 @@ CFilePreloadData::CFilePreloadData(const rstl::string& path)
   }
 }
 
-CFilePreloadData::~CFilePreloadData() {
+CStreamPreloadedData::~CStreamPreloadedData() {
   for (rstl::vector< rstl::auto_ptr< CDvdRequest > >::iterator it = mRequests.begin();
        it != mRequests.end(); ++it) {
     if (!(*it)->IsComplete()) {
@@ -72,7 +72,7 @@ CFilePreloadData::~CFilePreloadData() {
   }
 }
 
-bool CFilePreloadData::IsReady() {
+bool CStreamPreloadedData::IsReady() {
   if (!mRequests.empty()) {
     if (!mRequests.back()->IsComplete()) {
       return false;
@@ -82,7 +82,7 @@ bool CFilePreloadData::IsReady() {
   return true;
 }
 
-void CFilePreloadData::Read(void* dest, int offset, int length) {
+void CStreamPreloadedData::Read(void* dest, int offset, int length) {
   int firstLength;
   const int chunk = offset / 0x4000;
   firstLength = (chunk + 1) * 0x4000 - offset;
@@ -103,23 +103,23 @@ void CFilePreloadData::Read(void* dest, int offset, int length) {
   }
 }
 
-static rstl::list< rstl::auto_ptr< CFilePreloadData > >::iterator
+static rstl::list< rstl::auto_ptr< CStreamPreloadedData > >::iterator
 FindFile(const rstl::string& path) {
-  for (rstl::list< rstl::auto_ptr< CFilePreloadData > >::iterator it = sPreloadedFiles.begin();
-       it != sPreloadedFiles.end(); ++it) {
+  for (rstl::list< rstl::auto_ptr< CStreamPreloadedData > >::iterator it = mPreloadedDatas.begin();
+       it != mPreloadedDatas.end(); ++it) {
     const int comparison = CStringExtras::CompareCaseInsensitive((*it)->GetFilename(), path);
     if (comparison == 0) {
       return it;
     }
   }
-  return sPreloadedFiles.end();
+  return mPreloadedDatas.end();
 }
 
-static CFilePreloadData* AcquireFile(const rstl::string& path) {
-  rstl::list< rstl::auto_ptr< CFilePreloadData > >::iterator it = FindFile(path);
-  if (it == sPreloadedFiles.end()) {
-    rstl::auto_ptr< CFilePreloadData > data(rs_new CFilePreloadData(path));
-    it = sPreloadedFiles.insert(sPreloadedFiles.end(), data);
+static CStreamPreloadedData* AcquireFile(const rstl::string& path) {
+  rstl::list< rstl::auto_ptr< CStreamPreloadedData > >::iterator it = FindFile(path);
+  if (it == mPreloadedDatas.end()) {
+    rstl::auto_ptr< CStreamPreloadedData > data(rs_new CStreamPreloadedData(path));
+    it = mPreloadedDatas.insert(mPreloadedDatas.end(), data);
   } else {
     ++(*it)->mRefCount;
   }
@@ -127,22 +127,25 @@ static CFilePreloadData* AcquireFile(const rstl::string& path) {
 }
 
 static void ReleaseFile(const rstl::string& path) {
-  rstl::list< rstl::auto_ptr< CFilePreloadData > >::iterator it = FindFile(path);
-  if (it != sPreloadedFiles.end()) {
+  rstl::list< rstl::auto_ptr< CStreamPreloadedData > >::iterator it = FindFile(path);
+  if (it != mPreloadedDatas.end()) {
     --(*it)->mRefCount;
     if ((*it)->mRefCount == 0) {
-      sPreloadedFiles.erase(it);
+      mPreloadedDatas.erase(it);
     }
   }
 }
 
-CFilePreload::CFilePreload(const rstl::string& path) : mData(AcquireFile(path)) {}
+CStreamPreloadedToken::CStreamPreloadedToken(const rstl::string& path) : mData(AcquireFile(path)) {}
 
-CFilePreload::CFilePreload(const CFilePreload& other) : mData(other.mData) { ++mData->mRefCount; }
+CStreamPreloadedToken::CStreamPreloadedToken(const CStreamPreloadedToken& other)
+: mData(other.mData) {
+  ++mData->mRefCount;
+}
 
-CFilePreload::~CFilePreload() { ReleaseFile(mData->GetFilename()); }
+CStreamPreloadedToken::~CStreamPreloadedToken() { ReleaseFile(mData->GetFilename()); }
 
-void CFilePreload::operator=(const CFilePreload& other) {
+void CStreamPreloadedToken::operator=(const CStreamPreloadedToken& other) {
   if (mData != other.mData) {
     ReleaseFile(mData->GetFilename());
     mData = other.mData;
@@ -150,8 +153,8 @@ void CFilePreload::operator=(const CFilePreload& other) {
   }
 }
 
-bool CFilePreload::IsReady() const { return mData->IsReady(); }
+bool CStreamPreloadedToken::IsReady() const { return mData->IsReady(); }
 
-void CFilePreload::Read(void* dest, int offset, int length) const {
+void CStreamPreloadedToken::Read(void* dest, int offset, int length) const {
   mData->Read(dest, offset, length);
 }

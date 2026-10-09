@@ -58,7 +58,7 @@ CScriptEffect::CScriptEffect(
 , mEffectLights(lightParameters.MakeActorLights().release())
 , mTriggerId(kInvalidUniqueId)
 , mDestroyDelayTimer(0.f)
-, mSpline(spline.GetDuration(), spline.IsClosedLoop() ? CGameSpline::kF_LoopPosition : 0,
+, mSpline(spline.GetDuration(), spline.IsClosedLoop() ? CSpline::kF_LoopPosition : 0,
           spline.GetSpline(), SLdrSpline(), spline.GetType(), spline.GetType())
 , mSplineTime(0.f)
 , mEmitting(emitting)

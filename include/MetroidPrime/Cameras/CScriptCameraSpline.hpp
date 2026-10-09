@@ -18,12 +18,12 @@ public:
                       CMotionSpline::ESplineType positionType,
                       CMotionSpline::ESplineType lookAtType);
 
-  // CGameSpline
+  // CSpline
   ~CScriptCameraSpline() override;
 
   CVector3f GetPositionByTime(float time, const CTransform4f& xf, const CStateManager& mgr);
   CQuaternion GetOrientationByTime(float time, const CTransform4f& xf, const CStateManager& mgr);
-  using CGameSpline::GetPositionByLength;
+  using CSpline::GetPositionByLength;
   CVector3f GetPositionByLength(float distance, const CTransform4f& xf, const CStateManager& mgr);
   CQuaternion GetOrientationByLength(float positionDistance, float targetDistance,
                                      const CTransform4f& xf, const CStateManager& mgr);
@@ -46,7 +46,7 @@ void CollectWaypoints(const CEntity& entity, EScriptObjectState state, EScriptOb
                       rstl::vector< CQuaternion >& orientations, CStateManager& mgr);
 void Initialise(const CEntity& entity, EScriptObjectState positionState,
                 EScriptObjectMessage positionMessage, EScriptObjectState targetState,
-                EScriptObjectMessage targetMessage, CStateManager& mgr, CGameSpline& spline);
+                EScriptObjectMessage targetMessage, CStateManager& mgr, CSpline& spline);
 } // namespace ScriptCameraSpline
 
 #endif // _CSCRIPTCAMERASPLINE

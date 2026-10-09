@@ -1,8 +1,8 @@
-#include "Kyoto/Animation/CCharacterInfo.hpp"
+#include "Kyoto/Animation/CCECharacterInfo.hpp"
 
 #include "Kyoto/Streams/CInputStream.hpp"
 
-CCharacterInfo::CParticleResData::CParticleResData(CInputStream& in, ushort tableCount)
+CCECharacterInfo::CParticleResData::CParticleResData(CInputStream& in, ushort tableCount)
 : mPart(in), mSwhc(in), mElscB(in) {
   if (tableCount > 5) {
     const rstl::vector< CAssetId > resources(in);
@@ -17,7 +17,7 @@ CCharacterInfo::CParticleResData::CParticleResData(CInputStream& in, ushort tabl
   }
 }
 
-CCharacterInfo::CCharacterInfo(CInputStream& in)
+CCECharacterInfo::CCECharacterInfo(CInputStream& in)
 : mTableCount(in.Get< ushort >())
 , mName(in)
 , mCmdl(in.Get< CAssetId >())

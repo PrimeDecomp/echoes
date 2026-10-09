@@ -32,9 +32,10 @@ public:
   void VGetSegStatementSet(const CSegIdList& list, CSegStatementSet& setOut) const override;
   void VGetSegStatementSet(const CSegIdList& list, CSegStatementSet& setOut,
                            const CCharAnimTime& time) const override;
-  void VGetSegData(const CCharLayoutInfo& layout, CJointData_LinearStorage& data,
-                   const CCharAnimTime& time) const override;
-  void VGetSegData(const CCharLayoutInfo& layout, CJointData_LinearStorage& data) const override;
+  void VGetJointData_Linear(const CCharLayoutInfo& layout, CJointData_LinearStorage& data,
+                            const CCharAnimTime& time) const override;
+  void VGetJointData_Linear(const CCharLayoutInfo& layout,
+                            CJointData_LinearStorage& data) const override;
   rstl::ownership_transfer< IAnimReader > VClone() const override;
   rstl::optional_object< rstl::ownership_transfer< IAnimReader > > VSimplified() override;
   void VSetPhase(float phase) override;

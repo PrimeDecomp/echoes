@@ -1,17 +1,17 @@
 #ifndef _CGAMECAMERASPLINE
 #define _CGAMECAMERASPLINE
 
-#include "Kyoto/Math/CGameSpline.hpp"
+#include "Kyoto/Math/CSpline.hpp"
 
 // Guessed name.
-class CGameCameraSpline : public CGameSpline {
+class CGameCameraSpline : public CSpline {
 public:
   CGameCameraSpline(float duration, uint flags, const CMayaSpline& positionTimeSpline,
                     const CMayaSpline& lookAtTimeSpline, const CMayaSpline& fovSpline,
                     const CMayaSpline& rollSpline, CMotionSpline::ESplineType positionType,
                     CMotionSpline::ESplineType lookAtType);
 
-  // CGameSpline
+  // CSpline
   ~CGameCameraSpline() override;
 
   // Guessed names, established by the runtime path-camera caller.

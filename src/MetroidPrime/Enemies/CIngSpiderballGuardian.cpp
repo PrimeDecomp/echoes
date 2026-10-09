@@ -1,6 +1,6 @@
 #include "MetroidPrime/Enemies/CIngSpiderballGuardian.hpp"
 
-#include "Kyoto/Animation/CCharacterInfo.hpp"
+#include "Kyoto/Animation/CCECharacterInfo.hpp"
 #include "Kyoto/Animation/CPASAnimParmData.hpp"
 #include "Kyoto/Animation/CPASDatabase.hpp"
 #include "Kyoto/Animation/CPOINode.hpp"
@@ -53,10 +53,10 @@ static CPatterned::StateMachine::SCodeFunction skCodeFuncs[] = {
                                    &CIngSpiderballGuardian::BeginNextPuzzleSection)},
 };
 
-static EMaterialTypes skCreateExcludeMaterial0 = kMT_Solid; // Guessed name
-static EMaterialTypes skCreateExcludeMaterial1 = kMT_Platform;  // Guessed name
-static EMaterialTypes skCreateExcludeMaterial2 = kMT_Player;    // Guessed name
-static EMaterialTypes skWaypointRayMaterial = kMT_Platform;     // Guessed name
+static EMaterialTypes skCreateExcludeMaterial0 = kMT_Solid;    // Guessed name
+static EMaterialTypes skCreateExcludeMaterial1 = kMT_Platform; // Guessed name
+static EMaterialTypes skCreateExcludeMaterial2 = kMT_Player;   // Guessed name
+static EMaterialTypes skWaypointRayMaterial = kMT_Platform;    // Guessed name
 
 // Guessed names; effects shown for the patrolling, damaged and stunned states.
 static const char* const skEffectNames[] = {

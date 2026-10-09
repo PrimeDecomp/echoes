@@ -1,4 +1,4 @@
-#include "Kyoto/Particles/CSortedParticleSystemDataFactory.hpp"
+#include "Kyoto/Particles/CParticleSortedSystemDataFactory.hpp"
 
 #include "Kyoto/CRandom16.hpp"
 #include "Kyoto/CVParamTransfer.hpp"
@@ -7,21 +7,22 @@
 #include "Kyoto/Particles/CSpawnSystemKeyframeData.hpp"
 
 CFactoryFnReturn FSortedParticleSystemDataFactory(const SObjectTag& tag, CInputStream& in,
-                                                 const CVParamTransfer& transfer) {
+                                                  const CVParamTransfer& transfer) {
   rstl::rc_ptr< IVParamObj > obj = transfer.GetObj();
   CSimplePool* pool = static_cast< TObjOwnerParam< CSimplePool* >* >(obj.GetPtr())->GetData();
-  CSortedParticleSystemDescription* desc = CSortedParticleSystemDataFactory::GetGeneratorDesc(in, pool);
+  CSortedParticleSystemDescription* desc =
+      CParticleSortedSystemDataFactory::GetGeneratorDesc(in, pool);
   return desc;
 }
 
-CSortedParticleSystemDescription* CSortedParticleSystemDataFactory::GetGeneratorDesc(
-    CInputStream& in, CSimplePool* pool) {
+CSortedParticleSystemDescription*
+CParticleSortedSystemDataFactory::GetGeneratorDesc(CInputStream& in, CSimplePool* pool) {
   rstl::vector< CAssetId > resources;
   return CreateGeneratorDescription(in, pool);
 }
 
-CSortedParticleSystemDescription* CSortedParticleSystemDataFactory::CreateGeneratorDescription(
-    CInputStream& in, CSimplePool* pool) {
+CSortedParticleSystemDescription*
+CParticleSortedSystemDataFactory::CreateGeneratorDescription(CInputStream& in, CSimplePool* pool) {
   const FourCC classId = CParticleDataFactory::GetClassID(in);
   if (classId != 'SRSM') {
     return nullptr;
@@ -31,8 +32,8 @@ CSortedParticleSystemDescription* CSortedParticleSystemDataFactory::CreateGenera
   return desc;
 }
 
-bool CSortedParticleSystemDataFactory::CreateSRSM(CSortedParticleSystemDescription* desc,
-                                                CInputStream& in, CSimplePool* pool) {
+bool CParticleSortedSystemDataFactory::CreateSRSM(CSortedParticleSystemDescription* desc,
+                                                  CInputStream& in, CSimplePool* pool) {
   bool done = false;
   CRandom16 random(99);
   while (!done) {

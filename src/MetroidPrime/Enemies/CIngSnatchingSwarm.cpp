@@ -768,7 +768,7 @@ CParticleGen* CIngSnatchingSwarm::CreateParticle(const CVector3f& scale,
                                                  const CToken& token) {
   const CObjectReference* ref = token.GetRef();
   return CElementGen::ConstructChildParticleSystem(
-      token, ref->GetTag().GetType(), 0, CElementGen::kOSF_One, false, true, translation,
+      token, ref->GetObjectTag().GetType(), 0, CElementGen::kOSF_One, false, true, translation,
       CTransform4f::Identity(), CVector3f::Zero(), CTransform4f::Identity(), scale, CColor::White(),
       CVector3f::One());
 }

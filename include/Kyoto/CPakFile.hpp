@@ -19,19 +19,19 @@ public:
   enum EAsyncPhase { kAP_Warmup, kAP_InitialHeaderLoad, kAP_DataLoad, kAP_Loaded };
 
 #pragma pack(push, 1)
-  struct SResInfo {
+  struct CResInfo {
     CAssetId mId;
     uchar mData[7];
 
-    SResInfo(uint id, uint fourCC, uint offset, uint size, uint flags, uint groupedSize);
+    CResInfo(uint id, uint fourCC, uint offset, uint size, uint flags, uint groupedSize);
     uint GetType() const;
     uint GetOffset() const;
     uint GetSize() const;
     bool IsCompressed() const;
-    void SetGroupedSize(uint size);
-    uint GetGroupedSize() const;
+    void SetLookaheadAfterResourceSize(uint size);
+    uint GetLookaheadAfterResourceSize() const;
     CAssetId GetId() const { return mId; }
-    bool operator<(const SResInfo& other) const { return mId < other.mId; }
+    bool operator<(const CResInfo& other) const { return mId < other.mId; }
   };
 #pragma pack(pop)
 
@@ -53,14 +53,14 @@ public:
     return mNameList;
   }
   const SObjectTag* GetResIdByName(const char* name) const;
-  const SResInfo* GetResInfo(uint id) const;
-  const SResInfo* GetResInfoForLoadDirectionless(uint id);
-  const SResInfo* GetResInfoForLoadPreferForward(uint id);
+  const CResInfo* GetResInfo(uint id) const;
+  const CResInfo* GetResInfoForLoadDirectionless(uint id);
+  const CResInfo* GetResInfoForLoadPreferForward(uint id);
   uint GetFakeStaticSize() const;
 
 private:
   void UpdateFakeStaticSize();
-  void RebuildResourceLists(const rstl::vector< SResInfo >& sortedResources);
+  void RebuildResourceLists(const rstl::vector< CResInfo >& sortedResources);
   void LoadResourceTable(CMemoryInStream& in);
   void Warmup();
   void InitialHeaderLoad();
@@ -77,18 +77,18 @@ private:
   uint mResTableOffset;
   int mResTableCount;
   int mFakeStaticSize;
-  const void* mAramBase;
+  const void* mpARAMHeader;
   rstl::vector< rstl::pair< rstl::string, SObjectTag > > mNameList;
   rstl::vector< CAssetId > mDepList;
-  rstl::vector< SResInfo > mResList;
+  rstl::vector< CResInfo > mResInfoBuckets;
   rstl::vector< uint > mBucketOffsets;
   mutable int mCurrentSeek;
 };
 CHECK_SIZEOF(CPakFile, 0x9c)
-NESTED_CHECK_SIZEOF(CPakFile, SResInfo, 0xb)
+NESTED_CHECK_SIZEOF(CPakFile, CResInfo, 0xb)
 
 namespace rstl {
-RSTL_DECLARE_TRIVIALLY_CONSTRUCTIBLE(CPakFile::SResInfo)
+RSTL_DECLARE_TRIVIALLY_CONSTRUCTIBLE(CPakFile::CResInfo)
 } // namespace rstl
 
 #endif // _CPAKFILE

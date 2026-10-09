@@ -1,7 +1,7 @@
 #include "MetroidPrime/ScriptObjects/CScriptPlayerActor.hpp"
 
 #include "Collision/CMaterialFilter.hpp"
-#include "Kyoto/Animation/CCharacterInfo.hpp"
+#include "Kyoto/Animation/CCECharacterInfo.hpp"
 #include "Kyoto/CSimplePool.hpp"
 #include "Kyoto/Graphics/CModel.hpp"
 #include "Kyoto/SObjectTag.hpp"
@@ -356,7 +356,7 @@ void CScriptPlayerActor::LoadSuit(int charIdx) {
     return;
   }
   TToken< CCharacterFactory > factory = gpCharacterFactoryBuilder->GetFactory(mSuitRes);
-  const CCharacterInfo& charInfo = factory->GetCharInfo(charIdx);
+  const CCECharacterInfo& charInfo = factory->GetCharInfo(charIdx);
   mSuitModel = rs_new TCachedToken< CModel >(
       gpSimplePool->GetObj(SObjectTag('CMDL', charInfo.GetModelId())));
   mSuitModel->Lock();

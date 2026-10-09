@@ -37,9 +37,10 @@ public:
   void VGetSegStatementSet(const CSegIdList& list, CSegStatementSet& set) const override;
   void VGetSegStatementSet(const CSegIdList& list, CSegStatementSet& set,
                            const CCharAnimTime& time) const override;
-  void VGetSegData(const CCharLayoutInfo& layout, CJointData_LinearStorage& data,
-                   const CCharAnimTime& time) const override;
-  void VGetSegData(const CCharLayoutInfo& layout, CJointData_LinearStorage& data) const override;
+  void VGetJointData_Linear(const CCharLayoutInfo& layout, CJointData_LinearStorage& data,
+                            const CCharAnimTime& time) const override;
+  void VGetJointData_Linear(const CCharLayoutInfo& layout,
+                            CJointData_LinearStorage& data) const override;
   rstl::ownership_transfer< IAnimReader > VClone() const override;
   void VSetPhase(float phase) override;
   SAdvancementResults VGetAdvancementResults(const CCharAnimTime& time,

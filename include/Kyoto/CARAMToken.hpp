@@ -5,6 +5,7 @@
 
 class CARAMToken {
   static CARAMToken* sLists[7];
+
 public:
   enum EStatus {
     kS_Zero,
@@ -13,7 +14,7 @@ public:
     kS_Three,
     kS_Four,
     kS_Five,
-    kS_Six,
+    kStatus_Unowned,
   };
 
   CARAMToken();

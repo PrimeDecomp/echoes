@@ -67,7 +67,7 @@ CGunTurretTop::CGunTurretTop(TUniqueId uid, const rstl::string& name, const CEnt
   if (mPirateChargeEffect != kInvalidAssetId) {
     parts.push_back_unsafe(mPirateChargeEffect);
   }
-  AnimationData()->GetParticleDB().CacheParticleDesc(CCharacterInfo::CParticleResData(
+  AnimationData()->GetParticleDB().CacheParticleDesc(CCECharacterInfo::CParticleResData(
       parts, rstl::vector< CAssetId >(), rstl::vector< CAssetId >(), rstl::vector< CAssetId >(),
       rstl::vector< CAssetId >(), rstl::vector< CAssetId >()));
 }

@@ -130,7 +130,7 @@ void CDvdFile::PingARAMTransfer() {
 
 void CDvdFile::TryARAMFile() {
   mARAMBuffer = static_cast< uchar* >(CARAMManager::Alloc(mSize));
-  if (!CARAMManager::IsAllocValid(mARAMBuffer)) {
+  if (!CARAMManager::IsValidAlloc(mARAMBuffer)) {
     return;
   }
   mARAMFile = rs_new CDvdFileARAM();

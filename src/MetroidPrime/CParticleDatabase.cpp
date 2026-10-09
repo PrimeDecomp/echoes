@@ -47,7 +47,7 @@ static void CacheParticleList(const rstl::vector< CAssetId >& ids,
   }
 }
 
-void CParticleDatabase::CacheParticleDesc(const CCharacterInfo::CParticleResData& data) {
+void CParticleDatabase::CacheParticleDesc(const CCECharacterInfo::CParticleResData& data) {
   CacheParticleList< CGenDescription, 'PART' >(data.GetParts(), mParticleDescs);
   CacheParticleList< CSwooshDescription, 'SWHC' >(data.GetSwooshes(), mSwooshDescs);
   CacheParticleList< CElectricDescription, 'ELSC' >(data.GetElectrics(), mElectricDescs);

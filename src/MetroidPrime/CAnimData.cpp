@@ -35,7 +35,7 @@ static CInt32POINode* sInt32TransientCacheData;
 static int sPOICacheReferenceCount;
 
 CAnimData::CAnimData(
-    CAssetId selfId, const CCharacterInfo& charInfo, int defaultAnim, int charIdx, bool loop,
+    CAssetId selfId, const CCECharacterInfo& charInfo, int defaultAnim, int charIdx, bool loop,
     const TLockedToken< CCharLayoutInfo >& layoutData, const TToken< CSkinnedModel >& modelData,
     const rstl::optional_object< TLockedToken< CSkinnedModel > >& iceModelData,
     const rstl::optional_object< TLockedToken< CSpatialPrimitive > >& spatialPrimitive,
@@ -577,9 +577,9 @@ void CAnimData::RecalcPoseBuilder(const CCharAnimTime* time) const {
     storage->SetHasScales(true);
   }
   if (time == nullptr) {
-    mAnimRoot->VGetSegData(layout, *storage);
+    mAnimRoot->VGetJointData_Linear(layout, *storage);
   } else {
-    mAnimRoot->VGetSegData(layout, *storage, *time);
+    mAnimRoot->VGetJointData_Linear(layout, *storage, *time);
   }
   AddAdditiveSegData(*storage);
   mPose.BuildPose(layout, *storage);
@@ -973,8 +973,8 @@ void CAnimData::InitializeEffects(CStateManager& mgr, TAreaId areaId, const CVec
 }
 
 CParticleGenInfo* CAnimData::GetFirstParticleEffect(const rstl::string& name) {
-  const CCharacterInfo::TEffectList& effects = mCharInfo.GetEffects();
-  CCharacterInfo::TEffectList::const_iterator it = rstl::find_by_key(effects, name);
+  const CCECharacterInfo::TEffectList& effects = mCharInfo.GetEffects();
+  CCECharacterInfo::TEffectList::const_iterator it = rstl::find_by_key(effects, name);
   if (it != effects.end() && !it->second.empty()) {
     return mParticleDB.GetParticleEffect(it->second[0].GetComponentNameHash());
   }
@@ -982,8 +982,8 @@ CParticleGenInfo* CAnimData::GetFirstParticleEffect(const rstl::string& name) {
 }
 
 void CAnimData::SetEffectState(const rstl::string& name, bool active, CStateManager& mgr) {
-  const CCharacterInfo::TEffectList effects = mCharInfo.GetEffects();
-  CCharacterInfo::TEffectList::const_iterator it = rstl::find_by_key(effects, name);
+  const CCECharacterInfo::TEffectList effects = mCharInfo.GetEffects();
+  CCECharacterInfo::TEffectList::const_iterator it = rstl::find_by_key(effects, name);
   if (it != effects.end()) {
     rstl::vector< CEffectComponent >::const_iterator end = it->second.end();
     rstl::vector< CEffectComponent >::const_iterator comp = it->second.begin();
@@ -994,8 +994,8 @@ void CAnimData::SetEffectState(const rstl::string& name, bool active, CStateMana
 }
 
 void CAnimData::SetEffectComponentExternalParam(const rstl::string& name, int index, float value) {
-  const CCharacterInfo::TEffectList effects = mCharInfo.GetEffects();
-  CCharacterInfo::TEffectList::const_iterator it = rstl::find_by_key(effects, name);
+  const CCECharacterInfo::TEffectList effects = mCharInfo.GetEffects();
+  CCECharacterInfo::TEffectList::const_iterator it = rstl::find_by_key(effects, name);
   if (it != effects.end()) {
     rstl::vector< CEffectComponent >::const_iterator comp = it->second.begin();
     if (comp != it->second.end()) {
@@ -1226,7 +1226,7 @@ void CAnimData::AddAdditiveSegData(CJointData_LinearStorage& data) const {
       if (data.HasScales()) {
         additive.SetHasScales(true);
       }
-      playback.GetAnimationTree()->VGetSegData(layout, additive);
+      playback.GetAnimationTree()->VGetJointData_Linear(layout, additive);
       data.Add(additive, weight);
     }
   }

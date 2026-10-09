@@ -1,7 +1,7 @@
 #include "Kyoto/Alloc/CCircularBuffer.hpp"
 
 CCircularBuffer::CCircularBuffer(void* buf, const int len, const EOwnership ownership)
-: mPtr(static_cast< char* >(buf)), mBufferLen(len), xc_(0), mNextFreeAddr(0), x14_(-1) {
+: mPtr(static_cast< char* >(buf)), mMemorySize(len), xc_(0), mNextFreeAddr(0), x14_(-1) {
   if (ownership == kOS_NotOwned) {
     (void)mPtr.release();
   }
@@ -16,7 +16,7 @@ bool CCircularBuffer::IsWrappedMemory(const int offset, const int len) {
 }
 
 void* CCircularBuffer::Alloc(const int len) {
-  if ((mBufferLen - mNextFreeAddr) >= len && !IsWrappedMemory(mNextFreeAddr, len)) {
+  if ((mMemorySize - mNextFreeAddr) >= len && !IsWrappedMemory(mNextFreeAddr, len)) {
     const int offset = mNextFreeAddr;
     uchar* ptr = reinterpret_cast< uchar* >(mPtr.get());
     mNextFreeAddr = offset + len;

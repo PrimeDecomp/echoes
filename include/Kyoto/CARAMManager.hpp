@@ -32,7 +32,7 @@ public:
   static void AramManagerDMACallback(u32 result);
   static void RefreshActiveDMAList();
   static void CollectGarbage();
-  static bool IsAllocValid(const void* ptr);
+  static bool IsValidAlloc(const void* ptr);
   static const void* GetInvalidAlloc();
 
   static void PreInitializeAlloc(uint size) { mPreInitializeAlloc += size; }

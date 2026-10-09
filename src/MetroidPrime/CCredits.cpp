@@ -22,7 +22,7 @@
 #include "Kyoto/CFrameDelayedKiller.hpp"
 #include "Kyoto/CResFactory.hpp"
 #include "Kyoto/Graphics/CMoviePlayer.hpp"
-#include "Kyoto/Streams/CFilePreload.hpp"
+#include "Kyoto/Streams/CStreamPreloadedToken.hpp"
 #include "Kyoto/Text/CGuiTextSupport.hpp"
 #include "Kyoto/Text/CRasterFont.hpp"
 #include "Kyoto/Text/CStringTable.hpp"
@@ -281,7 +281,7 @@ CIOWin::EMessageReturn CPlayMovie::OnMessage(const CArchitectureMessage& msg,
     case kS_LoadAudio:
       if (mWhich == kWM_Results) {
         if (mAudioPreload.null()) {
-          mAudioPreload = rs_new CFilePreload(rstl::string_l(skCompletionAudio));
+          mAudioPreload = rs_new CStreamPreloadedToken(rstl::string_l(skCompletionAudio));
         }
         if (!mAudioPreload->IsReady()) {
           return kMR_Exit;
@@ -606,7 +606,7 @@ CIOWin::EMessageReturn CCredits::Update(float dt, CArchitectureQueue& queue) {
   }
   case kS_LoadAudio: {
     if (mAudioPreload.null()) {
-      mAudioPreload = rs_new CFilePreload(rstl::string_l(skCreditsAudio));
+      mAudioPreload = rs_new CStreamPreloadedToken(rstl::string_l(skCreditsAudio));
     }
     if (!mAudioPreload->IsReady()) {
       return kMR_Exit;

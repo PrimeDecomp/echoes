@@ -1480,7 +1480,7 @@ MetroidPrime/BodyState/CABSLoopReaction.cpp:
 	.text       start:0x80227E6C end:0x80228420
 	.sdata2     start:0x8041EDC0 end:0x8041EDD0
 
-Kyoto/Graphics/CThreeSegmentModel.cpp:
+Kyoto/Graphics/CFoldySurface.cpp:
 	.text       start:0x80228420 end:0x80228C48
 
 MetroidPrime/Cameras/CFixedCamera.cpp:
@@ -1833,7 +1833,7 @@ Kyoto/Animation/CAnimation.cpp:
 Kyoto/Animation/CAnimationManager.cpp:
 	.text       start:0x8028CE44 end:0x8028CF90
 
-Kyoto/Animation/CAnimationSet.cpp:
+Kyoto/Animation/CCEAnimationSet.cpp:
 	.text       start:0x8028CF90 end:0x8028EBC4
 
 Kyoto/Animation/CAnimTreeLoopIn.cpp:
@@ -1847,7 +1847,7 @@ Kyoto/Animation/CAnimTreeSequence.cpp:
 	.sdata      start:0x80419CD0 end:0x80419CD8
 	.sdata2     start:0x8041F568 end:0x8041F570
 
-Kyoto/Animation/CCharacterInfo.cpp:
+Kyoto/Animation/CCECharacterInfo.cpp:
 	.text       start:0x802929CC end:0x802940A0
 
 Kyoto/Animation/CCharacterSet.cpp:
@@ -2469,7 +2469,7 @@ Kyoto/Input/CRumbleGenerator.cpp:
 Kyoto/Audio/g721.cpp:
 	.text       start:0x803260F0 end:0x80326A6C
 
-Kyoto/Audio/CStaticAudioPlayer.cpp:
+Kyoto/Audio/DolphinCRSFAudio.cpp:
 	.text       start:0x80326A6C end:0x80327944
 	.ctors      start:0x803A5A30 end:0x803A5A34
 
@@ -2508,10 +2508,10 @@ Kyoto/Particles/CSortedParticleSystem.cpp:
 	.sdata      start:0x80419F60 end:0x80419F68
 	.sdata2     start:0x8041FF40 end:0x8041FF68
 
-Kyoto/Particles/CSortedParticleSystemDataFactory.cpp:
+Kyoto/Particles/CParticleSortedSystemDataFactory.cpp:
 	.text       start:0x8032F2C0 end:0x8032F710
 
-Kyoto/Graphics/CGXTransientBuffer.cpp:
+Kyoto/Graphics/DolphinGPUMemory.cpp:
 	.text       start:0x8032F774 end:0x8032FEB8
 	.ctors      start:0x803A5A40 end:0x803A5A44
 	.sdata      start:0x80419F68 end:0x80419F70
@@ -2520,7 +2520,7 @@ Kyoto/Math/CGameCameraSpline.cpp:
 	.text       start:0x8032FEB8 end:0x803300BC
 	.sdata2     start:0x8041FF68 end:0x8041FF70
 
-Kyoto/Math/CGameSpline.cpp:
+Kyoto/Math/CSpline.cpp:
 	.text       start:0x803300BC end:0x80330C30
 	.sdata2     start:0x8041FF70 end:0x8041FF80
 
@@ -2604,7 +2604,7 @@ Kyoto/Animation/CPoseAsTransforms_Linear.cpp:
 	.text       start:0x8033DAF4 end:0x8033E840
 	.sdata2     start:0x804200E8 end:0x804200F0
 
-Kyoto/Particles/CDeferredParticleEffect.cpp:
+Kyoto/Particles/CManagedParticleGen.cpp:
 	.text       start:0x8033E840 end:0x8033F17C
 	.sdata2     start:0x804200F0 end:0x804200F8
 
@@ -2639,7 +2639,7 @@ Kyoto/Streams/CBitStreamWriter.cpp:
 Kyoto/Streams/CBitStreamReader.cpp:
 	.text       start:0x803431F0 end:0x803433C4
 
-Kyoto/Streams/CInputStream.cpp:
+Kyoto/Streams/DolphinCInputStream.cpp:
 	.text       start:0x803433C4 end:0x803435D4
 
 Kyoto/Streams/CLZOSupport.cpp:
@@ -2659,7 +2659,7 @@ LZO/lzo1x_d1.c:
 Kyoto/Streams/DolphinCLZOInputStream.cpp:
 	.text       start:0x80344524 end:0x8034470C
 
-Kyoto/Streams/CFilePreload.cpp:
+Kyoto/Streams/CStreamPreloadedToken.cpp:
 	.text       start:0x8034470C end:0x80345168
 	.ctors      start:0x803A5A4C end:0x803A5A50
 

@@ -1,4 +1,4 @@
-#include "Kyoto/Particles/CDeferredParticleEffect.hpp"
+#include "Kyoto/Particles/CManagedParticleGen.hpp"
 
 #include "Kyoto/Alloc/CMemory.hpp"
 #include "Kyoto/Particles/CElementGen.hpp"
@@ -7,8 +7,7 @@
 #include "Kyoto/Particles/CParticleSwoosh.hpp"
 #include "Kyoto/Particles/CSortedParticleSystem.hpp"
 
-CDeferredParticleEffect::CDeferredParticleEffect(const CToken& effect,
-                                                 const CDependencyGroupToken& group)
+CManagedParticleGen::CManagedParticleGen(const CToken& effect, const CDependencyGroupToken& group)
 : mEffect(effect)
 , mTag(mEffect.GetTag())
 , mDependencies(group)
@@ -19,9 +18,9 @@ CDeferredParticleEffect::CDeferredParticleEffect(const CToken& effect,
 , mCreatePending(false)
 , x40_26_(false) {}
 
-CDeferredParticleEffect::~CDeferredParticleEffect() {}
+CManagedParticleGen::~CManagedParticleGen() {}
 
-bool CDeferredParticleEffect::Update(double dt) {
+bool CManagedParticleGen::Update(double dt) {
   if (mGenerator.get() != nullptr) {
     mGenerator->Update(dt);
     bool done = false;
@@ -53,37 +52,37 @@ bool CDeferredParticleEffect::Update(double dt) {
   return false;
 }
 
-void CDeferredParticleEffect::Render() const {
+void CManagedParticleGen::Render() const {
   if (mGenerator.get() != nullptr) {
     mGenerator->Render();
   }
 }
 
-void CDeferredParticleEffect::SetOrientation(const CTransform4f& orientation) {
+void CManagedParticleGen::SetOrientation(const CTransform4f& orientation) {
   if (mGenerator.get() != nullptr) {
     mGenerator->SetOrientation(orientation);
   }
 }
 
-void CDeferredParticleEffect::SetTranslation(const CVector3f& translation) {
+void CManagedParticleGen::SetTranslation(const CVector3f& translation) {
   if (mGenerator.get() != nullptr) {
     mGenerator->SetTranslation(translation);
   }
 }
 
-void CDeferredParticleEffect::SetParticleEmission(bool emitting) {
+void CManagedParticleGen::SetParticleEmission(bool emitting) {
   if (mGenerator.get() != nullptr) {
     mGenerator->SetParticleEmission(emitting);
   }
 }
 
-void CDeferredParticleEffect::SetGeneratorRate(float rate) {
+void CManagedParticleGen::SetGeneratorRate(float rate) {
   if (mGenerator.get() != nullptr) {
     mGenerator->SetGeneratorRate(rate);
   }
 }
 
-void CDeferredParticleEffect::Load(bool createGenerator) {
+void CManagedParticleGen::Load(bool createGenerator) {
   if (mDependencies && !mDependencies->IsLocked()) {
     mDependencies->Lock();
   }
@@ -94,14 +93,14 @@ void CDeferredParticleEffect::Load(bool createGenerator) {
   }
 }
 
-void CDeferredParticleEffect::Unload() {
+void CManagedParticleGen::Unload() {
   if (mDependencies && mDependencies->IsLocked()) {
     mDependencies->Unlock();
   }
   mCreatePending = false;
 }
 
-void CDeferredParticleEffect::CreateGenerator() {
+void CManagedParticleGen::CreateGenerator() {
   CParticleGen* gen;
   switch (mTag.type) {
   case 'PART': {

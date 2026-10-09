@@ -11,7 +11,7 @@
 class COBBTreeGroup;
 class CFluidPlane;
 
-class CGameSpline;
+class CSpline;
 // Guessed name; the owned waypoint helper remains incompletely scaffolded.
 class CPlatformWaypointTracker;
 
@@ -87,7 +87,7 @@ public:
   void StopMotion(); // Guessed name
   void SetControlledAnimation(bool controlled) { mControlledAnimation = controlled; }
   void SetActorRotateId(TUniqueId id) { mActorRotateId = id; } // Guessed name.
-  float GetMotionDuration() const { return mMotionDuration; } // Guessed name
+  float GetMotionDuration() const { return mMotionDuration; }  // Guessed name
 
   typedef rstl::reserved_vector< ushort, 1024 > TMovedList;
   typedef rstl::reserved_vector< TUniqueId, 1024 > TNearList;
@@ -126,7 +126,7 @@ private:
   uint mRainGenRate;
   TUniqueId mBoundsTrigger;
   rstl::single_ptr< CGameSplineDesc > mMotionSpline;
-  rstl::single_ptr< CGameSpline > mSplineController;
+  rstl::single_ptr< CSpline > mSplineController;
   float mMotionTime;
   uint mMotionFlags;
   float mInitialTime;

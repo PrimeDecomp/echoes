@@ -68,7 +68,7 @@ void ScriptCameraSpline::Initialise(const CEntity& entity, EScriptObjectState po
                                     EScriptObjectMessage positionMessage,
                                     EScriptObjectState targetState,
                                     EScriptObjectMessage targetMessage, CStateManager& mgr,
-                                    CGameSpline& spline) {
+                                    CSpline& spline) {
   rstl::vector< CVector3f > positions;
   rstl::vector< CQuaternion > orientations;
   rstl::vector< CVector3f > targets;

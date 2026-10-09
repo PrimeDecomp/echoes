@@ -1,11 +1,11 @@
-#ifndef _CGXTRANSIENTBUFFER
-#define _CGXTRANSIENTBUFFER
+#ifndef _DOLPHINGPUMEMORY
+#define _DOLPHINGPUMEMORY
 
 #include "types.h"
 
 // Guessed name: shared GX draw-sync-managed scratch storage, separated from the model TUs.
 // Method names describe the native operations; no original Echoes export is known.
-class CGXTransientBuffer {
+class GPUMemory {
 public:
   static void SetBuffer(void* buffer, uint size);
   static void* EnsureAllocation(int size);
@@ -13,4 +13,4 @@ public:
   static void TickAllocations();
 };
 
-#endif // _CGXTRANSIENTBUFFER
+#endif // _DOLPHINGPUMEMORY

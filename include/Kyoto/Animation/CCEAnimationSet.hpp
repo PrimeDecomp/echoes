@@ -1,5 +1,5 @@
-#ifndef _CANIMATIONSET
-#define _CANIMATIONSET
+#ifndef _CCEANIMATIONSET
+#define _CCEANIMATIONSET
 
 #include "Kyoto/Animation/CAdditiveAnimationInfo.hpp"
 #include "Kyoto/Animation/CAnimPOIData.hpp"
@@ -13,7 +13,7 @@
 #include "rstl/pair.hpp"
 #include "rstl/vector.hpp"
 
-class CAnimationSet {
+class CCEAnimationSet {
 public:
   typedef rstl::vector< CAnimation > AnimationList;
   typedef rstl::vector< CTransition > TransitionList;
@@ -21,7 +21,7 @@ public:
   typedef rstl::vector< rstl::pair< uint, CAdditiveAnimationInfo > > AdditiveAnimationList;
   typedef rstl::vector< CAnimPOIData > EventSetList; // Guessed name.
 
-  explicit CAnimationSet(CInputStream& in);
+  explicit CCEAnimationSet(CInputStream& in);
 
   const AnimationList& GetAnimations() const { return mAnimations; }
   const TransitionList& GetTransitions() const { return mTransitions; }
@@ -48,6 +48,6 @@ private:
   HalfTransitionList mHalfTransitions;
   EventSetList mEventSets; // Guessed name: embedded animation event data.
 };
-CHECK_SIZEOF(CAnimationSet, 0x64)
+CHECK_SIZEOF(CCEAnimationSet, 0x64)
 
-#endif // _CANIMATIONSET
+#endif // _CCEANIMATIONSET

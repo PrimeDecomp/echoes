@@ -79,14 +79,15 @@ void CAnimSourceReader::VGetSegStatementSet(const CSegIdList& list, CSegStatemen
   mSource->GetSegStatementSet(list, set, time);
 }
 
-void CAnimSourceReader::VGetSegData(const CCharLayoutInfo& layout, CJointData_LinearStorage& data,
-                                    const CCharAnimTime& time) const {
-  mSource->GetSegData(layout, data, time);
+void CAnimSourceReader::VGetJointData_Linear(const CCharLayoutInfo& layout,
+                                             CJointData_LinearStorage& data,
+                                             const CCharAnimTime& time) const {
+  mSource->GetJointData_Linear(layout, data, time);
 }
 
-void CAnimSourceReader::VGetSegData(const CCharLayoutInfo& layout,
-                                    CJointData_LinearStorage& data) const {
-  mSource->GetSegData(layout, data, mCurTime);
+void CAnimSourceReader::VGetJointData_Linear(const CCharLayoutInfo& layout,
+                                             CJointData_LinearStorage& data) const {
+  mSource->GetJointData_Linear(layout, data, mCurTime);
 }
 
 rstl::ownership_transfer< IAnimReader > CAnimSourceReader::VClone() const {

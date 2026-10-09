@@ -1,13 +1,12 @@
-#include "Kyoto/Math/CGameSpline.hpp"
+#include "Kyoto/Math/CSpline.hpp"
 
 #include "Kyoto/Math/CMath.hpp"
 #include "Kyoto/Math/CRelAngle.hpp"
 #include "Kyoto/Math/CUnitVector3f.hpp"
 
-CGameSpline::CGameSpline(float duration, uint flags, const CMayaSpline& positionTimeSpline,
-                         const CMayaSpline& lookAtTimeSpline,
-                         CMotionSpline::ESplineType positionType,
-                         CMotionSpline::ESplineType lookAtType)
+CSpline::CSpline(float duration, uint flags, const CMayaSpline& positionTimeSpline,
+                 const CMayaSpline& lookAtTimeSpline, CMotionSpline::ESplineType positionType,
+                 CMotionSpline::ESplineType lookAtType)
 : mPositionSpline(false, duration, positionType)
 , mPositionTimeSpline(positionTimeSpline)
 , mLookAtSpline(false, duration, lookAtType)
@@ -22,11 +21,11 @@ CGameSpline::CGameSpline(float duration, uint flags, const CMayaSpline& position
   }
 }
 
-CGameSpline::~CGameSpline() {}
+CSpline::~CSpline() {}
 
-void CGameSpline::Initialise(const rstl::vector< CVector3f >& positions,
-                             const rstl::vector< CQuaternion >& orientations,
-                             const rstl::vector< CVector3f >& lookAtPoints) {
+void CSpline::Initialise(const rstl::vector< CVector3f >& positions,
+                         const rstl::vector< CQuaternion >& orientations,
+                         const rstl::vector< CVector3f >& lookAtPoints) {
   mPositionSpline.Initialise(positions);
   mLookAtSpline.Initialise(lookAtPoints);
   mOrientations.clear();
@@ -36,11 +35,11 @@ void CGameSpline::Initialise(const rstl::vector< CVector3f >& positions,
   }
 }
 
-float CGameSpline::GetLength() const { return mPositionSpline.GetLength(); }
+float CSpline::GetLength() const { return mPositionSpline.GetLength(); }
 
-float CGameSpline::GetDuration() const { return mDuration; }
+float CSpline::GetDuration() const { return mDuration; }
 
-CQuaternion CGameSpline::GetOrientationByTime(float time) {
+CQuaternion CSpline::GetOrientationByTime(float time) {
   if (mPositionSpline.GetKnotCount() == 0) {
     return CQuaternion::AxisAngle(CUnitVector3f(0.f, 1.f, 0.f, CUnitVector3f::kN_Yes),
                                   CRelAngle::FromRadians(0.f));
@@ -67,7 +66,7 @@ CQuaternion CGameSpline::GetOrientationByTime(float time) {
   return CQuaternion::Slerp(first, mOrientations[end], t);
 }
 
-CQuaternion CGameSpline::GetOrientationByLength(float distance) {
+CQuaternion CSpline::GetOrientationByLength(float distance) {
   if (mPositionSpline.GetKnotCount() == 0) {
     return CQuaternion::AxisAngle(CUnitVector3f(0.f, 1.f, 0.f, CUnitVector3f::kN_Yes),
                                   CRelAngle::FromRadians(0.f));
@@ -94,7 +93,7 @@ CQuaternion CGameSpline::GetOrientationByLength(float distance) {
   return CQuaternion::Slerp(first, mOrientations[end], t);
 }
 
-CVector3f CGameSpline::GetPositionByTime(float time) {
+CVector3f CSpline::GetPositionByTime(float time) {
   CVector3f position = CVector3f::Zero();
   if (mPositionSpline.GetControlPointCount() != 0) {
     position = mPositionSpline.GetPositionByTime(mDuration * mPositionTimeSpline.EvaluateAt(time));
@@ -102,7 +101,7 @@ CVector3f CGameSpline::GetPositionByTime(float time) {
   return position;
 }
 
-CVector3f CGameSpline::GetPositionByLength(float distance) {
+CVector3f CSpline::GetPositionByLength(float distance) {
   CVector3f position = CVector3f::Zero();
   if (mPositionSpline.GetKnotCount() >= 1) {
     position = mPositionSpline.GetPositionByLength(distance);
@@ -110,7 +109,7 @@ CVector3f CGameSpline::GetPositionByLength(float distance) {
   return position;
 }
 
-CVector3f CGameSpline::GetLookAtByTime(float time) {
+CVector3f CSpline::GetLookAtByTime(float time) {
   CVector3f position = CVector3f::Zero();
   float splineTime = mDuration * mLookAtTimeSpline.EvaluateAt(time);
   if (mFlags & kF_UsePositionTimeForLookAt) {
@@ -124,7 +123,7 @@ CVector3f CGameSpline::GetLookAtByTime(float time) {
   return position;
 }
 
-CVector3f CGameSpline::GetLookAtByLength(float distance) {
+CVector3f CSpline::GetLookAtByLength(float distance) {
   CVector3f position = CVector3f::Zero();
   if ((mFlags & kF_UsePositionForLookAt) && mPositionSpline.GetKnotCount() >= 1) {
     position = mPositionSpline.GetPositionByLength(distance);
@@ -134,26 +133,26 @@ CVector3f CGameSpline::GetLookAtByLength(float distance) {
   return position;
 }
 
-float CGameSpline::FindClosestLengthOnSpline(float start, const CVector3f& position) const {
+float CSpline::FindClosestLengthOnSpline(float start, const CVector3f& position) const {
   return mPositionSpline.FindClosestLengthOnSpline(start, position);
 }
 
-float CGameSpline::ValidateLength(float distance) const {
+float CSpline::ValidateLength(float distance) const {
   return mPositionSpline.ValidateLength(distance);
 }
 
-CMotionSpline& CGameSpline::PositionSpline() { return mPositionSpline; }
+CMotionSpline& CSpline::PositionSpline() { return mPositionSpline; }
 
-const CMotionSpline& CGameSpline::GetPositionSpline() const { return mPositionSpline; }
+const CMotionSpline& CSpline::GetPositionSpline() const { return mPositionSpline; }
 
-CMayaSpline& CGameSpline::PositionTimeSpline() { return mPositionTimeSpline; }
+CMayaSpline& CSpline::PositionTimeSpline() { return mPositionTimeSpline; }
 
-uint CGameSpline::GetPositionKnotCount() const { return mPositionSpline.GetKnotCount(); }
+uint CSpline::GetPositionKnotCount() const { return mPositionSpline.GetKnotCount(); }
 
-CMotionSpline& CGameSpline::LookAtSpline() { return mLookAtSpline; }
+CMotionSpline& CSpline::LookAtSpline() { return mLookAtSpline; }
 
-const CMotionSpline& CGameSpline::GetLookAtSpline() const { return mLookAtSpline; }
+const CMotionSpline& CSpline::GetLookAtSpline() const { return mLookAtSpline; }
 
-CMayaSpline& CGameSpline::LookAtTimeSpline() { return mLookAtTimeSpline; }
+CMayaSpline& CSpline::LookAtTimeSpline() { return mLookAtTimeSpline; }
 
-uint CGameSpline::GetLookAtKnotCount() const { return mLookAtSpline.GetKnotCount(); }
+uint CSpline::GetLookAtKnotCount() const { return mLookAtSpline.GetKnotCount(); }

@@ -1,5 +1,5 @@
-#ifndef _CSTATICAUDIOPLAYER
-#define _CSTATICAUDIOPLAYER
+#ifndef _DOLPHINCRSFAUDIO
+#define _DOLPHINCRSFAUDIO
 
 #include "types.h"
 
@@ -11,12 +11,12 @@
 class CDvdRequest;
 typedef void (*FAudioCallback)();
 
-class CStaticAudioPlayer {
+class CRSFAudio {
 public:
-  CStaticAudioPlayer(const rstl::string& filepath, const int loopStart, const int loopEnd);
-  ~CStaticAudioPlayer();
+  CRSFAudio(const rstl::string& filepath, const int loopStart, const int loopEnd);
+  ~CRSFAudio();
 
-  const bool IsReady() const;
+  const bool IsFullyLoaded() const;
   void StartMixOut();
   void StopMixOut();
 
@@ -49,6 +49,6 @@ private:
   ushort mVolume;
 };
 
-CHECK_SIZEOF(CStaticAudioPlayer, 0xC4)
+CHECK_SIZEOF(CRSFAudio, 0xC4)
 
-#endif // _CSTATICAUDIOPLAYER
+#endif // _DOLPHINCRSFAUDIO

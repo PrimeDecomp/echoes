@@ -16,7 +16,7 @@
 #include "Kyoto/Input/CFinalInput.hpp"
 #include "Kyoto/Math/CMath.hpp"
 #include "Kyoto/Math/CRelAngle.hpp"
-#include "Kyoto/Streams/CFilePreload.hpp"
+#include "Kyoto/Streams/CStreamPreloadedToken.hpp"
 #include "Kyoto/Text/CGuiTextSupport.hpp"
 #include "Kyoto/Text/CStringTable.hpp"
 #include "MetaRender/CCubeRenderer.hpp"
@@ -453,7 +453,7 @@ void CGameResultsScreen::Update(float dt) {
     return;
   case kLS_PreloadMusic:
     if (mMusicPreload.null()) {
-      mMusicPreload = rs_new CFilePreload(rstl::string_l(skMusicFile));
+      mMusicPreload = rs_new CStreamPreloadedToken(rstl::string_l(skMusicFile));
     }
     mTime += dt;
     if (!mMusicPreload->IsReady()) {

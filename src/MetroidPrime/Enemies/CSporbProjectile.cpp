@@ -2,7 +2,7 @@
 
 #include "Collision/CCollisionInfoList.hpp"
 #include "Collision/CMaterialFilter.hpp"
-#include "Kyoto/Animation/CCharacterInfo.hpp"
+#include "Kyoto/Animation/CCECharacterInfo.hpp"
 #include "Kyoto/Animation/CPOINode.hpp"
 #include "Kyoto/Particles/CParticleData.hpp"
 #include "MetroidPrime/BodyState/CBodyController.hpp"
@@ -104,7 +104,7 @@ CSporbProjectile::CSporbProjectile(TUniqueId uid, const rstl::string& name, cons
   if (mBallEscapeEffect != kInvalidAssetId) {
     particles.push_back_unsafe(mBallEscapeEffect);
   }
-  AnimationData()->GetParticleDB().CacheParticleDesc(CCharacterInfo::CParticleResData(
+  AnimationData()->GetParticleDB().CacheParticleDesc(CCECharacterInfo::CParticleResData(
       particles, rstl::vector< CAssetId >(), rstl::vector< CAssetId >(), rstl::vector< CAssetId >(),
       rstl::vector< CAssetId >(), rstl::vector< CAssetId >()));
 }

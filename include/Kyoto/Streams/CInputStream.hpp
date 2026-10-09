@@ -72,8 +72,8 @@ public:
 private:
   uchar* mBuffer;
   uchar* mPtr;
-  unsigned long mLength;
-  bool mOwned;
+  unsigned long mBufferSize;
+  bool mOwner;
 };
 
 CHECK_SIZEOF(CInputStream, 0x14)

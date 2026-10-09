@@ -6,7 +6,7 @@
 #include "rstl/single_ptr.hpp"
 #include "rstl/string.hpp"
 
-#include "Kyoto/Audio/CStaticAudioPlayer.hpp"
+#include "Kyoto/Audio/DolphinCRSFAudio.hpp"
 
 // Guessed names throughout; the class name follows the RSFA loader and SLdrRsfAudio.
 class CScriptRsfAudio : public CEntity {
@@ -37,7 +37,7 @@ private:
   float mMusicVolume;
   float mTargetMusicVolume;
   float mMusicVolumeRate;
-  rstl::single_ptr< CStaticAudioPlayer > mPlayer;
+  rstl::single_ptr< CRSFAudio > mPlayer;
   float mCurrentVolume;
   float mFadeTimeLeft;
   bool mLoadRequested : 1;

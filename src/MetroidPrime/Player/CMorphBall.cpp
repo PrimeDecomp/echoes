@@ -13,8 +13,8 @@
 #include "Kyoto/Math/CMath.hpp"
 #include "Kyoto/Math/CRelAngle.hpp"
 #include "Kyoto/Math/CloseEnough.hpp"
-#include "Kyoto/Particles/CDeferredParticleEffect.hpp"
 #include "Kyoto/Particles/CElementGen.hpp"
+#include "Kyoto/Particles/CManagedParticleGen.hpp"
 #include "Kyoto/Particles/CParticleElectric.hpp"
 #include "Kyoto/Particles/CParticleSwoosh.hpp"
 #include "MetroidPrime/CActorLights.hpp"
@@ -403,8 +403,8 @@ void CMorphBall::InitializeWakeEffects() {
                           "OrganicWake_DGRP", "SandWake_DGRP",         "RainWake_DGRP"};
   for (int i = 0; i < 6; ++i) {
     const CDependencyGroupToken group(gpSimplePool->GetObj(groups[i]), *gpSimplePool);
-    mWakeEffects.push_back(rstl::auto_ptr< CDeferredParticleEffect >(
-        rs_new CDeferredParticleEffect(gpSimplePool->GetObj(effects[i]), group)));
+    mWakeEffects.push_back(rstl::auto_ptr< CManagedParticleGen >(
+        rs_new CManagedParticleGen(gpSimplePool->GetObj(effects[i]), group)));
   }
 }
 
@@ -1094,8 +1094,8 @@ void CMorphBall::CollidedWith(const TUniqueId& id, const CCollisionInfoList& lis
   }
 }
 
-static EMaterialTypes CloseToCollisionMaterial1 = kMT_Player;    // Guessed name
-static EMaterialTypes CloseToCollisionMaterial2 = kMT_Solid;     // Guessed name
+static EMaterialTypes CloseToCollisionMaterial1 = kMT_Player; // Guessed name
+static EMaterialTypes CloseToCollisionMaterial2 = kMT_Solid;  // Guessed name
 
 bool CMorphBall::BallCloseToCollision(const CStateManager& mgr, float distance,
                                       const CMaterialFilter& filter) const {
@@ -3025,9 +3025,9 @@ void CMorphBall::SetSpiderBallSwingingState(bool swinging) {
   mSpiderBallSwinging = swinging;
 }
 
-static EMaterialTypes SpiderNearListExcludeMaterial1 = kMT_Character;           // Guessed name
-static EMaterialTypes SpiderNearListExcludeMaterial2 = kMT_Player;              // Guessed name
-static EMaterialTypes SpiderNearListExcludeMaterial3 = kMT_Projectile;          // Guessed name
+static EMaterialTypes SpiderNearListExcludeMaterial1 = kMT_Character;             // Guessed name
+static EMaterialTypes SpiderNearListExcludeMaterial2 = kMT_Player;                // Guessed name
+static EMaterialTypes SpiderNearListExcludeMaterial3 = kMT_Projectile;            // Guessed name
 static EMaterialTypes SpiderNearListExcludeMaterial4 = kMT_ProjectilePassthrough; // Guessed name
 static EMaterialTypes SpiderCollisionSurfaceMaterial = kMT_Unknown61;             // Guessed name
 

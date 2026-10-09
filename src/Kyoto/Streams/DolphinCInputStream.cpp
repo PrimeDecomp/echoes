@@ -6,27 +6,27 @@
 
 CInputStream::CInputStream(const void* ptr, unsigned long len)
 : mBuffer(const_cast< uchar* >(reinterpret_cast< const uchar* >(ptr)))
-, mLength(len)
-, mOwned(false) {
+, mBufferSize(len)
+, mOwner(false) {
   mPtr = mBuffer;
 }
 
 CInputStream::CInputStream(const void* ptr, unsigned long len, bool owned)
 : mBuffer(const_cast< uchar* >(reinterpret_cast< const uchar* >(ptr)))
-, mLength(len)
-, mOwned(owned) {
+, mBufferSize(len)
+, mOwner(owned) {
   mPtr = mBuffer;
 }
 
 CInputStream::CInputStream(const SBufferAndSize& buffer, bool owned)
 : mBuffer(const_cast< uchar* >(reinterpret_cast< const uchar* >(buffer.mBuffer)))
-, mLength(buffer.mSize)
-, mOwned(owned) {
+, mBufferSize(buffer.mSize)
+, mOwner(owned) {
   mPtr = mBuffer;
 }
 
 CInputStream::~CInputStream() {
-  if (mOwned) {
+  if (mOwner) {
     delete[] mBuffer;
   }
 }
@@ -43,7 +43,7 @@ const void* CInputStream::Get(unsigned long len) {
 }
 
 size_t CInputStream::ReadBytes(void* dest, size_t len) {
-  size_t count = mLength - (mPtr - mBuffer);
+  size_t count = mBufferSize - (mPtr - mBuffer);
   if (len < count) {
     count = len;
   }
@@ -64,6 +64,6 @@ float CInputStream::ReadFloat() {
 }
 
 rstl::auto_ptr< uchar > CInputStream::ReleaseBuffer() {
-  mOwned = false;
+  mOwner = false;
   return rstl::auto_ptr< uchar >(mBuffer);
 }
