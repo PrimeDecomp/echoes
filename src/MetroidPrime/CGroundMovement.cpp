@@ -36,7 +36,7 @@ void CGroundMovement::CheckFalling(CPhysicsActor& actor, CStateManager& mgr, flo
     }
   }
   if (!outOfBounds) {
-    mgr.DeliverScriptMsg(CScriptMsg(kInvalidUniqueId, actor.GetUniqueId(), kSM_Falling));
+    mgr.DeliverScriptMsg(CScriptMsg(kInvalidUniqueId, actor.GetUniqueId(), kSM_OffGround));
   } else {
     mgr.DeliverScriptMsg(CScriptMsg(kInvalidUniqueId, actor.GetUniqueId(), kSM_Landed));
     actor.SetAngularVelocityWR(actor.GetAngularVelocityWR() * 0.98f);
@@ -119,7 +119,7 @@ void CGroundMovement::MoveGroundCollider(
           CEntity* entity = mgr.ObjectById(stepZId);
           if (TCastToPtr< CScriptPlatform >(entity)) {
             mgr.DeliverScriptMsg(
-                CScriptMsg(actor.GetUniqueId(), entity->GetUniqueId(), kSM_AddPlatformRider));
+                CScriptMsg(actor.GetUniqueId(), entity->GetUniqueId(), kSM_OnPlatform));
           }
           CGameCollision::SendMaterialMessage(mgr, info.GetMaterialLeft(), actor);
           mgr.DeliverScriptMsg(CScriptMsg(kInvalidUniqueId, actor.GetUniqueId(), kSM_Landed));
@@ -195,7 +195,7 @@ bool CGroundMovement::ResolveUpDown(CAreaCollisionCache& cache, CStateManager& m
         }
       }
       if (!floor) {
-        mgr.DeliverScriptMsg(CScriptMsg(kInvalidUniqueId, actor.GetUniqueId(), kSM_LandOnNotFloor));
+        mgr.DeliverScriptMsg(CScriptMsg(kInvalidUniqueId, actor.GetUniqueId(), kSM_Falling));
       }
       return false;
     }
@@ -243,7 +243,7 @@ bool CGroundMovement::MoveGroundColliderZ(CAreaCollisionCache& cache, CStateMana
       }
     }
     if (!floor) {
-      mgr.DeliverScriptMsg(CScriptMsg(kInvalidUniqueId, actor.GetUniqueId(), kSM_LandOnNotFloor));
+      mgr.DeliverScriptMsg(CScriptMsg(kInvalidUniqueId, actor.GetUniqueId(), kSM_Falling));
     }
 
     CCollisionInfoList filteredList;
@@ -361,7 +361,7 @@ bool CGroundMovement::MoveGroundColliderXY(CAreaCollisionCache& cache, CStateMan
     loopContinue = remainingDt > 0.f;
   }
   if (!didCollide && !actor.GetMaterialList().HasMaterial(kMT_GroundCollider)) {
-    mgr.DeliverScriptMsg(CScriptMsg(kInvalidUniqueId, actor.GetUniqueId(), kSM_Falling));
+    mgr.DeliverScriptMsg(CScriptMsg(kInvalidUniqueId, actor.GetUniqueId(), kSM_OffGround));
   }
   actor.MoveCollisionPrimitive(CVector3f::Zero());
   if (IsUser(0)) {
@@ -590,7 +590,7 @@ void CGroundMovement::MoveGroundCollider_New(
           result.mCollision = collisions[maxIndex];
           if (TCastToPtr< CScriptPlatform >(entity)) {
             mgr.DeliverScriptMsg(
-                CScriptMsg(actor.GetUniqueId(), entity->GetUniqueId(), kSM_AddPlatformRider));
+                CScriptMsg(actor.GetUniqueId(), entity->GetUniqueId(), kSM_OnPlatform));
           }
         }
         CCollisionInfo& info = collisions[maxIndex];
@@ -684,7 +684,7 @@ void CGroundMovement::MoveGroundCollider_New(
       CEntity* entity = mgr.ObjectById(id);
       if (TCastToPtr< CScriptPlatform >(entity)) {
         mgr.DeliverScriptMsg(
-            CScriptMsg(actor.GetUniqueId(), entity->GetUniqueId(), kSM_AddPlatformRider));
+            CScriptMsg(actor.GetUniqueId(), entity->GetUniqueId(), kSM_OnPlatform));
       } else {
         mgr.DeliverScriptMsg(
             CScriptMsg(kInvalidUniqueId, actor.GetUniqueId(), kSM_LandedOnStaticGround));

@@ -286,7 +286,7 @@ void CParasite::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
       break;
     }
     }
-  case kSM_XXDG:
+  case kSM_ReflectedDamage:
     if (mType == kPT_IceZoomer) {
       mBodyController->CommandMgr().DeliverCmd(CBCAdditiveFlinchCmd(1.f));
     }
@@ -642,7 +642,7 @@ void CParasite::Deactivate(CStateManager& mgr, EStateMsg msg, float) {
   switch (msg) {
   case kStateMsg_Activate:
     mStateProgress = 0;
-    SendScriptMsgs(kSS_DGNR, mgr, kInvalidUniqueId, kSM_None);
+    SendScriptMsgs(kSS_DeGenerate, mgr, kInvalidUniqueId, kSM_None);
     mgr.DeleteObjectRequest(GetUniqueId());
     break;
   case kStateMsg_Update:
@@ -1173,7 +1173,7 @@ void CParasite::UpdateCollisionActors(float dt, CStateManager& mgr) {
                                 false);
         mBodyController->SetLocomotionType(pas::kLT_Internal8);
         mBodyController->CommandMgr().DeliverCmd(CBCMeleeAttackCmd(pas::kS_Zero));
-        SendScriptMsgs(kSS_AboutToMassivelyDie, mgr, kInvalidUniqueId, kSM_None);
+        SendScriptMsgs(kSS_SpawnResidue, mgr, kInvalidUniqueId, kSM_None);
       }
     }
   }

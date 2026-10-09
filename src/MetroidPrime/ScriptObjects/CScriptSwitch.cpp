@@ -21,7 +21,7 @@ void CScriptSwitch::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
       break;
     case kSM_SetToZero:
       if (mOpened) {
-        SendScriptMsgs(kSS_Opened, mgr, msg.GetOriginator(), kSM_None);
+        SendScriptMsgs(kSS_Open, mgr, msg.GetOriginator(), kSM_None);
         if (mCloseOnOpened) {
           mOpened = false;
         }

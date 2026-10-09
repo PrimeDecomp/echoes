@@ -185,7 +185,7 @@ CGunTurretBase::CGunTurretBase(
 void CGunTurretBase::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
   switch (msg.GetMessage()) {
   case kSM_Delete:
-  case kSM_XHIT:
+  case kSM_HitObject:
   case kSM_AIUpdateDisabled:
   case kSM_Decrement:
   case kSM_Activate:

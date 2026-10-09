@@ -426,8 +426,8 @@ void COctapedeSegment::Death(CStateManager& mgr, const CVector3f& direction,
   RemoveMaterial(kMT_Orbit, mgr);
   SetMovable(true);
   Stop();
-  mgr.DeliverScriptMsg(CScriptMsg(kInvalidUniqueId, GetUniqueId(), kSM_Falling));
-  mgr.DeliverScriptMsg(CScriptMsg(kInvalidUniqueId, GetUniqueId(), kSM_Falling));
+  mgr.DeliverScriptMsg(CScriptMsg(kInvalidUniqueId, GetUniqueId(), kSM_OffGround));
+  mgr.DeliverScriptMsg(CScriptMsg(kInvalidUniqueId, GetUniqueId(), kSM_OffGround));
 
   mBreakApartSpeed =
       mMinBreakApartSpeed + (mMaxBreakApartSpeed - mMinBreakApartSpeed) * mgr.Random()->Float();
@@ -467,7 +467,7 @@ void COctapedeSegment::Death(CStateManager& mgr, const CVector3f& direction,
                       127, GetDistanceToCamera(mgr), GetTranslation(), mgr.GetNextAreaId().Value(),
                       mgr, true);
   }
-  SendScriptMsgs(kSS_InternalState00, mgr, kInvalidUniqueId, kSM_None);
+  SendScriptMsgs(kSS_InternalState0, mgr, kInvalidUniqueId, kSM_None);
 }
 
 void COctapedeSegment::Dead(CStateManager& mgr, EStateMsg msg, float dt) {
@@ -510,7 +510,7 @@ void COctapedeSegment::Dead(CStateManager& mgr, EStateMsg msg, float dt) {
 void COctapedeSegment::Bounce(CStateManager& mgr, const CVector3f& normal, bool counts) {
   if (mBouncesRemaining > 0 && !mBounceLatch) {
     mBounceLatch = true;
-    mgr.DeliverScriptMsg(CScriptMsg(kInvalidUniqueId, GetUniqueId(), kSM_Falling));
+    mgr.DeliverScriptMsg(CScriptMsg(kInvalidUniqueId, GetUniqueId(), kSM_OffGround));
 
     const CVector3f velocity = GetVelocityWR();
     const float speed = velocity.Magnitude();
@@ -547,7 +547,7 @@ void COctapedeSegment::Bounce(CStateManager& mgr, const CVector3f& normal, bool 
       mDisabledAnimationDeltas = 0;
       mPlayerObstructed = false;
     }
-    mgr.DeliverScriptMsg(CScriptMsg(kInvalidUniqueId, GetUniqueId(), kSM_Falling));
+    mgr.DeliverScriptMsg(CScriptMsg(kInvalidUniqueId, GetUniqueId(), kSM_OffGround));
   } else {
     mBounceLatch = false;
   }
@@ -587,7 +587,7 @@ void COctapedeSegment::CollidedWith(const TUniqueId& id, const CCollisionInfoLis
 }
 
 void COctapedeSegment::Explode(CStateManager& mgr) {
-  const TUniqueId effectId = FindConnectedObject(mgr, kSS_DGNR, kSM_Activate);
+  const TUniqueId effectId = FindConnectedObject(mgr, kSS_DeGenerate, kSM_Activate);
   if (effectId != kInvalidUniqueId) {
     if (CScriptEffect* effect = TCastToPtr< CScriptEffect >(mgr.ObjectById(effectId))) {
       effect->SetTransform(GetTransform());
@@ -597,7 +597,7 @@ void COctapedeSegment::Explode(CStateManager& mgr) {
   ProcessSoundEvent(sfx, 1.f, 0, mSoundFalloff, mMaxAudibleDistance, CSegId(0), 0, 0, 0.f, 20, 127,
                     GetDistanceToCamera(mgr), GetTranslation(), mgr.GetNextAreaId().Value(), mgr,
                     true);
-  SendScriptMsgs(kSS_DGNR, mgr, kInvalidUniqueId, kSM_None);
+  SendScriptMsgs(kSS_DeGenerate, mgr, kInvalidUniqueId, kSM_None);
   mgr.ApplyDamageToWorld(GetUniqueId(), *this, GetTranslation(), mExplosionDamage,
                          CMaterialFilter::MakeIncludeExclude(
                              CMaterialList(skExplosionDamageMaterial), CMaterialList()));

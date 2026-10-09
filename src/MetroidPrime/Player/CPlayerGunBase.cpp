@@ -108,16 +108,16 @@ void CPlayerGunBase::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) 
   case kSM_Delete:
     DeleteGunLight(mgr);
     break;
-  case kSM_XEPZ:
-  case kSM_XIPZ:
+  case kSM_EnteredPhazonPool:
+  case kSM_InsidePhazonPool:
     mInPhazonPool = true;
     break;
-  case kSM_XXPZ:
+  case kSM_ExitedPhazonPool:
     mInPhazonPool = false;
     break;
-  case kSM_XENF:
-  case kSM_XINF:
-  case kSM_XEXF:
+  case kSM_EnteredFluid:
+  case kSM_InsideFluid:
+  case kSM_ExitedFluid:
     break;
   default:
     break;

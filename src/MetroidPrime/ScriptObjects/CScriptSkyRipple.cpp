@@ -15,8 +15,8 @@
 #include "MetroidPrime/ScriptObjects/CScriptActor.hpp"
 #include "MetroidPrime/TCastTo.hpp"
 
-static EScriptObjectState sFirstSkyState = kSS_InternalState00;
-static EScriptObjectState sSecondSkyState = kSS_InternalState01;
+static EScriptObjectState sFirstSkyState = kSS_InternalState0;
+static EScriptObjectState sSecondSkyState = kSS_InternalState1;
 
 CScriptSkyRipple::CScriptSkyRipple(TUniqueId uid, const CEntityInfo& info, const rstl::string& name)
 : CActor(uid, name, info, 0, CTransform4f::Identity(), CModelData::None(), CMaterialList(),

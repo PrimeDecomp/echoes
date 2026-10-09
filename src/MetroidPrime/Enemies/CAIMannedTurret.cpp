@@ -123,7 +123,7 @@ void CAIMannedTurret::SetupStateMachine(CStateManager& mgr) {
 }
 
 void CAIMannedTurret::AttachToActors(CStateManager& mgr) {
-  mTurretId = FindConnectedObject(mgr, kSS_AttachToBase, kSM_Attach);
+  mTurretId = FindConnectedObject(mgr, kSS_AttachedAnimatedObject, kSM_Attach);
   if (CActor* turret = TCastToPtr< CActor >(mgr.ObjectById(mTurretId))) {
     if (turret->ModelData()->AnimationData() != nullptr) {
       const CPASDatabase& pasDatabase = turret->AnimationData()->GetPASDatabase();
@@ -141,7 +141,7 @@ void CAIMannedTurret::AttachToActors(CStateManager& mgr) {
       mTurretModelFlags = turret->GetModelFlags();
     }
   }
-  mRiderId = FindConnectedObject(mgr, kSS_AttachToCharacter, kSM_Attach);
+  mRiderId = FindConnectedObject(mgr, kSS_AttachedCollisionObject, kSM_Attach);
   if (CActor* rider = TCastToPtr< CActor >(mgr.ObjectById(mRiderId))) {
     rider->AddMaterial(kMT_ScanPassthrough, mgr);
   }

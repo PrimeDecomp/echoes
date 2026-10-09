@@ -99,7 +99,7 @@ void CWallWalker::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
   case kSM_Delete:
     DestroyCollisionManager(mgr);
     break;
-  case kSM_XXDG:
+  case kSM_ReflectedDamage:
   case kSM_ResistedDamage:
     if (!TCastToConstPtr< CCollisionActor >(mgr.GetObjectById(msg.GetSenderId()))) {
       BodyController()->CommandMgr().DeliverCmd(CBCAdditiveFlinchCmd(1.f));

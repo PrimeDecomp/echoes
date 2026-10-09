@@ -288,10 +288,10 @@ public:
   int GetAreaSaveId() const { return mAreaSaveId; }
   bool IsLoaded() const { return mPhase == kP_Loaded; }
   EOcclusionState GetOcclusionState() const {
-    return IsLoaded() ? mPostConstructed->mOcclusionState : kOS_Occluded;
+    return IsLoaded() ? mPostConst->mOcclusionState : kOS_Occluded;
   }
-  CPostConstructed* GetPostConstructed() { return mPostConstructed.get(); }
-  const CPostConstructed* GetPostConstructed() const { return mPostConstructed.get(); }
+  CPostConstructed* GetPostConstructed() { return mPostConst.get(); }
+  const CPostConstructed* GetPostConstructed() const { return mPostConst.get(); }
   const CAreaFog* GetAreaFog() const { return GetPostConstructed()->mAreaFog.get(); }
   CGameArea* GetNext() const { return mNext; }
   int GetCurChain() const { return mCurrentChain; }
@@ -308,9 +308,9 @@ public:
   Dock& DockNC(int index) { return mDocks[index]; }
   void SetActive(bool active) { mActive = active; }
   void SetValidationPaused(bool paused) { mValidationPaused = paused; }
-  CObjectList* ObjectList() { return mPostConstructed->mAreaObjectList.get(); }
-  const CObjectList* GetObjectList() const { return mPostConstructed->mAreaObjectList.get(); }
-  const CObjectList* ObjectList() const { return mPostConstructed->mAreaObjectList.get(); }
+  CObjectList* ObjectList() { return mPostConst->mAreaObjectList.get(); }
+  const CObjectList* GetObjectList() const { return mPostConst->mAreaObjectList.get(); }
+  const CObjectList* ObjectList() const { return mPostConst->mAreaObjectList.get(); }
   void AddDock(TUniqueId uid); // Guessed name.
 
   void ClearTokenList();
@@ -417,7 +417,8 @@ private:
   CGameArea* mNext;
   CGameArea* mPrev;
   int mCurrentChain;
-  rstl::single_ptr< CPostConstructed > mPostConstructed;
+  // Name from the Corruption prototype's (G2MEAB) CGameArea asserts ("mPostConst->mVisFreeList").
+  rstl::single_ptr< CPostConstructed > mPostConst;
   bool mLoadPaused : 1;
   bool mValidationPaused : 1;
   bool mActive : 1;

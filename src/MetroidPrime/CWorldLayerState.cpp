@@ -19,11 +19,11 @@ void CWorldLayerState::PutTo(CBitStreamWriter& out, const CWorldSaveGameInfo&) c
   uint totalLayerCount = 0;
   const int areaCount = mAreaLayers.size();
   for (int i = 0; i < areaCount; ++i) {
-    totalLayerCount += GetAreaLayerCount(TAreaId(i)) - 1;
+    totalLayerCount += GetLayerCount(TAreaId(i)) - 1;
   }
   out.WriteBits(totalLayerCount, 10);
   for (int i = 0; i < areaCount; ++i) {
-    const int layerCount = GetAreaLayerCount(TAreaId(i));
+    const int layerCount = GetLayerCount(TAreaId(i));
     for (int layer = 1; layer < layerCount; ++layer) {
       out.WriteBits(IsLayerActive(TAreaId(i), TLayerId(layer)) ? 1 : 0, 1);
     }
@@ -55,17 +55,17 @@ const rstl::string& CWorldLayerState::GetLayerName(TAreaId area, TLayerId layer)
   if (layerId < 0 || layerId >= areaLayers.mLayerCount) {
     return skEmptyString;
   }
-  if (mLayerNames.IsNull() || mLayerNameOffsets.IsNull()) {
+  if (mpLayerNameList.IsNull() || mpLayerNameStartIndexList.IsNull()) {
     return skEmptyString;
   }
-  if (areaId > mLayerNameOffsets->size()) {
+  if (areaId > mpLayerNameStartIndexList->size()) {
     return skEmptyString;
   }
-  const int index = (*mLayerNameOffsets)[areaId] + layerId;
-  if (index > mLayerNames->size()) {
+  const int index = (*mpLayerNameStartIndexList)[areaId] + layerId;
+  if (index > mpLayerNameList->size()) {
     return skEmptyString;
   }
-  return (*mLayerNames)[index];
+  return (*mpLayerNameList)[index];
 }
 
 void CWorldLayerState::InitializeWorldLayers(
@@ -77,8 +77,8 @@ void CWorldLayerState::InitializeWorldLayers(
   }
 
   mAreaLayers = areas;
-  mLayerNameOffsets = indices;
-  mLayerNames = names;
+  mpLayerNameStartIndexList = indices;
+  mpLayerNameList = names;
   if (mSaveLayers.size() == 0) {
     return;
   }
@@ -86,7 +86,7 @@ void CWorldLayerState::InitializeWorldLayers(
   int bit = 0;
   const int areaCount = mAreaLayers.size();
   for (int i = 0; i < areaCount; ++i) {
-    const int layerCount = GetAreaLayerCount(TAreaId(i));
+    const int layerCount = GetLayerCount(TAreaId(i));
     for (int layer = 1; layer < layerCount; ++layer) {
       SetLayerActive(TAreaId(i), TLayerId(layer), mSaveLayers[bit++]);
     }
@@ -94,7 +94,7 @@ void CWorldLayerState::InitializeWorldLayers(
   mSaveLayers = rstl::bit_vector< rstl::rmemory_allocator >();
 }
 
-int CWorldLayerState::GetAreaLayerCount(TAreaId area) const {
+int CWorldLayerState::GetLayerCount(TAreaId area) const {
   return mAreaLayers[area.Value()].mLayerCount;
 }
 
@@ -103,9 +103,9 @@ const rstl::vector< CWorldLayers::Area >& CWorldLayerState::GetAreaLayers() cons
 }
 
 const rstl::rc_ptr< rstl::vector< rstl::string > >& CWorldLayerState::GetLayerNames() const {
-  return mLayerNames;
+  return mpLayerNameList;
 }
 
 const rstl::rc_ptr< rstl::vector< int > >& CWorldLayerState::GetLayerNameOffsets() const {
-  return mLayerNameOffsets;
+  return mpLayerNameStartIndexList;
 }

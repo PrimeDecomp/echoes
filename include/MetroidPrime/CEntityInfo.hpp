@@ -35,7 +35,7 @@ enum EEntityType {
   kET_GameLight = 26,
   kET_HomingBlob = 27, // Guessed name; Dark impact's multi-target particle weapon.
   kET_HUDBillboardEffect = 28,
-  kET_IngPuddle = 29, // Target-derived class tag.
+  kET_IngPuddle = 29,         // Target-derived class tag.
   kET_IngSnatchingSwarm = 30, // Target-derived class tag.
   kET_PathCamera = 31,
   kET_Player = 32,
@@ -107,21 +107,21 @@ enum EEntityType {
   kET_ScriptWorldTeleporter = 98,
   kET_SnakeWeedSwarm = 99, // Native REL type query; class spelling corroborated by Wii export.
   kET_SpindleCamera = 100,
-  kET_SurfaceCamera = 101, // Guessed name; runtime surface camera.
-  kET_SwarmBasics = 102,   // Native TypesMatch tag, correlated with swarm consumers.
-  kET_FlyerSwarm = 103,    // Native REL TypesMatch tag; parent is the SwarmBasics tag.
-  kET_WallCrawler = 104,   // Target-derived class tag.
-  kET_BacteriaSwarm = 105, // Native REL TypesMatch tag; parent is CActor.
-  kET_MetareeSwarm = 106,  // Native REL TypesMatch tag; parent is the SwarmBasics tag.
-  kET_IngBlobSwarm = 107, // Native REL TypesMatch tag; parent is the SwarmBasics tag.
+  kET_SurfaceCamera = 101,    // Guessed name; runtime surface camera.
+  kET_SwarmBasics = 102,      // Native TypesMatch tag, correlated with swarm consumers.
+  kET_FlyerSwarm = 103,       // Native REL TypesMatch tag; parent is the SwarmBasics tag.
+  kET_WallCrawler = 104,      // Target-derived class tag.
+  kET_BacteriaSwarm = 105,    // Native REL TypesMatch tag; parent is CActor.
+  kET_MetareeSwarm = 106,     // Native REL TypesMatch tag; parent is the SwarmBasics tag.
+  kET_IngBlobSwarm = 107,     // Native REL TypesMatch tag; parent is the SwarmBasics tag.
   kET_PlantScarabSwarm = 108, // Native REL TypesMatch tag; parent is the SwarmBasics tag.
   kET_BeamProjectile = 109,
   kET_PlasmaProjectile = 110,
   kET_DarkSamus = 111,
-  kET_Grenchler = 115, // Target-derived class tag.
-  kET_IngSpaceJumpGuardian = 118, // Target-derived class tag.
-  kET_IngSpiderballGuardian = 119, // Target-derived class tag.
-  kET_Lumite = 120, // Target-derived class tag.
+  kET_Grenchler = 115,                 // Target-derived class tag.
+  kET_IngSpaceJumpGuardian = 118,      // Target-derived class tag.
+  kET_IngSpiderballGuardian = 119,     // Target-derived class tag.
+  kET_Lumite = 120,                    // Target-derived class tag.
   kET_Metaree = 121,                   // Target-derived class tag.
   kET_Metroid = 122,                   // Target-derived class tag.
   kET_BabyMetroid = 123,               // Target-derived class tag.
@@ -138,26 +138,29 @@ enum EEntityType {
   kET_ScriptPlayerTurret = 138,        // Target-derived class tag; turret-HUD REL dispatch target.
   kET_GunTurretBase = 139,             // Target-derived class tag.
   kET_GunTurretTop = 140,              // Target-derived class tag.
-  kET_Kralee = 141, // Target-derived class tag.
-  kET_Glowbug = 142, // Target-derived class tag.
-  kET_SporbBase = 143, // Target-derived class tag.
-  kET_SporbNeedle = 144, // Target-derived class tag.
-  kET_SporbTop = 145, // Target-derived class tag.
-  kET_SporbProjectile = 146, // Target-derived class tag.
-  kET_Blogg = 149, // Target-derived class tag.
+  kET_Kralee = 141,                    // Target-derived class tag.
+  kET_Glowbug = 142,                   // Target-derived class tag.
+  kET_SporbBase = 143,                 // Target-derived class tag.
+  kET_SporbNeedle = 144,               // Target-derived class tag.
+  kET_SporbTop = 145,                  // Target-derived class tag.
+  kET_SporbProjectile = 146,           // Target-derived class tag.
+  kET_Blogg = 149,                     // Target-derived class tag.
   kET_WallWalker = 150,                // Target-derived class tag.
-  kET_Shredder = 151, // Target-derived class tag.
+  kET_Shredder = 151,                  // Target-derived class tag.
   kET_TargetableProjectile = 152,      // Target-derived class tag.
   kET_AIMannedTurret = 153,            // Target-derived class tag.
-  kET_StoneToad = 154, // Target-derived class tag.
+  kET_StoneToad = 154,                 // Target-derived class tag.
   kET_ScriptFrontEndDataNetwork = 155, // Target-derived class tag.
   kET_PowerBomb = 156,
-  kET_Krocuss = 157, // Target-derived class tag.
+  kET_Krocuss = 157,         // Target-derived class tag.
   kET_OctapedeSegment = 158, // Target-derived class tag.
-  kET_PuddleSpore = 159, // Target-derived class tag.
+  kET_PuddleSpore = 159,     // Target-derived class tag.
   kET_ScriptForgottenObject = 160,
 };
 
+// Where Echoes and the Corruption prototype (G2MEAB) share a FourCC, the name is the one in the
+// prototype's state and message name tables (CScriptLUA.cpp's rodata, lbl_8068AAA0 and
+// lbl_8068ADB8), which pair each name with its FourCC.
 enum EScriptObjectState {
   kSS_Active = 0x41435456,
   kSS_Arrived = 0x41525256,
@@ -170,14 +173,14 @@ enum EScriptObjectState {
   kSS_NonZero = 0x215a4552,
   kSS_DefaultState = 0x44465354,
   kSS_MaxReached = 0x4d415852,
-  kSS_ScanStart = 0x4553434e,
-  kSS_ScanProcessing = 0x4253434e,
+  kSS_EndScan = 0x4553434e,
+  kSS_BeginScan = 0x4253434e,
   kSS_ScanDone = 0x53434e44,
   kSS_Patrol = 0x5054524c,
   kSS_Attack = 0x4154544b,
-  kSS_AttachToBase = 0x41544f42, // Guessed name; connection to the turret base actor.
-  kSS_AttachToCharacter = 0x4154434c, // Guessed name; connection to the rider actor.
-  kSS_IngSnatch = 0x49534e41, // Guessed name
+  kSS_AttachedAnimatedObject = 0x41544f42,  // Connection to the turret base actor.
+  kSS_AttachedCollisionObject = 0x4154434c, // Connection to the rider actor.
+  kSS_IngSnatch = 0x49534e41,               // Guessed name
   kSS_Retreat = 0x52545254, // Prime-correlated name; cover point's retreat connection.
   kSS_Play = 0x504c4159,
   kSS_Connect = 0x434f4e4e,
@@ -185,23 +188,23 @@ enum EScriptObjectState {
   kSS_InFront = 0x58494e46,
   kSS_InBack = 0x58494e42,
   kSS_Slave = 0x534c4156,
-  kSS_Opened = 0x4f50454e,
+  kSS_Open = 0x4f50454e,
   kSS_Closed = 0x434c4f53,
   kSS_CameraTarget = 0x43544754,
   kSS_CameraPath = 0x43505448,
   kSS_CameraPlayer = 0x43504c52,
   kSS_CameraTime = 0x4354494d,
-  kSS_UnFrozen = 0x5546525a,
+  kSS_UnFreeze = 0x5546525a,
   kSS_Dead = 0x44454144,
-  kSS_DeathRattle = 0x5241544c,         // Guessed Prime-correlated name; native damage-death state.
-  kSS_AboutToMassivelyDie = 0x52445545, // Guessed Prime name; native pre-massive-death state.
+  kSS_DeathRattle = 0x5241544c,  // Guessed Prime-correlated name; native damage-death state.
+  kSS_SpawnResidue = 0x52445545, // Native pre-massive-death state.
   // Guessed DKCR HD names; native Patterned massive-damage connections establish the tags.
   kSS_XDamage = 0x58444d47,
   kSS_DarkXDamage = 0x44524b58,
   kSS_IceXDamage = 0x49444d47, // Guessed DKCR HD name; native massive frozen death tag.
   // Guessed names; coin-denomination tags (100 and 50) sent beside the DAMG/XDMG/IDMG family.
-  kSS_BIDG = 0x42494447,
-  kSS_BXDG = 0x42584447,
+  kSS_BallIceXDamage = 0x42494447,
+  kSS_BallXDamage = 0x42584447,
   kSS_Generate = 0x47454e52,
   kSS_GeneratorConnection = 0x47524e54, // Guessed name; generator-to-spawned-object connections.
   kSS_ReflectedDamage = 0x52454644,
@@ -228,20 +231,20 @@ enum EScriptObjectState {
   kSS_AreaLightDamage = 0x44414c47,
   kSS_UnknownSourceDamage = 0x44554e53,
   kSS_InheritBounds = 0x49424e44,
-  kSS_Modify = 0x4d444659,          // Prime name; fish cloud modifier connections.
-  kSS_InternalState00 = 0x49533030, // Guessed name: base of the ten counter-condition states.
-  kSS_InternalState01 = 0x49533031, // Guessed name
+  kSS_Modify = 0x4d444659,         // Prime name; fish cloud modifier connections.
+  kSS_InternalState0 = 0x49533030, // Base of the ten counter-condition states.
+  kSS_InternalState1 = 0x49533031,
   // Guessed names; portal-transition connections use these internal states.
-  kSS_InternalState03 = 0x49533033,
-  kSS_InternalState04 = 0x49533034,
-  kSS_InternalState05 = 0x49533035,
-  kSS_InternalState06 = 0x49533036,
+  kSS_InternalState3 = 0x49533033,
+  kSS_InternalState4 = 0x49533034,
+  kSS_InternalState5 = 0x49533035,
+  kSS_InternalState6 = 0x49533036,
   kSS_ScanSource = 0x53434e53,
   // Guessed names; GUI widget/menu states sent by the ScriptGui REL.
-  kSS_InternalState02 = 0x49533032,
-  kSS_InternalState07 = 0x49533037,
-  kSS_InternalState08 = 0x49533038,
-  kSS_InternalState09 = 0x49533039,
+  kSS_InternalState2 = 0x49533032,
+  kSS_InternalState7 = 0x49533037,
+  kSS_InternalState8 = 0x49533038,
+  kSS_InternalState9 = 0x49533039,
   kSS_InternalState10 = 0x49533130,
   kSS_InternalState11 = 0x49533131,
   kSS_InternalState12 = 0x49533132,
@@ -254,7 +257,7 @@ enum EScriptObjectState {
   kSS_InternalState19 = 0x49533139,
   kSS_Locked = 0x4c4f434b,
   kSS_Unlocked = 0x554c434b,
-  kSS_Frozen = 0x4652455a,
+  kSS_Freeze = 0x4652455a,
   kSS_APRC = 0x41505243, // Native GUI accept-press tag, sent before kSS_PressA.
   kSS_PressA = 0x50525341,
   kSS_PressB = 0x50525342,
@@ -264,10 +267,10 @@ enum EScriptObjectState {
   kSS_PressStart = 0x50525354,
   kSS_Left = 0x4c454654,
   kSS_Right = 0x52474854,
-  kSS_AIS1 = 0x41495331, // Native GUI connection tags; meaning unresolved.
-  kSS_AIS2 = 0x41495332,
-  kSS_AIS3 = 0x41495333,
-  kSS_DGNR = 0x44474e52, // Native save-screen failure tag; meaning unresolved.
+  kSS_AILogicState1 = 0x41495331,
+  kSS_AILogicState2 = 0x41495332,
+  kSS_AILogicState3 = 0x41495333,
+  kSS_DeGenerate = 0x44474e52,
   kSS_Up = 0x55502020,
   kSS_Down = 0x444f574e, // Guessed name; destructible barrier finished lowering.
   kSS_GRNT = 0x47524e54, // Destructible barrier: generator for falling sections.
@@ -275,6 +278,7 @@ enum EScriptObjectState {
   kSS_InvalidState = 0xffffffff,
 };
 
+// Names as for EScriptObjectState.
 enum EScriptObjectMessage {
   kSM_Action = 0x4143544e,
   kSM_Arrived = 0x41525256, // Guessed name; sent to a waypoint when its follower reaches it.
@@ -306,16 +310,16 @@ enum EScriptObjectMessage {
   kSM_Decrement = 0x44454352,
   kSM_Left = 0x4c454654, // Guessed name; shows the grapple on a player actor.
   kSM_Kill = 0x4b494c4c,
-  kSM_InternalMessage00 = 0x494d3030,
-  kSM_InternalMessage01 = 0x494d3031,
-  kSM_InternalMessage02 = 0x494d3032, // Guessed name; GUI menu item-state refresh.
-  kSM_InternalMessage03 = 0x494d3033, // Guessed name.
-  kSM_InternalMessage04 = 0x494d3034, // Guessed name.
-  kSM_InternalMessage05 = 0x494d3035, // Guessed name.
-  kSM_InternalMessage06 = 0x494d3036, // Guessed name.
-  kSM_InternalMessage07 = 0x494d3037, // Guessed name.
-  kSM_InternalMessage08 = 0x494d3038, // Guessed name.
-  kSM_InternalMessage09 = 0x494d3039, // Guessed name.
+  kSM_InternalMessage0 = 0x494d3030,
+  kSM_InternalMessage1 = 0x494d3031,
+  kSM_InternalMessage2 = 0x494d3032, // GUI menu item-state refresh.
+  kSM_InternalMessage3 = 0x494d3033,
+  kSM_InternalMessage4 = 0x494d3034,
+  kSM_InternalMessage5 = 0x494d3035,
+  kSM_InternalMessage6 = 0x494d3036,
+  kSM_InternalMessage7 = 0x494d3037,
+  kSM_InternalMessage8 = 0x494d3038,
+  kSM_InternalMessage9 = 0x494d3039,
   kSM_InternalMessage10 = 0x494d3130, // Guessed name.
   kSM_InternalMessage11 = 0x494d3131, // Guessed name.
   kSM_InternalMessage12 = 0x494d3132, // Guessed name.
@@ -325,36 +329,35 @@ enum EScriptObjectMessage {
 
   // Guessed lifecycle names from DKCR HD, corroborated by Echoes consumers.
   kSM_Create = 0x58435254,
-  kSM_XEPZ = 0x5845505a,  // Guessed name; Phazon-pool entry.
-  kSM_XIPZ = 0x5849505a,  // Guessed name; Phazon-pool update.
-  kSM_XXPZ = 0x5858505a,  // Guessed name; Phazon-pool exit.
-  kSM_XENZ = 0x58454e5a,  // Guessed name; makes a flagged bouncy grenade explode.
-  kSM_XEXZ = 0x5845585a,  // Guessed name; paired with XENZ on safe-zone exit.
-  kSM_Clear = 0x58434c52, // Guessed DKCR HD name; clears an effect's particles.
+  kSM_EnteredPhazonPool = 0x5845505a, // Phazon-pool entry.
+  kSM_InsidePhazonPool = 0x5849505a,  // Phazon-pool update.
+  kSM_ExitedPhazonPool = 0x5858505a,  // Phazon-pool exit.
+  kSM_XENZ = 0x58454e5a,              // Guessed name; makes a flagged bouncy grenade explode.
+  kSM_XEXZ = 0x5845585a,              // Guessed name; paired with XENZ on safe-zone exit.
+  kSM_Clear = 0x58434c52,             // Guessed DKCR HD name; clears an effect's particles.
   kSM_AreaLoaded = 0x58414c44,
   kSM_WorldLoaded = 0x58574c44,
   kSM_Delete = 0x5844454c,
-  kSM_XENF = 0x58454e46,   // Native fluid-entry tag.
-  kSM_XINF = 0x58494e46,   // Native fluid-update tag.
-  kSM_XEXF = 0x58455846,   // Native fluid-exit tag.
-  kSM_XINS = 0x58494e53,   // Guessed name; sent to the player when an ice impact touches them.
-  kSM_Damage = 0x58444d47, // Guessed DKCR HD name; damage notification.
+  kSM_EnteredFluid = 0x58454e46,
+  kSM_InsideFluid = 0x58494e46,
+  kSM_ExitedFluid = 0x58455846,
+  kSM_InShrubbery = 0x58494e53,    // Sent to the player when an ice impact touches them.
+  kSM_Damage = 0x58444d47,         // Guessed DKCR HD name; damage notification.
   kSM_ResistedDamage = 0x58524447, // Guessed DKCR HD name; native resisted-damage branch.
-  kSM_XHIT = 0x58484954,
-  kSM_XCRT = 0x58435254, // Guessed name; creates the collision actors.
-  kSM_XAOV = 0x58414f56,             // Native projectile visor-impact tag.
+  kSM_HitObject = 0x58484954,
+  kSM_AcidOnVisor = 0x58414f56,
   kSM_AIUpdateDisabled = 0x58415544, // Guessed DKCR HD name; patterned update disabled.
-  kSM_XXDG = 0x58584447,
-  kSM_LandOnNotFloor = 0x5846414c,
-  kSM_Falling = 0x584f4646,
+  kSM_ReflectedDamage = 0x58584447,
+  kSM_Falling = 0x5846414c,
+  kSM_OffGround = 0x584f4646,
   kSM_Launching = 0x584c4155,            // Guessed DKCR HD name; jump/hurled launch notification.
   kSM_Landed = 0x584c4e44,               // Guessed DKCR HD name; landing notification.
   kSM_LandedOnStaticGround = 0x584c5347, // Guessed DKCR HD name; native static-ground notification.
   // Guessed Prime names, correlated with the native player message handler.
-  kSM_OnIceSurface = 0x584f4e49,
-  kSM_OnMudSlowSurface = 0x584f4e4f,
-  kSM_OnNormalSurface = 0x584f4e44,
-  kSM_AddPlatformRider = 0x584f4e50,
+  kSM_OnIce = 0x584f4e49,
+  kSM_OnOrganic = 0x584f4e4f,
+  kSM_OnDirt = 0x584f4e44,
+  kSM_OnPlatform = 0x584f4e50,
 
   kSM_None = 0xffffffff,
 };

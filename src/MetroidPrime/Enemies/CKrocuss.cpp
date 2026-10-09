@@ -141,7 +141,7 @@ void CKrocuss::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
     break;
   case kSM_Damage:
   case kSM_ResistedDamage:
-  case kSM_XXDG:
+  case kSM_ReflectedDamage:
     if (mWingState == kWS_Opening) {
       mWingState = kWS_Closing;
       mWingStateTime = mTimeToCloseShell * (1.f - mWingStateTime / mTimeToOpenShell);

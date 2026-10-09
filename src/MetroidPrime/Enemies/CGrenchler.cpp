@@ -745,7 +745,7 @@ void CGrenchler::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
       ResetBodyVulnerabilities(mgr);
     }
     break;
-  case kSM_Falling:
+  case kSM_OffGround:
     if (mIsGrappleGuardian == true) {
       return;
     }
@@ -764,7 +764,7 @@ void CGrenchler::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
       mCollisionManager->SetPhysicsActive(mgr, false);
     }
     break;
-  case kSM_XXDG:
+  case kSM_ReflectedDamage:
     mHitByPlayerProjectile = true;
     break;
   case kSM_ResistedDamage: {
@@ -866,7 +866,7 @@ void CGrenchler::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
       }
     }
     break;
-  case kSM_XHIT:
+  case kSM_HitObject:
     if (mCurrentAction != 14 && mCurrentAction != 2 && mCurrentAction != 8) {
       TUniqueId senderId = msg.GetSenderId();
       if (CCollisionActor* collisionActor =
@@ -879,20 +879,20 @@ void CGrenchler::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
               CVector3f::Zero());
           mCurDamageRemTime = mDamageWaitTime;
           if (mIsGrappleGuardian == true && GetAlive() == true && mTailDestroyed == 1) {
-            SendScriptMsgs(kSS_InternalState03, mgr, GetUniqueId(), kSM_None);
+            SendScriptMsgs(kSS_InternalState3, mgr, GetUniqueId(), kSM_None);
             CreateVisorEffect(mgr);
           }
         }
       }
     }
     break;
-  case kSM_InternalMessage00:
+  case kSM_InternalMessage0:
     if (GetAlive() == true && GetActive() == true) {
       mReturnToPatrol = true;
       mAlerted = false;
     }
     break;
-  case kSM_XCRT:
+  case kSM_Create:
     break;
   }
   CPatterned::AcceptScriptMsg(mgr, msg);
@@ -950,7 +950,7 @@ void CGrenchler::DestroyTail(CStateManager& mgr) {
                            AnimationData()->GetModelData()->GetLayoutInfo()));
   AnimationData()->SetSkinnedModel(*skinnedModel);
   SpawnTail(mgr);
-  SendScriptMsgs(kSS_DGNR, mgr, kInvalidUniqueId, kSM_None);
+  SendScriptMsgs(kSS_DeGenerate, mgr, kInvalidUniqueId, kSM_None);
   BodyController()->UnFreeze();
 }
 
@@ -2155,7 +2155,7 @@ void CGrenchler::GrappleSlide(CStateManager& mgr, EStateMsg msg, float dt) {
 void CGrenchler::GrappleSlideBonk(CStateManager& mgr, EStateMsg msg, float dt) {
   switch (msg) {
   case kStateMsg_Activate:
-    SendScriptMsgs(kSS_InternalState02, mgr);
+    SendScriptMsgs(kSS_InternalState2, mgr);
     break;
   case kStateMsg_Update:
     if (10.f + mSlideStartTime < mElapsedTime) {
@@ -2332,7 +2332,7 @@ void CGrenchler::LaunchToJumpTarget() {
 
 void CGrenchler::NotifyFalling(CStateManager& mgr, const TUniqueId& id) {
   if (GetBodyController()->GetCurrentStateId() != pas::kAS_Hurled) {
-    CPatterned::AcceptScriptMsg(mgr, CScriptMsg(id, GetUniqueId(), kSM_Falling));
+    CPatterned::AcceptScriptMsg(mgr, CScriptMsg(id, GetUniqueId(), kSM_OffGround));
     SetMomentumWR(CVector3f(0.f, 0.f, -GetGravityConstant() * GetMass()));
     LaunchToJumpTarget();
   }
@@ -4073,14 +4073,14 @@ void CGrenchler::UpdateCapturedPlayer(CStateManager& mgr) {
 void CGrenchler::BeginMorphballCapture(CStateManager& mgr) {
   if (mCaptureActive != 1) {
     mCaptureActive = true;
-    SendScriptMsgs(kSS_InternalState00, mgr, GetUniqueId(), kSM_None);
+    SendScriptMsgs(kSS_InternalState0, mgr, GetUniqueId(), kSM_None);
   }
 }
 
 void CGrenchler::EndMorphballCapture(CStateManager& mgr) {
   if (mCaptureActive) {
     mCaptureActive = false;
-    SendScriptMsgs(kSS_InternalState01, mgr, GetUniqueId(), kSM_None);
+    SendScriptMsgs(kSS_InternalState1, mgr, GetUniqueId(), kSM_None);
   }
 }
 

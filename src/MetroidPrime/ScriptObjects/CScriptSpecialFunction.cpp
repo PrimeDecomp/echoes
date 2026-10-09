@@ -1001,7 +1001,7 @@ void CScriptSpecialFunction::AcceptEnvironmentVariable(CStateManager& mgr, const
       break;
     case kSM_SetToZero:
       if (var->GetValue() == var->GetMaximum()) {
-        SendScriptMsgs(kSS_Opened, mgr);
+        SendScriptMsgs(kSS_Open, mgr);
       }
       if (var->GetValue() == var->GetMinimum()) {
         SendScriptMsgs(kSS_Closed, mgr);
@@ -1906,9 +1906,9 @@ void CScriptSpecialFunction::ThinkAreaOcclusion(float dt, CStateManager& mgr) {
   int state = mgr.World()->Area(GetCurrentAreaId())->GetOcclusionState();
   if (state != mIntParm1) {
     if (state == CGameArea::kOS_Occluded) {
-      SendScriptMsgs(kSS_InternalState00, mgr);
+      SendScriptMsgs(kSS_InternalState0, mgr);
     } else if (state == CGameArea::kOS_Visible) {
-      SendScriptMsgs(kSS_InternalState01, mgr);
+      SendScriptMsgs(kSS_InternalState1, mgr);
     }
     mIntParm1 = state;
   }

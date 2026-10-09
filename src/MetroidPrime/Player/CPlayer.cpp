@@ -1724,7 +1724,7 @@ void CPlayer::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
     mFallingTime = 0.f;
     SetMoveState(NPlayer::kMS_OnGround, mgr);
     break;
-  case kSM_Falling:
+  case kSM_OffGround:
     if (morphState != kMS_Morphed || mMorphBall->GetBallState() != CMorphBall::kBS_Spider) {
       if (morphState == kMS_Morphed) {
         if (mMovementState == NPlayer::kMS_OnGround) {
@@ -1735,33 +1735,33 @@ void CPlayer::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
       }
     }
     break;
-  case kSM_LandOnNotFloor:
+  case kSM_Falling:
     if (morphState == kMS_Morphed && mMorphBall->GetBallState() == CMorphBall::kBS_Spider &&
         mMovementState != NPlayer::kMS_ApplyJump) {
       SetMoveState(NPlayer::kMS_ApplyJump, mgr);
     }
     break;
-  case kSM_OnIceSurface:
+  case kSM_OnIce:
     if (updateSurface) {
       SetSurfaceRestraint(kSR_Ice);
     }
     break;
-  case kSM_OnMudSlowSurface:
+  case kSM_OnOrganic:
     if (updateSurface) {
       SetSurfaceRestraint(kSR_Organic);
     }
     break;
-  case kSM_OnNormalSurface:
+  case kSM_OnDirt:
     if (updateSurface) {
       SetSurfaceRestraint(kSR_Normal);
     }
     break;
-  case kSM_XINS:
+  case kSM_InShrubbery:
     if (updateSurface) {
       SetSurfaceRestraint(kSR_Shrubbery);
     }
     break;
-  case kSM_XENF: {
+  case kSM_EnteredFluid: {
     UpdateSubmerged(mgr);
     const float length = 0.5f * GetEyeHeight();
     const CMaterialFilter filter = CMaterialFilter::MakeInclude(CMaterialList(kMT_Solid));
@@ -1773,7 +1773,7 @@ void CPlayer::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
     }
     break;
   }
-  case kSM_XINF:
+  case kSM_InsideFluid:
     UpdateSubmerged(mgr);
     if (const CScriptWater* water =
             TCastToConstPtr< CScriptWater >(mgr.GetObjectById(InFluidId()))) {
@@ -1798,15 +1798,15 @@ void CPlayer::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
       }
     }
     break;
-  case kSM_XEXF:
+  case kSM_ExitedFluid:
     UpdateSubmerged(mgr);
     SetSurfaceRestraint(IsOnGround() ? kSR_Normal : kSR_Air);
     break;
-  case kSM_XAOV:
+  case kSM_AcidOnVisor:
     mOrbitPreventionTimer = GetTweakPlayer()->GetOrbitPreventionTime();
     SetOrbitRequest(kOR_ProjectileCollide, mgr);
     break;
-  case kSM_AddPlatformRider:
+  case kSM_OnPlatform:
     if (mRidingPlatform != kInvalidUniqueId && mRidingPlatform != sender) {
       if (CScriptPlatform* platform =
               TCastToPtr< CScriptPlatform >(mgr.ObjectById(mRidingPlatform))) {

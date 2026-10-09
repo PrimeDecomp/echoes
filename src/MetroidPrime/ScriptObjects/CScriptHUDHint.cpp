@@ -62,10 +62,10 @@ void CScriptHUDHint::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) 
   }
 
   switch (msg.GetMessage()) {
-  case kSM_InternalMessage00:
+  case kSM_InternalMessage0:
     mAnimationState = kAS_Forward;
     break;
-  case kSM_InternalMessage01:
+  case kSM_InternalMessage1:
     mAnimationState = kAS_Backward;
     break;
   case kSM_Increment:

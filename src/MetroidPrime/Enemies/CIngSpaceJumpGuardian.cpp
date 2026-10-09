@@ -229,11 +229,11 @@ void CIngSpaceJumpGuardian::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg
     mPathFindSearch.SetArea(
         mgr.GetWorld()->GetAreaAlways(GetCurrentAreaId()).GetPostConstructed()->mPathArea);
     break;
-  case kSM_Falling:
+  case kSM_OffGround:
     SetConstantForceWR(CVector3f(0.f, 0.f, -(GetMass() * GetGravityConstant())));
     break;
   case kSM_Launching:
-    CPatterned::AcceptScriptMsg(mgr, CScriptMsg(GetUniqueId(), GetUniqueId(), kSM_Falling));
+    CPatterned::AcceptScriptMsg(mgr, CScriptMsg(GetUniqueId(), GetUniqueId(), kSM_OffGround));
     SetConstantForceWR(CVector3f(0.f, 0.f, -(GetMass() * GetGravityConstant())));
     ComputeJumpVelocity(mgr);
     break;
@@ -247,7 +247,7 @@ void CIngSpaceJumpGuardian::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg
   case kSM_ResistedDamage:
     mHitByPlayerProjectile = true;
     break;
-  case kSM_XHIT:
+  case kSM_HitObject:
     TouchDamage(mgr, senderId);
     break;
   }

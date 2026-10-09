@@ -210,7 +210,7 @@ void CWispTentacle::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
       ActorLights()->SetLightingPositionOffset(lightingOffset);
     }
     break;
-  case kSM_XHIT:
+  case kSM_HitObject:
     if (CCollisionActor* colAct = TCastToPtr< CCollisionActor >(mgr.ObjectById(senderId))) {
       const TUniqueId touched = colAct->GetLastTouchedObject();
       if (CPlayer* player = TCastToPtr< CPlayer >(mgr.ObjectById(touched))) {

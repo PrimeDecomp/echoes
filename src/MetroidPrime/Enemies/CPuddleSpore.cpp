@@ -143,7 +143,7 @@ void CPuddleSpore::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
     }
     break;
   case kSM_ResistedDamage:
-  case kSM_XXDG:
+  case kSM_ReflectedDamage:
     handled = true;
     break;
   }
@@ -550,7 +550,7 @@ void CPuddleSpore::TurnAround(CStateManager& mgr, EStateMsg msg, float dt) {
 void CPuddleSpore::GetUp(CStateManager& mgr, EStateMsg msg, float dt) {
   switch (msg) {
   case kStateMsg_Activate:
-    SendScriptMsgs(kSS_Opened, mgr);
+    SendScriptMsgs(kSS_Open, mgr);
     mOpen = true;
     KnockOffPlayers(mData.mKnockOffForce, mgr);
     mSecondaryStateTimer = 0.f;

@@ -75,7 +75,7 @@ void CScriptAdvancedCounter::SendCounterStates(CStateManager& mgr) {
 
   for (int i = 0; i < mConditions.size(); ++i) {
     if (mCurrent == mConditions[i]) {
-      SendScriptMsgs(static_cast< EScriptObjectState >(kSS_InternalState00 + i), mgr);
+      SendScriptMsgs(static_cast< EScriptObjectState >(kSS_InternalState0 + i), mgr);
     }
   }
 }

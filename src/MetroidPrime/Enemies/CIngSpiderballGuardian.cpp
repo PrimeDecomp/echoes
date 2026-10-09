@@ -156,19 +156,19 @@ void CIngSpiderballGuardian::AcceptScriptMsg(CStateManager& mgr, const CScriptMs
       }
     }
     break;
-  case kSM_InternalMessage00:
+  case kSM_InternalMessage0:
     mCanBeDamaged = false;
     break;
-  case kSM_InternalMessage01:
+  case kSM_InternalMessage1:
     mCanBeDamaged = true;
     break;
-  case kSM_InternalMessage02:
+  case kSM_InternalMessage2:
     mProximityDamageEnabled = false;
     break;
-  case kSM_InternalMessage03:
+  case kSM_InternalMessage3:
     mProximityDamageEnabled = true;
     break;
-  case kSM_InternalMessage04:
+  case kSM_InternalMessage4:
     if (++mHitCount >= skHitsToCharge[mPhase]) {
       SetGuardianState(mgr, kGS_Charging);
     }
@@ -176,7 +176,7 @@ void CIngSpiderballGuardian::AcceptScriptMsg(CStateManager& mgr, const CScriptMs
       mRecoveryDelay = 1.5f;
     }
     break;
-  case kSM_InternalMessage05:
+  case kSM_InternalMessage5:
     mReturnToPatrolRequested = true;
     break;
   }
@@ -604,13 +604,13 @@ void CIngSpiderballGuardian::UpdateRollSound() {
 void CIngSpiderballGuardian::SetGuardianState(CStateManager& mgr, EGuardianState state) {
   const SLdrIngSpiderballGuardianStruct& props = GetPhaseProperties();
   if (mState == kGS_Stunned && state != kGS_Charging && state != mState) {
-    SendScriptMsgs(kSS_InternalState01, mgr, GetUniqueId(), kSM_None);
+    SendScriptMsgs(kSS_InternalState1, mgr, GetUniqueId(), kSM_None);
   }
 
   switch (state) {
   case kGS_Patrol:
     if (mState != kGS_Patrol) {
-      SendScriptMsgs(kSS_InternalState02, mgr, GetUniqueId(), kSM_None);
+      SendScriptMsgs(kSS_InternalState2, mgr, GetUniqueId(), kSM_None);
     }
     mTargetSpeed = props.minPatrolSpeed;
     mStunHealth = props.stunnedHitPoints;
@@ -626,7 +626,7 @@ void CIngSpiderballGuardian::SetGuardianState(CStateManager& mgr, EGuardianState
     break;
   case kGS_Stunned:
     if (mState != kGS_Stunned) {
-      SendScriptMsgs(kSS_InternalState00, mgr, GetUniqueId(), kSM_None);
+      SendScriptMsgs(kSS_InternalState0, mgr, GetUniqueId(), kSM_None);
       mPlayStunSound = true;
     }
     mStunTimer = props.stunnedTime;
@@ -639,7 +639,7 @@ void CIngSpiderballGuardian::SetGuardianState(CStateManager& mgr, EGuardianState
     if (mState != kGS_Charging) {
       PlayCustomSound(GetTranslation(), GetTransform().GetUp(), mData.audioPlaybackParms_0x44c1f241,
                       false);
-      SendScriptMsgs(kSS_InternalState03, mgr, GetUniqueId(), kSM_None);
+      SendScriptMsgs(kSS_InternalState3, mgr, GetUniqueId(), kSM_None);
     }
     break;
   }

@@ -339,7 +339,7 @@ void CSwarmBasics::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
   case kSM_Increment:
     x4f0_30_ = true;
     break;
-  case kSM_InternalMessage00:
+  case kSM_InternalMessage0:
     ++x52c_;
     break;
   }
@@ -814,7 +814,7 @@ void CSwarmBasics::Think(float dt, CStateManager& mgr) {
                                      kLST_Locomotion);
   FlushDeathMessages(mgr);
   if (x4f1_24_) {
-    SendScriptMsgs(kSS_InternalState00, mgr);
+    SendScriptMsgs(kSS_InternalState0, mgr);
     x4f1_24_ = false;
   }
   UpdateSeekerTargets(mgr);
@@ -1348,8 +1348,8 @@ void CSwarmBasics::Touch(CActor& actor, CStateManager& mgr) {
                   if (!energy->Explode(pos, -1.f * energy->GetTransform().GetForward(),
                                        kWCR_EnemyNormal, mgr, mDamageVulnerability,
                                        GetUniqueId())) {
-                    mgr.SendScriptMsg(this, energy->GetUniqueId(), kSM_XHIT);
-                    mgr.SendScriptMsg(this, energy->GetUniqueId(), kSM_XXDG);
+                    mgr.SendScriptMsg(this, energy->GetUniqueId(), kSM_HitObject);
+                    mgr.SendScriptMsg(this, energy->GetUniqueId(), kSM_ReflectedDamage);
                     SendScriptMsgs(kSS_ReflectedDamage, mgr);
                   } else {
                     mgr.ApplyDamageToWorld(energy->GetOwnerId(), *energy, pos,

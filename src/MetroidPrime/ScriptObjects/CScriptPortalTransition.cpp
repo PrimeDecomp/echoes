@@ -45,15 +45,15 @@ CToken CScriptEffect::GetDescription() const { return *mDescription; }
 rstl::single_ptr< CPortalTransition >
 CScriptPortalTransition::CreateTransition(CStateManager& mgr) const {
   const CActor* actor = TCastToConstPtr< CActor >(
-      mgr.GetObjectById(FindConnectedObject(mgr, kSS_InternalState00, kSM_None)));
+      mgr.GetObjectById(FindConnectedObject(mgr, kSS_InternalState0, kSM_None)));
   const CScriptEffect* firstEffect = TCastToConstPtr< CScriptEffect >(
-      mgr.GetObjectById(FindConnectedObject(mgr, kSS_InternalState03, kSM_None)));
+      mgr.GetObjectById(FindConnectedObject(mgr, kSS_InternalState3, kSM_None)));
   const CScriptEffect* secondEffect = TCastToConstPtr< CScriptEffect >(
-      mgr.GetObjectById(FindConnectedObject(mgr, kSS_InternalState04, kSM_None)));
+      mgr.GetObjectById(FindConnectedObject(mgr, kSS_InternalState4, kSM_None)));
   const CScriptCamera* firstCamera = TCastToConstPtr< CScriptCamera >(
-      mgr.GetObjectById(FindConnectedObject(mgr, kSS_InternalState05, kSM_None)));
+      mgr.GetObjectById(FindConnectedObject(mgr, kSS_InternalState5, kSM_None)));
   const CScriptCamera* secondCamera = TCastToConstPtr< CScriptCamera >(
-      mgr.GetObjectById(FindConnectedObject(mgr, kSS_InternalState06, kSM_None)));
+      mgr.GetObjectById(FindConnectedObject(mgr, kSS_InternalState6, kSM_None)));
 
   rstl::optional_object< CToken > firstDescription;
   if (firstEffect != nullptr) {

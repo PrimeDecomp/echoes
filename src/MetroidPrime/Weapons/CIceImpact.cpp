@@ -284,7 +284,7 @@ void CIceImpact::Touch(CActor& actor, CStateManager& mgr) {
     }
 
     if (CPlayer* player = TCastToPtr< CPlayer >(&actor)) {
-      mgr.SendScriptMsg(player->GetUniqueId(), kInvalidUniqueId, kSM_XINS);
+      mgr.SendScriptMsg(player->GetUniqueId(), kInvalidUniqueId, kSM_InShrubbery);
     }
   }
 }

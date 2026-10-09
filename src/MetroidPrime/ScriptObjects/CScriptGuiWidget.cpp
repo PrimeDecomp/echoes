@@ -75,7 +75,7 @@ void CScriptGuiWidget::Think(float dt, CStateManager& mgr) {
   const bool present = gpController->GetGamepadData(mControllerNumber).DeviceIsPresent();
   if (present != mControllerPresent) {
     mControllerPresent = !mControllerPresent;
-    SendScriptMsgs(mControllerPresent ? kSS_UnFrozen : kSS_Frozen, mgr);
+    SendScriptMsgs(mControllerPresent ? kSS_UnFreeze : kSS_Freeze, mgr);
   }
 
   CSaveGameScreen* saveScreen = mgr.mSaveGameScreen.get();

@@ -75,7 +75,7 @@ void CAtomicAlpha::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
   case kSM_Create:
     BodyController()->Activate(mgr, pas::kAS_Invalid);
     break;
-  case kSM_XENF:
+  case kSM_EnteredFluid:
     if (GetAlive()) {
       mPendingDeath = true;
     }

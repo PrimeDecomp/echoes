@@ -347,18 +347,18 @@ void CGameProjectile::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg)
   case kSM_Delete:
     DeleteProjectileLight(mgr);
     break;
-  case kSM_XENF:
+  case kSM_EnteredFluid:
     if (mInWater != true) {
       mInWater = true;
       mWaterUpdate = true;
     }
     break;
-  case kSM_XINF:
+  case kSM_InsideFluid:
     if (!mWaterUpdate) {
       mWaterUpdate = true;
     }
     break;
-  case kSM_XEXF:
+  case kSM_ExitedFluid:
     if (mWaterUpdate) {
       mWaterUpdate = false;
       mInWater = false;
@@ -645,7 +645,7 @@ void CGameProjectile::ResolveCollisionWithActor(const CRayCastResult& result, CA
             CVector3f(1.f, 1.f, 1.f), CVector3f::Zero(), false));
         CSfxManager::SfxStart(particle->mSound, 0x7f, player->GetSoundPan(CPlayer::kMSP_4));
         if (particle->mSendCollideMessage) {
-          mgr.SendScriptMsg(player, GetUniqueId(), kSM_XAOV);
+          mgr.SendScriptMsg(player, GetUniqueId(), kSM_AcidOnVisor);
         }
       }
     }

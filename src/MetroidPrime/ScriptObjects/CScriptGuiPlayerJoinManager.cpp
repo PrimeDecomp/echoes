@@ -8,13 +8,13 @@
 #include "MetroidPrime/ScriptLoader/SLdrGuiPlayerJoinManager.hpp"
 
 // Guessed names. Per-controller states sent on join-state transitions.
-static const EScriptObjectState skJoinedStates[4] = {kSS_InternalState00, kSS_InternalState01,
-                                                     kSS_InternalState02, kSS_InternalState03};
+static const EScriptObjectState skJoinedStates[4] = {kSS_InternalState0, kSS_InternalState1,
+                                                     kSS_InternalState2, kSS_InternalState3};
 static const EScriptObjectState skJoinedExtraStates[4] = {kSS_BombDamage, kSS_PowerBombDamage,
                                                           kSS_MissileDamage, kSS_BoostBallDamage};
 static const EScriptObjectState skDisconnectedStates[4] = {
-    kSS_InternalState04, kSS_InternalState05, kSS_InternalState06, kSS_InternalState07};
-static const EScriptObjectState skReadyStates[4] = {kSS_InternalState08, kSS_InternalState09,
+    kSS_InternalState4, kSS_InternalState5, kSS_InternalState6, kSS_InternalState7};
+static const EScriptObjectState skReadyStates[4] = {kSS_InternalState8, kSS_InternalState9,
                                                     kSS_InternalState10, kSS_InternalState11};
 static const EScriptObjectState skLeftStates[4] = {kSS_InternalState12, kSS_InternalState13,
                                                    kSS_InternalState14, kSS_InternalState15};
@@ -52,16 +52,16 @@ void CScriptGuiPlayerJoinManager::AcceptScriptMsg(CStateManager& mgr, const CScr
 
   if (GetActive()) {
     switch (msg.GetMessage()) {
-    case kSM_InternalMessage00:
-    case kSM_InternalMessage01:
-    case kSM_InternalMessage02:
-    case kSM_InternalMessage03: {
+    case kSM_InternalMessage0:
+    case kSM_InternalMessage1:
+    case kSM_InternalMessage2:
+    case kSM_InternalMessage3: {
       int idx;
-      if (msg.GetMessage() == kSM_InternalMessage00) {
+      if (msg.GetMessage() == kSM_InternalMessage0) {
         idx = 0;
-      } else if (msg.GetMessage() == kSM_InternalMessage01) {
+      } else if (msg.GetMessage() == kSM_InternalMessage1) {
         idx = 1;
-      } else if (msg.GetMessage() == kSM_InternalMessage02) {
+      } else if (msg.GetMessage() == kSM_InternalMessage2) {
         idx = 2;
       } else {
         idx = 3;
@@ -69,7 +69,7 @@ void CScriptGuiPlayerJoinManager::AcceptScriptMsg(CStateManager& mgr, const CScr
       mJoinStates[idx] = kJS_ForcedJoin;
       break;
     }
-    case kSM_InternalMessage04:
+    case kSM_InternalMessage4:
       SendControllerStates(mgr);
       mPlayerCountState = 0;
       UpdatePlayerCount(mgr);

@@ -809,7 +809,7 @@ void CSplinter::Rise(CStateManager& mgr, EStateMsg msg, float dt) {
         }
         mSac.mGrabbedId = kInvalidUniqueId;
       }
-      SendScriptMsgs(kSS_DGNR, mgr, kInvalidUniqueId, kSM_None);
+      SendScriptMsgs(kSS_DeGenerate, mgr, kInvalidUniqueId, kSM_None);
       mgr.DeleteObjectRequest(GetUniqueId());
     }
   }
@@ -1736,7 +1736,7 @@ void CSplinter::UpdateHealthMessage(CStateManager& mgr, float dt) {
     if (GetHealthInfo()->GetHP() < mUnknownb1c) {
       mUnknownb24 += dt;
       if (mUnknownb24 > 1.f) {
-        SendScriptMsgs(kSS_AIS1, mgr, kSM_None);
+        SendScriptMsgs(kSS_AILogicState1, mgr, kSM_None);
         mUnknownb20 = 1;
       }
     }
@@ -2350,7 +2350,7 @@ void CSplinter::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
     }
     return;
   case kSM_Launching:
-    CPatterned::AcceptScriptMsg(mgr, CScriptMsg(msg.GetSenderId(), GetUniqueId(), kSM_Falling));
+    CPatterned::AcceptScriptMsg(mgr, CScriptMsg(msg.GetSenderId(), GetUniqueId(), kSM_OffGround));
     mJump.mUnknown8 = true;
     {
       float mass = GetMass();
@@ -2365,7 +2365,7 @@ void CSplinter::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
       break;
     }
     break;
-  case kSM_Falling:
+  case kSM_OffGround:
     if (mJump.mPhase == 0 && !mJump.mVelocitySet) {
       CPlayer* player = mgr.GetPlayer(0);
       if (player->GetMorphballTransitionState() == CPlayer::kMS_Morphed) {

@@ -602,7 +602,7 @@ void CScriptPlatform::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg)
         break;
       }
     }
-    mLookAtTarget = FindConnectedObject(mgr, kSS_Connect, kSM_InternalMessage00);
+    mLookAtTarget = FindConnectedObject(mgr, kSS_Connect, kSM_InternalMessage0);
     break;
   }
   case EScriptObjectMessage('XONP'):

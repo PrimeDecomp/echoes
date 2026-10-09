@@ -363,7 +363,7 @@ void CScriptSafeZone::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg)
       SetLowPassFilter(false);
     }
     break;
-  case kSM_InternalMessage03:
+  case kSM_InternalMessage3:
     if (!GetActive()) {
       mActivation = 1.f;
       UpdateObstruction(mgr, true);
@@ -373,7 +373,7 @@ void CScriptSafeZone::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg)
     CScriptTrigger::AcceptScriptMsg(mgr, CScriptMsg(msg.GetSenderId(), msg.GetId(), kSM_Activate,
                                                     msg.GetOriginator(), msg.GetState()));
     return;
-  case kSM_InternalMessage02:
+  case kSM_InternalMessage2:
     if (GetActive()) {
       mActivation = 0.f;
       UpdateObstruction(mgr, false);
@@ -402,7 +402,7 @@ void CScriptSafeZone::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg)
       }
     }
     break;
-  case kSM_InternalMessage00:
+  case kSM_InternalMessage0:
     if (mZoneType != kZT_Echo) {
       SetZoneType(kZT_Echo);
       mShellPulse = 2.f;
@@ -426,7 +426,7 @@ void CScriptSafeZone::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg)
       }
     }
     break;
-  case kSM_InternalMessage01:
+  case kSM_InternalMessage1:
     if (GetActive()) {
       PlaySound(mgr, mFlashSound, 0);
       mFlashTimer = 1.f;
