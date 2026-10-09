@@ -271,19 +271,23 @@ void CBallCamera::Reset(const CTransform4f& xf, CStateManager& mgr) {
 }
 
 CVector3f CBallCamera::ApplyColliders() {
+  const CVector3f smallCentroid = mSmallColliders.GetCentroid();
+  const CVector3f mediumCentroid = mMediumColliders.GetCentroid();
+  const CVector3f largeCentroid = mLargeColliders.GetCentroid();
+
   float centroidX = 0.f;
   float centroidZ = 0.f;
-  if (mSmallColliders.GetCentroid().GetY() == 0.f) {
-    centroidX = mSmallColliders.GetCentroid().GetX();
-    centroidZ = mSmallColliders.GetCentroid().GetZ();
+  if (smallCentroid.GetY() == 0.f) {
+    centroidX = smallCentroid.GetX();
+    centroidZ = smallCentroid.GetZ();
   }
-  if (mMediumColliders.GetCentroid().GetY() == 0.f) {
-    centroidX += mMediumColliders.GetCentroid().GetX();
-    centroidZ += mMediumColliders.GetCentroid().GetZ();
+  if (mediumCentroid.GetY() == 0.f) {
+    centroidX += mediumCentroid.GetX();
+    centroidZ += mediumCentroid.GetZ();
   }
-  if (mLargeColliders.GetCentroid().GetY() == 0.f) {
-    centroidX += mLargeColliders.GetCentroid().GetX();
-    centroidZ += mLargeColliders.GetCentroid().GetZ();
+  if (largeCentroid.GetY() == 0.f) {
+    centroidX += largeCentroid.GetX();
+    centroidZ += largeCentroid.GetZ();
   }
 
   if (mClearLOS) {
@@ -319,7 +323,9 @@ CVector3f CBallCamera::ApplyColliders() {
       centroidZ = 0.f;
     }
   }
-  return CVector3f(CMath::Limit(centroidX, 3.5f), 0.f, CMath::Limit(centroidZ, 4.f));
+  const float limitedX = CMath::Limit(centroidX, 3.5f);
+  const float limitedZ = CMath::Limit(centroidZ, 4.f);
+  return CVector3f(limitedX, 0.f, limitedZ);
 }
 
 CVector3f CBallCamera::AvoidGeometryFull(const CTransform4f& xf,
