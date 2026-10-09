@@ -1791,16 +1791,18 @@ void CBallCamera::UpdateLookAtPosition(float dt, CStateManager& mgr, bool telepo
 }
 
 CVector3f CBallCamera::GetScanObjectIndicatorPosition(const CStateManager& mgr) const {
-  const CPlayer& player = GetPlayer(mgr);
-  if (player.GetCameraState() == CPlayer::kCS_MorphBallTransition) {
-    const CVector3f firstPersonPos =
-        GetCameraManager(mgr).GetFirstPersonCamera()->GetScanObjectIndicatorPosition(mgr);
-    float factor = 1.f - player.GetMorphBallTransitionFactor();
-    factor = CMath::Clamp(0.f, factor, 1.f);
+  if (Player(const_cast< CStateManager& >(mgr)).GetCameraState() ==
+      CPlayer::kCS_MorphBallTransition) {
+    const CVector3f lookToFirstPerson = CameraManager(const_cast< CStateManager& >(mgr))
+                                            .GetFirstPersonCamera()
+                                            ->GetScanObjectIndicatorPosition(mgr) -
+                                        mLookPos;
+    float factor = CMath::Clamp(
+        0.f, 1.f - Player(const_cast< CStateManager& >(mgr)).GetMorphBallTransitionFactor(), 1.f);
     if (mState == kBCS_FromBall) {
       factor = 1.f - factor;
     }
-    return mLookPos + factor * (firstPersonPos - mLookPos);
+    return mLookPos + factor * lookToFirstPerson;
   }
   return mLookPos;
 }
