@@ -549,9 +549,11 @@ bool CPauseScreen::CheckLoadComplete(const CStateManager& mgr) {
           bounds.Include((*it)->GetBounds());
         }
         mModelCenterOffset = -bounds.GetCenterPoint();
-        const CVector3f extent = bounds.GetMaxPoint() - bounds.GetMinPoint();
+        const float maxXZ =
+            rstl::max_val(bounds.GetMaxPoint().GetZ() - bounds.GetMinPoint().GetZ(),
+                          bounds.GetMaxPoint().GetX() - bounds.GetMinPoint().GetX());
         const float maxExtent =
-            rstl::max_val(rstl::max_val(extent.GetX(), extent.GetZ()), extent.GetY());
+            rstl::max_val(maxXZ, bounds.GetMaxPoint().GetY() - bounds.GetMinPoint().GetY());
         const float scale =
             (gpTweakGui->GetLogBookScanModelScale() * mScanInfo->GetObject()->GetModelScale()) /
             maxExtent;
