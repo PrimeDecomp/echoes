@@ -440,8 +440,7 @@ bool CPauseScreen::CheckLoadComplete(const CStateManager& mgr) {
       for (rstl::vector< SObjectTag >::const_iterator it = scan.GetDependencies().begin();
            it != scan.GetDependencies().end(); ++it) {
         if (it->type != FourCC('AGSC')) {
-          const SObjectTag tag = *it;
-          mDependencies.push_back_unsafe(gpSimplePool->GetObj(tag));
+          mDependencies.push_back_unsafe(gpSimplePool->GetObj(SObjectTag(it->type, it->id)));
           mDependencies.back().Lock();
         }
       }
