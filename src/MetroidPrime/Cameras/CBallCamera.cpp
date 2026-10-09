@@ -1848,12 +1848,10 @@ void CBallCamera::ActivateFailSafe(float dt, CStateManager& mgr) {
 }
 
 void CBallCamera::CheckFailSafe(float dt, CStateManager& mgr) {
-  if (CameraManager(mgr).GetCurrentCameraId(false) != GetUniqueId() &&
-      !CameraManager(mgr).IsInterpolationCameraActive()) {
-    return;
-  }
-  if (CameraManager(mgr).IsInterpolationCameraActive() &&
-      CameraManager(mgr).GetInterpolationCamera()->GetTargetId() != GetUniqueId()) {
+  if ((CameraManager(mgr).GetCurrentCameraId(false) != GetUniqueId() &&
+       !CameraManager(mgr).IsInterpolationCameraActive()) ||
+      (CameraManager(mgr).IsInterpolationCameraActive() &&
+       CameraManager(mgr).GetInterpolationCamera()->GetTargetId() != GetUniqueId())) {
     return;
   }
   if ((mgr.GetUpdateFrameIdx() & 3) != GetControllerNumber()) {
@@ -1904,7 +1902,8 @@ void CBallCamera::CheckFailSafe(float dt, CStateManager& mgr) {
   } else {
     mObscuredTime = 0.f;
   }
-  mUnobscureMag = CMath::Clamp(0.f, 0.5f * mObscuredTime, 1.f);
+  const float unobscureMag = mObscuredTime / 2.f;
+  mUnobscureMag = CMath::Clamp(0.f, unobscureMag, 1.f);
   if (mObscureAvoidance &&
       (mObscuredTime > 2.f || (mTooCloseActorId != kInvalidUniqueId && mObscuredTime > 1.f)) &&
       !mClearLOS && mSplineState == kBSS_Invalid) {
