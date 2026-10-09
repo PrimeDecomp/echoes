@@ -155,8 +155,8 @@ void CSpindleCamera::Think(float dt, CStateManager& mgr) {
   }
 
   const CTransform4f scriptXf = script->GetTransform();
-  const CLine hintLine(scriptXf.GetTranslation(), CUnitVector3f(scriptXf.GetUp()));
-  const CVector3f hintPos = hintLine.GetRefPoint();
+  const CVector3f hintPos = scriptXf.GetTranslation();
+  const CLine hintLine(hintPos, CUnitVector3f(scriptXf.GetUp()));
 
   CVector3f hintToCamDir = GetTranslation() - hintLine.GetClosestPoint(GetTranslation());
   const CVector3f ballPos = Player(mgr).GetBallPosition();
@@ -165,13 +165,13 @@ void CSpindleCamera::Think(float dt, CStateManager& mgr) {
   float hintToBallDist = 0.f;
   CVector3f hintDir = script->GetTransform().GetForward();
   const CVector3f up = script->GetTransform().GetUp();
-  if (hintDir.CanBeNormalized()) {
+  if (hintDir.IsMagnitudeSafe()) {
     hintDir.Normalize();
   } else {
     hintDir = CVector3f(0.f, 1.f, 0.f);
   }
 
-  if (hintToBallDir.CanBeNormalized()) {
+  if (hintToBallDir.IsMagnitudeSafe()) {
     hintToBallDist = hintToBallDir.Magnitude();
     hintToBallDir.Normalize();
   } else {
@@ -206,7 +206,7 @@ void CSpindleCamera::Think(float dt, CStateManager& mgr) {
   CVector3f hintDelta =
       script->GetTranslation() - origLine.GetClosestPoint(script->GetTranslation());
   float hintDeltaDist = 0.f;
-  if (hintDelta.CanBeNormalized()) {
+  if (hintDelta.IsMagnitudeSafe()) {
     hintDeltaDist = hintDelta.Magnitude();
   }
   mInVars.push_back(hintDeltaDist);
@@ -241,7 +241,7 @@ void CSpindleCamera::Think(float dt, CStateManager& mgr) {
 
   CVector3f newCamPos = GetTranslation();
   float hintToCamDist = hintToCamDir.Magnitude();
-  if (hintToCamDir.CanBeNormalized()) {
+  if (hintToCamDir.IsMagnitudeSafe()) {
     hintToCamDir.Normalize();
   } else {
     hintToCamDir = hintDir;
@@ -306,7 +306,7 @@ void CSpindleCamera::Think(float dt, CStateManager& mgr) {
   camToBall[kDZ] = 0.f;
 
   float camToBallDist = 0.f;
-  if (camToBall.CanBeNormalized()) {
+  if (camToBall.IsMagnitudeSafe()) {
     camToBallDist = camToBall.Magnitude();
   }
 
@@ -369,7 +369,7 @@ void CSpindleCamera::Think(float dt, CStateManager& mgr) {
   if ((params.GetFlags() & 0x20) != 0) {
     CVector3f flatHintDir = script->GetTransform().GetForward();
     flatHintDir[kDZ] = 0.f;
-    if (flatHintDir.CanBeNormalized()) {
+    if (flatHintDir.IsMagnitudeSafe()) {
       flatHintDir.Normalize();
       float clampedAzimuth = CMath::Limit(
           CMath::AbsF(acos(CMath::Limit(CVector3f::Dot(flatHintDir, newHintToCamDir), 1.f))),
@@ -377,8 +377,8 @@ void CSpindleCamera::Think(float dt, CStateManager& mgr) {
       if (CVector3f::Dot(CVector3f::Cross(flatHintDir, newHintToCamDir), up) < 0.f) {
         clampedAzimuth = -clampedAzimuth;
       }
-      azimuthQuat =
-          CQuaternion::AxisAngle(hintLine.GetNormal(), CRelAngle::FromRadians(clampedAzimuth));
+      azimuthQuat = CQuaternion::AxisAngle(hintLine.GetNormal(),
+                                           CRelAngle::FromRadians(clampedAzimuth));
       newHintToCamDir = azimuthQuat.Transform(flatHintDir);
     }
   }
@@ -398,16 +398,17 @@ void CSpindleCamera::Think(float dt, CStateManager& mgr) {
   mLookPosition = GetScanObjectIndicatorPosition(mgr);
 
   CVector3f lookDelta = mLookPosition - newCamPos;
-  if (lookDelta.CanBeNormalized()) {
+  if (lookDelta.IsMagnitudeSafe()) {
     SetTransform(CTransform4f::LookAt(newCamPos, newCamPos + lookDelta));
   }
 
   SetTargetFov(GetInterpolant(params.GetFov()));
-  if ((params.GetFlags() & 0x8000) != 0) {
+  if ((params.GetFlags() & 0x10000) != 0) {
     mFixedPositionInitialized = true;
   }
 
-  SetTransform(ValidateCameraTransform(GetTransform(), oldXf, dt));
+  const CTransform4f validXf = ValidateCameraTransform(GetTransform(), oldXf, dt);
+  SetTransform(validXf);
   CActor::Think(dt, mgr);
 }
 

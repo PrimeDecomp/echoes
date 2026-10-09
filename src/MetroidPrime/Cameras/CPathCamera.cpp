@@ -367,19 +367,18 @@ CVector3f CPathCamera::GetScanObjectIndicatorPosition(const CStateManager& mgr) 
       }
       const float interp = CMath::Clamp(
           0.f, camera->GetPerpendicularInterpControlSpline().EvaluateAt(planarDistance), 1.f);
-      CVector3f target;
       if ((camera->GetSpline().GetFlags() & CGameSpline::kF_UsePositionForLookAt) &&
           camera->GetSpline().GetPositionSpline().GetControlPointCount() != 0) {
         const float distance =
             camera->GetSpline().FindClosestLengthOnSpline(mPositionDistance, playerPosition);
-        target = camera->GetSpline().CGameSpline::GetPositionByLength(distance);
+        result = camera->GetSpline().CGameSpline::GetPositionByLength(distance);
       } else {
-        target = camera->GetSpline().GetLookAtByLength(mLookAtDistance);
+        result = camera->GetSpline().GetLookAtByLength(mLookAtDistance);
       }
       const CVector3f ballIndicator = CameraManager(const_cast< CStateManager& >(mgr))
                                           .GetBallCamera()
                                           ->GetScanObjectIndicatorPosition(mgr);
-      result = target + interp * (ballIndicator - target);
+      result = result + interp * (ballIndicator - result);
     } else {
       if (camera->GetSpline().GetLookAtKnotCount() == 0 &&
           (camera->GetSpline().GetFlags() & CGameSpline::kF_UsePositionForLookAt) &&
