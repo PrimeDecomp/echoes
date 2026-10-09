@@ -195,11 +195,11 @@ void CPauseScreen::InitializeFrameGlue() {
   }
 
   mLights.reserve(2);
-  mLights.push_back(CLight::BuildPoint(gpTweakGui->GetLogBookModelLight1Position(),
-                                       gpTweakGui->GetLogBookModelLight1Color()));
+  mLights.push_back_unsafe(CLight::BuildPoint(gpTweakGui->GetLogBookModelLight1Position(),
+                                              gpTweakGui->GetLogBookModelLight1Color()));
   mLights[0].SetAttenuation(1.f, 0.2f, 0.f);
-  mLights.push_back(CLight::BuildPoint(gpTweakGui->GetLogBookModelLight2Position(),
-                                       gpTweakGui->GetLogBookModelLight2Color()));
+  mLights.push_back_unsafe(CLight::BuildPoint(gpTweakGui->GetLogBookModelLight2Position(),
+                                              gpTweakGui->GetLogBookModelLight2Color()));
   mLights[1].SetAttenuation(1.f, 0.2f, 0.f);
   mActorLights->BuildFakeLightList(mLights, gpTweakGui->GetLogBookModelAmbientLightColor());
   mMessage = static_cast< CGuiTextPane* >(mFrame->FindWidget("textpane_message"));
@@ -210,7 +210,7 @@ void CPauseScreen::InitializeFrameGlue() {
   for (int i = 0; i < 100; ++i) {
     CGuiWidget* widget = mFrame->FindWidget(CBasics::Stringize("%s%d", skHexWidget, i));
     if (widget != nullptr) {
-      mHexWidgets.push_back(widget);
+      mHexWidgets.push_back_unsafe(widget);
     }
   }
   if (CGuiWidget* widget = mFrame->FindWidget("model_topframe")) {
