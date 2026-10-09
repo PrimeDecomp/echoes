@@ -87,8 +87,8 @@ void CSurfaceCamera::Think(float dt, CStateManager& mgr) {
             if (camera->GetFlags() & CScriptSurfaceCamera::kSF_OffsetIsDegrees) {
               angle = CRelAngle::FromDegrees(offsetX).AsRadians();
             }
-            const CQuaternion rotation =
-                CQuaternion::AxisAngle(cylinder.GetAxis().GetNormal(), CRelAngle::FromRadians(angle));
+            const CQuaternion rotation = CQuaternion::AxisAngle(cylinder.GetAxis().GetNormal(),
+                                                                CRelAngle::FromRadians(angle));
             position = surface->GetSurfacePoint(axisPoint + rotation.Transform(radial));
           }
         }
