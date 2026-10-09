@@ -345,7 +345,6 @@ enum EScriptObjectMessage {
   kSM_Damage = 0x58444d47,         // Guessed DKCR HD name; damage notification.
   kSM_ResistedDamage = 0x58524447, // Guessed DKCR HD name; native resisted-damage branch.
   kSM_HitObject = 0x58484954,
-  kSM_Create = 0x58435254, // Creates the collision actors.
   kSM_AcidOnVisor = 0x58414f56,
   kSM_AIUpdateDisabled = 0x58415544, // Guessed DKCR HD name; patterned update disabled.
   kSM_ReflectedDamage = 0x58584447,
