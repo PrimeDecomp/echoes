@@ -123,6 +123,7 @@ public:
     const CAreaOctTree::Node& GetLeaf(int i) const { return mNodeCache[i]; }
     int GetNumLeaves() const { return mNodeCache.size(); }
     bool HasCacheOverflowed() const { return mOverflow; }
+    TAreaId GetAreaId() const { return mAreaId; } // Guessed name
     const CAreaOctTree& GetOctTree() const { return mOctTree; }
     rstl::reserved_vector< CAreaOctTree::Node, 64 >::const_iterator begin() const {
       return mNodeCache.begin();

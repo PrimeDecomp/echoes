@@ -33,6 +33,8 @@ public:
   // Additional-flags overload is target-derived; this spelling is reconstructed.
   CCollisionSurface GetTriangle(ushort index, const CTransform4f* xf, u64 additionalFlags) const;
   const ushort* GetTriangleEdgeIndices(ushort index) const { return mSurfaceIndices + index * 3; }
+  // Guessed name: the neighbouring triangle across each edge, as read by the GeomBlobV2 REL.
+  const ushort* GetTriangleNeighbors(ushort index) const { return x28_ + index * 3; }
   u64 GetVertMaterial(uint index) const { return mMaterials[mVertexMaterials[index]]; }
   u64 GetEdgeMaterial(uint index) const { return mMaterials[mEdgeMaterials[index]]; }
   u64 GetTriangleMaterial(uint index) const { return mMaterials[mSurfaceMaterials[index]]; }

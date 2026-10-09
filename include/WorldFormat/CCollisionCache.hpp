@@ -45,6 +45,7 @@ public:
   const CCollisionPrimitiveData& GetGeometry() const { return *mGeometry; }
   bool AtEnd() const { return mOffset >= mEnd; }
   bool AtLeafStart() const { return mLeafExhausted; }
+  const CTransform4f* GetTransform() const { return mTransform; } // Guessed name
   bool MatchesGeometry(short id, const CCollisionPrimitiveData* geometry,
                        const CTransform4f& transform, u64 flags) const;
 

@@ -15,7 +15,7 @@ __dt__Q24rstl66basic_string<c,Q24rstl14char_traits<c>,Q24rstl17rmemory_allocator
 UpdateTouchBounds__10CIngPuddleFv = .text:0x00000A70; // type:function size:0xF4
 MoveAlongSurface__10CIngPuddleFRC9CVector3fff = .text:0x00000B64; // type:function size:0x200
 UpdateBlobEffect__10CIngPuddleFR13CStateManagerf = .text:0x00000D64; // type:function size:0x14C
-SpawnBlobEffect__10CIngPuddleFR13CStateManagerRC25TToken<15CGenDescription> = .text:0x00000EB0; // type:function size:0x120
+SpawnBlobEffect__10CIngPuddleFR13CStateManagerRC31TLockedToken<15CGenDescription> = .text:0x00000EB0; // type:function size:0x120
 InitializeStateMachine__10CIngPuddleFR13CStateManager = .text:0x00000FD0; // type:function size:0xC8
 GetStateMachine__10CIngPuddleCFv = .text:0x00001098; // type:function size:0x68
 __dt__22TToken<12CGenericFSM2>Fv = .text:0x00001100; // type:function size:0x54

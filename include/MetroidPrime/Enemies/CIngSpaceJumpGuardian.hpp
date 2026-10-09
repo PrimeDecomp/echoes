@@ -94,9 +94,10 @@ private:
   // Guessed names; how the current jump target is reached.
   enum EJumpMode { kJM_None = -1, kJM_Location, kJM_Waypoint };
 
-  void UpdateBlob(CStateManager& mgr, float dt);                                   // Guessed name
-  void SpawnBlobEffect(CStateManager& mgr, const TToken< CGenDescription >& desc); // Guessed name
-  rstl::vector< TUniqueId > FindJumpPoints(CStateManager& mgr);                    // Guessed name
+  void UpdateBlob(CStateManager& mgr, float dt); // Guessed name
+  void SpawnBlobEffect(CStateManager& mgr,
+                       const TLockedToken< CGenDescription >& desc); // Guessed name
+  rstl::vector< TUniqueId > FindJumpPoints(CStateManager& mgr);      // Guessed name
   rstl::vector< TUniqueId >
   FilterJumpPoints(CStateManager& mgr,
                    const rstl::vector< TUniqueId >& points);             // Guessed name
