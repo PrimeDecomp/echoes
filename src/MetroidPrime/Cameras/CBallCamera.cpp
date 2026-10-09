@@ -1589,12 +1589,12 @@ void CBallCamera::UpdateUsingFreeLook(float dt, CStateManager& mgr) {
 void CBallCamera::UpdateUsingTransitions(float dt, CStateManager& mgr) {
   mLookAtBall = false;
   CPlayer& player = Player(mgr);
+  const CVector3f ballPos = player.GetBallPosition();
+  const CVector3f eyePos = player.GetEyePosition();
+  const CTransform4f oldXf(GetTransform());
 
-  if (mState == kBCS_FromBall) {
-    if (UpdateTransitionFromBallCamera(mgr)) {
-      player.SkipMorphTransition();
-    }
-  } else if (mState == kBCS_ToBall) {
+  switch (mState) {
+  case kBCS_ToBall: {
     bool finished;
     if (player.GetSpawnedMorphballState() == CPlayer::kMS_Morphed) {
       finished = UpdateTransitionToBallCamera(mgr);
@@ -1605,6 +1605,15 @@ void CBallCamera::UpdateUsingTransitions(float dt, CStateManager& mgr) {
     if (finished) {
       player.SkipMorphTransition();
     }
+    break;
+  }
+  case kBCS_FromBall:
+    if (UpdateTransitionFromBallCamera(mgr)) {
+      player.SkipMorphTransition();
+    }
+    break;
+  default:
+    break;
   }
 }
 
