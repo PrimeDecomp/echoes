@@ -185,15 +185,15 @@ void CSpindleCamera::Think(float dt, CStateManager& mgr) {
 
   const float hintBallAngle =
       CMath::AbsF(acos(CMath::Limit(CVector3f::Dot(hintToBallDir, hintDir), 1.f)));
-  const float hintBallAngleDegrees = 57.29578f * hintBallAngle;
+  const float hintBallAngleDegrees = hintBallAngle * (180.f / M_PIF);
   mInVars.push_back(hintBallAngleDegrees);
 
   const float hintBallCross = CVector3f::Dot(CVector3f::Cross(hintToBallDir, hintDir), up);
   if (hintBallCross >= 0.f) {
     mInVars.push_back(hintBallAngleDegrees);
-    mInVars.push_back(57.29578f * (2.f * M_PIF - hintBallAngle));
+    mInVars.push_back((2.f * M_PIF - hintBallAngle) * (180.f / M_PIF));
   } else {
-    mInVars.push_back(57.29578f * (2.f * M_PIF - hintBallAngle));
+    mInVars.push_back((2.f * M_PIF - hintBallAngle) * (180.f / M_PIF));
     mInVars.push_back(hintBallAngleDegrees);
   }
 
@@ -310,7 +310,7 @@ void CSpindleCamera::Think(float dt, CStateManager& mgr) {
   }
 
   targetHintToCamDeltaAngle *=
-      (1.f - CMath::Clamp(0.f, (camToBallDist - 2.f) * 0.5f, 1.f)) * 10.f + 1.f;
+      (1.f - CMath::Clamp(0.f, (camToBallDist - 2.f) / 2.f, 1.f)) * 10.f + 1.f;
   targetHintToCamDeltaAngle = CMath::Limit(targetHintToCamDeltaAngle, hintToCamDeltaAngleRange);
 
   if (CMath::AbsF(CMath::Limit(CVector3f::Dot(hintToCamDir, targetHintToCam), 1.f)) < 0.9999999f) {
