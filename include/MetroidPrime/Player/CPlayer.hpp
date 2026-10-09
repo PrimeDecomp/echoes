@@ -285,6 +285,7 @@ public:
   uint GetEchoPulseCounter() const { return mEchoPulseCounter; } // Guessed name
   EPlayerCameraState GetCameraState() const { return mCameraState; }
   bool GetDoneSidewaysDashing() const { return mDoneSidewaysDashing; }
+  bool GetSidewaysDashing() const { return mSidewaysDashing; } // Guessed name
 
   void Update(float dt, CStateManager& mgr);
   void PostUpdate(float dt, CStateManager& mgr);

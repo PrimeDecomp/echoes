@@ -302,6 +302,8 @@ CHECK_SIZEOF(CBCJumpCmd, 0x34)
 class CBCUnknown18Cmd : public CBodyStateCmd {
 public:
   CBCUnknown18Cmd() : CBodyStateCmd(kBSC_Unknown18), mAnimationVariant(0) {}
+  explicit CBCUnknown18Cmd(int animationVariant)
+  : CBodyStateCmd(kBSC_Unknown18), mAnimationVariant(animationVariant) {}
 
   int GetAnimationVariant() const { return mAnimationVariant; } // Guessed name
 
@@ -563,6 +565,10 @@ public:
   void DeliverCmd(const CBCJumpCmd& cmd) {
     DeliverCmd(cmd.GetCommandId());
     mJump = cmd;
+  }
+  void DeliverCmd(const CBCUnknown18Cmd& cmd) {
+    DeliverCmd(cmd.GetCommandId());
+    x280_ = cmd;
   }
 
   void DeliverCmd(const CBCAdditiveFlinchCmd& cmd) {

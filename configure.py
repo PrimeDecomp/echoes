@@ -1949,6 +1949,13 @@ config.libs = [
         ],
         extra_cflags=["-pool off"],
     ),
+    Rel(
+        "Splinter",
+        [
+            Object(NonMatching, "MetroidPrime/Enemies/CSplinter.cpp"),
+        ],
+        extra_cflags=["-pool off"],
+    ),
 ]
 
 

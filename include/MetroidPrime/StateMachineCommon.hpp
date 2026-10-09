@@ -11,10 +11,15 @@ enum EStateMsg {
 class CTriggerData {
 public:
   explicit CTriggerData(float value) : mValue(value) {}
+  // Guessed constructor: some Splinter calls store the integer zero for the argument.
+  explicit CTriggerData(int value) : mInt(value) {}
   float GetFloat() const { return mValue; }
 
 private:
-  float mValue;
+  union {
+    float mValue;
+    int mInt;
+  };
 };
 
 #endif
