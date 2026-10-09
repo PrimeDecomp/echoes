@@ -55,71 +55,76 @@ CTransform4f CInterpolationCamera::CalculateOrientation(float dt, const CVector3
   done = false;
   CTransform4f xf = GetTransform();
   if (mInterpolateRotation) {
-    const CGameCamera* target = TCastToConstPtr< CGameCamera >(mgr.GetObjectById(mTargetId));
-    if (!target) {
-      return xf;
-    }
-
-    float remaining;
-    switch (mRotationMode) {
-    case kRM_Linear:
-    case kRM_LinearSlerp:
-      remaining = CMath::Clamp(0.f, 1.f - mTime / mDuration, 1.f);
-      break;
-    case kRM_Sine:
-      remaining = CMath::Clamp(0.f, 1.f - sinf((M_PIF * 0.5f * mTime) / mDuration), 1.f);
-      break;
-    case kRM_SinusoidalEase:
-      remaining = 1.f - CMath::EaseInOut(CMath::Limit(mTime / mDuration, 1.f),
-                                         CMath::kET_Sinusoidal, 0.25f, 0.75f, 0.f, 1.f, 2.f);
-      break;
-    case kRM_SinusoidalEaseFull:
-      remaining = 1.f - CMath::EaseInOut(CMath::Limit(mTime / mDuration, 1.f),
-                                         CMath::kET_Sinusoidal, 0.f, 1.f, 0.f, 1.f, 2.f);
-      break;
-    case kRM_QuadraticEase:
-      remaining = 1.f - CMath::EaseInOut(CMath::Limit(mTime / mDuration, 1.f), CMath::kET_Quadratic,
-                                         0.25f, 0.75f, 0.f, 1.f, 2.f);
-      break;
-    case kRM_QuadraticEaseFull:
-      remaining = 1.f - CMath::EaseInOut(CMath::Limit(mTime / mDuration, 1.f), CMath::kET_Quadratic,
-                                         0.f, 1.f, 0.f, 1.f, 2.f);
-      break;
-    default:
-      remaining = 1.f - CMath::EaseInOut(CMath::Limit(mTime / mDuration, 1.f),
-                                         CMath::kET_Sinusoidal, 0.4f, 0.6f, 0.f, 1.f, 2.f);
-      break;
-    }
-
-    CVector3f direction = target->GetTransform().GetForward();
-    if (direction.IsMagnitudeSafe()) {
-      direction.Normalize();
-    } else {
-      direction = GetTransform().GetForward();
-    }
-    if (direction.DropZ().IsMagnitudeSafe()) {
-      const float projection =
-          CMath::Limit(CVector3f::Dot(GetTransform().GetForward(), direction), 1.f);
-      xf = CTransform4f::LookAt(position, position + direction);
-      if (projection >= 0.999999f || mRotationFinished) {
-        mRotationFinished = true;
-      } else {
-        const CRelAngle angle = CRelAngle::FromRadians(mInitialAngle * remaining);
-        CVector3f rotated;
-        if (mRotationMode == kRM_LinearSlerp) {
-          rotated = CVector3f::Slerp(direction, mStartTransform.GetForward(), angle);
-        } else {
-          const CQuaternion rotation =
-              CQuaternion::LookAt(direction, mStartTransform.GetForward(), angle);
-          rotated = rotation.Transform(direction);
-        }
-        xf = CTransform4f::LookAt(position, position + rotated);
+    if (const CGameCamera* target = TCastToConstPtr< CGameCamera >(mgr.GetObjectById(mTargetId))) {
+      float remaining;
+      switch (mRotationMode) {
+      case kRM_Linear:
+        remaining = CMath::Clamp(0.f, 1.f - mTime / mDuration, 1.f);
+        break;
+      case kRM_LinearSlerp:
+        remaining = CMath::Clamp(0.f, 1.f - mTime / mDuration, 1.f);
+        break;
+      case kRM_Sine:
+        remaining = CMath::Clamp(0.f, 1.f - sinf((M_PIF * 0.5f * mTime) / mDuration), 1.f);
+        break;
+      case kRM_SinusoidalEase:
+        remaining = 1.f - CMath::EaseInOut(CMath::Limit(mTime / mDuration, 1.f),
+                                           CMath::kET_Sinusoidal, 0.25f, 0.75f, 0.f, 1.f, 2.f);
+        break;
+      case kRM_SinusoidalEaseFull:
+        remaining = 1.f - CMath::EaseInOut(CMath::Limit(mTime / mDuration, 1.f),
+                                           CMath::kET_Sinusoidal, 0.f, 1.f, 0.f, 1.f, 2.f);
+        break;
+      case kRM_QuadraticEase:
+        remaining = 1.f - CMath::EaseInOut(CMath::Limit(mTime / mDuration, 1.f),
+                                           CMath::kET_Quadratic, 0.25f, 0.75f, 0.f, 1.f, 2.f);
+        break;
+      case kRM_QuadraticEaseFull:
+        remaining = 1.f - CMath::EaseInOut(CMath::Limit(mTime / mDuration, 1.f),
+                                           CMath::kET_Quadratic, 0.f, 1.f, 0.f, 1.f, 2.f);
+        break;
+      default:
+        remaining = 1.f - CMath::EaseInOut(CMath::Limit(mTime / mDuration, 1.f),
+                                           CMath::kET_Sinusoidal, 0.4f, 0.6f, 0.f, 1.f, 2.f);
+        break;
       }
-    } else {
-      xf.SetTranslation(position);
-    }
-    if (mTime >= mDuration) {
-      done = true;
+
+      CVector3f direction = target->GetTransform().GetForward();
+      if (direction.IsMagnitudeSafe()) {
+        direction.Normalize();
+      } else {
+        direction = GetTransform().GetForward();
+      }
+      CVector3f flatDirection = direction;
+      flatDirection.SetZ(0.f);
+      if (flatDirection.IsMagnitudeSafe()) {
+        const float projection =
+            CMath::Limit(CVector3f::Dot(GetTransform().GetForward(), direction), 1.f);
+        const float angle = mInitialAngle * remaining;
+        CTransform4f lookAt = CTransform4f::LookAt(position, position + direction);
+        if (projection < 0.999999f && !mRotationFinished) {
+          CVector3f rotated;
+          if (mRotationMode == kRM_LinearSlerp) {
+            rotated = CVector3f::Slerp(direction, mStartTransform.GetForward(),
+                                       CRelAngle::FromRadians(angle));
+          } else {
+            const CQuaternion rotation = CQuaternion::LookAt(
+                direction, mStartTransform.GetForward(), CRelAngle::FromRadians(angle));
+            rotated = rotation.Transform(direction);
+          }
+          lookAt = CTransform4f::LookAt(position, position + rotated);
+        } else {
+          mRotationFinished = true;
+          xf = CTransform4f::LookAt(position, position + direction);
+        }
+        xf = lookAt;
+      } else {
+        xf = GetTransform();
+        xf.SetTranslation(position);
+      }
+      if (mTime >= mDuration) {
+        done = true;
+      }
     }
   } else {
     CVector3f direction = mLookPosition - position;
@@ -128,7 +133,9 @@ CTransform4f CInterpolationCamera::CalculateOrientation(float dt, const CVector3
     } else {
       direction = GetTransform().GetForward();
     }
-    if (direction.DropZ().IsMagnitudeSafe()) {
+    CVector3f flatDirection = direction;
+    flatDirection.SetZ(0.f);
+    if (flatDirection.IsMagnitudeSafe()) {
       const float projection =
           CMath::Limit(CVector3f::Dot(GetTransform().GetForward(), direction), 1.f);
       const float angle = acosf(projection);
@@ -138,20 +145,20 @@ CTransform4f CInterpolationCamera::CalculateOrientation(float dt, const CVector3
         const float progress = CMath::Clamp(0.f, angle / slowdownAngle, 1.f);
         speedScale = CMath::Limit(0.001f + sinf(M_PIF * 0.5f * progress), 1.f);
       }
-      const float timeScale = CMath::Limit(mTime / (0.2f * mDuration), 1.f);
-      if (projection >= 0.999999f || mRotationFinished) {
+      float step = dt * (mAngularSpeed * speedScale);
+      step *= CMath::Limit(mTime / (0.2f * mDuration), 1.f);
+      if (projection < 0.999999f && !mRotationFinished) {
+        const CQuaternion rotation = CQuaternion::LookAt(GetTransform().GetForward(), direction,
+                                                         CRelAngle::FromRadians(step));
+        const CVector3f rotated = rotation.Transform(GetTransform().GetForward());
+        xf = CTransform4f::LookAt(position, position + rotated);
+      } else {
         mRotationFinished = true;
         done = true;
         xf = CTransform4f::LookAt(position, position + direction);
-      } else {
-        const CRelAngle step =
-            CRelAngle::FromRadians(dt * (mAngularSpeed * speedScale) * timeScale);
-        const CQuaternion rotation =
-            CQuaternion::LookAt(GetTransform().GetForward(), direction, step);
-        xf = CTransform4f::LookAt(position,
-                                  position + rotation.Transform(GetTransform().GetForward()));
       }
     } else {
+      xf = GetTransform();
       xf.SetTranslation(position);
     }
   }
@@ -210,28 +217,28 @@ void CInterpolationCamera::SetInterpolation(const CTransform4f& xf, TUniqueId fr
 
   CGameCamera* source =
       const_cast< CGameCamera* >(TCastToConstPtr< CGameCamera >(mgr.GetObjectById(from)));
-  const CGameCamera* target = TCastToConstPtr< CGameCamera >(mgr.GetObjectById(to));
+  CGameCamera* target =
+      const_cast< CGameCamera* >(TCastToConstPtr< CGameCamera >(mgr.GetObjectById(to)));
   SetTransform(mStartTransform);
-  if (!target) {
+  if (target) {
+    mAngularSpeed = M_PIF;
+    mLookPosition = target->GetScanObjectIndicatorPosition(mgr);
+    mInitialDistance = CVector3f(target->GetTranslation() - xf.GetTranslation()).Magnitude();
+    if (source) {
+      const_cast< CCameraManager& >(GetCameraManager(mgr)).TransferCameraState(*source, *this, mgr);
+      SetTransform(xf);
+      SetFov(source->GetFov());
+      InterpolateFOV(source->GetFov(), duration, 0.f, to, mgr);
+      mInitialAngle = acosf(
+          CMath::Limit(CVector3f::Dot(xf.GetForward(), target->GetTransform().GetForward()), 1.f));
+    } else {
+      SetFovAndTarget(target->GetFov());
+    }
+  } else {
     if (source) {
       SetFov(source->GetFov());
     }
     InterpolateFOV(fov, duration, 0.f);
-    return;
-  }
-
-  mAngularSpeed = M_PIF;
-  mLookPosition = target->GetScanObjectIndicatorPosition(mgr);
-  mInitialDistance = (target->GetTranslation() - xf.GetTranslation()).Magnitude();
-  if (source) {
-    const_cast< CCameraManager& >(GetCameraManager(mgr)).TransferCameraState(*source, *this, mgr);
-    SetTransform(xf);
-    SetFov(source->GetFov());
-    InterpolateFOV(source->GetFov(), duration, 0.f, to, mgr);
-    mInitialAngle = acosf(
-        CMath::Limit(CVector3f::Dot(xf.GetForward(), target->GetTransform().GetForward()), 1.f));
-  } else {
-    SetFovAndTarget(target->GetFov());
   }
 }
 
@@ -303,7 +310,7 @@ void CInterpolationCamera::Think(float dt, CStateManager& mgr) {
     EndInterpolation(kER_Completed, mgr);
   } else if (mPositionMode == kPM_Direct ||
              target->GetUniqueId() == GetCameraManager(mgr).GetBallCamera()->GetUniqueId()) {
-    if ((target->GetTranslation() - xf.GetTranslation()).Magnitude() > 3.f) {
+    if (CVector3f(target->GetTranslation() - xf.GetTranslation()).Magnitude() > 3.f) {
       CVector3f direction = xf.GetTranslation() - oldXf.GetTranslation();
       if (direction.CanBeNormalized()) {
         direction = direction.AsNormalized();
