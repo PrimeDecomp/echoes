@@ -1173,7 +1173,8 @@ bool CBallCamera::fn_801a36f0(float distance, float dt, CVector3f& position, CSt
 
 void CBallCamera::UpdateUsingColliders(float dt, CStateManager& mgr) {
   if (Player(mgr).GetBombJumpCounter() == 1) {
-    const CScriptDoor* door = TCastToConstPtr< CScriptDoor >(mgr.GetObjectById(mTooCloseActorId));
+    const CScriptDoor* door =
+        TCastToConstPtr< CScriptDoor >(mgr.GetObjectById(TUniqueId(mTooCloseActorId)));
     if (door != nullptr && !door->IsOpen()) {
       return;
     }
@@ -1220,7 +1221,8 @@ void CBallCamera::UpdateUsingColliders(float dt, CStateManager& mgr) {
   }
 
   posAtBallLevel = GetTransform().GetTranslation() - posAtBallLevel;
-  CTransform4f ballToUnderCamLook = CTransform4f::Identity();
+  CTransform4f ballToUnderCamLook =
+      CTransform4f::LookAt(ballPos, ballPos + ballToCamFlat, CVector3f::Up());
   if (CVector3f(posAtBallLevel - ballPos).CanBeNormalized()) {
     ballToUnderCamLook = CTransform4f::LookAt(ballPos, posAtBallLevel, CVector3f::Up());
   }
@@ -1287,7 +1289,7 @@ void CBallCamera::UpdateUsingColliders(float dt, CStateManager& mgr) {
   desiredBallToCam = ballToUnderCamLook.Rotate(desiredBallToCam);
 
   const CScriptDoor* door = TCastToConstPtr< CScriptDoor >(mgr.GetObjectById(mTooCloseActorId));
-  if ((door == nullptr || !door->IsOpen()) &&
+  if ((door == nullptr || (door != nullptr && !door->IsOpen())) &&
       ((mChaseAllowed && mState == kBCS_Chase) || mBehaviour == kBCB_FreezeLookPosition ||
        mState == kBCS_Boost)) {
     CVector3f ballToCam(GetTranslation() - ballPos);
@@ -1346,7 +1348,7 @@ void CBallCamera::UpdateUsingColliders(float dt, CStateManager& mgr) {
   }
   }
 
-  const float desiredDistance = desiredBallToCam.Magnitude();
+  distance = desiredBallToCam.Magnitude();
   CVector3f desiredCamPos = ballPos + desiredBallToCam;
   float collDist = 0.f;
   bool noCollision = !DetectCollision(ballPos, ballPos + desiredBallToCam, 0.3f, collDist, mgr,
@@ -1370,9 +1372,9 @@ void CBallCamera::UpdateUsingColliders(float dt, CStateManager& mgr) {
 
   CVector3f colliderPointLocal = CVector3f::Zero();
   CVector3f volumeOffset = CVector3f::Zero();
-  bool volumeCollision = fn_801a39d0(desiredDistance, dt, volumeOffset, mgr);
+  bool volumeCollision = fn_801a39d0(ballToCamFlatMag, dt, volumeOffset, mgr);
   CVector3f doorOffset = CVector3f::Zero();
-  bool doorCollision = fn_801a36f0(desiredDistance, dt, doorOffset, mgr);
+  bool doorCollision = fn_801a36f0(ballToCamFlatMag, dt, doorOffset, mgr);
   if (!volumeCollision && !doorCollision) {
     if (mAvoidGeometryFull || !mClearLOS) {
       colliderPointLocal = AvoidGeometryFull(lookXf, nearList, mgr);
@@ -1444,7 +1446,8 @@ void CBallCamera::UpdateUsingColliders(float dt, CStateManager& mgr) {
   if (morphBall->GetBallState() != CMorphBall::kBS_Spider && !mNoElevationVelClamp &&
       !ridingPlatform && morphBall->GetBallState() != CMorphBall::kBS_ScrewAttack) {
     const uint framesSinceFloor = mgr.GetUpdateFrameIdx() - morphBall->GetLastFloorCollisionFrame();
-    if (player->GetVelocityWR().GetZ() > 8.f && framesSinceFloor >= 2) {
+    const bool recentlyOnFloor = framesSinceFloor < 2;
+    if (player->GetVelocityWR().GetZ() > 8.f && !recentlyOnFloor) {
       CVector3f delta = finalPos - oldPos;
       delta[kDZ] = CMath::Limit(delta.GetZ(), 0.1f * dt);
       finalPos = oldPos + delta;
@@ -1454,47 +1457,50 @@ void CBallCamera::UpdateUsingColliders(float dt, CStateManager& mgr) {
     }
   }
 
-  if (morphBall->GetBallState() == CMorphBall::kBS_ScrewAttack) {
+  if (player->GetMorphBall()->GetBallState() == CMorphBall::kBS_ScrewAttack) {
     finalPos.SetZ(oldPos.GetZ());
-    const float ceilingZ = player->GetLastSpaceJumpPosition().GetZ() + 5.f;
+    const float ceilingZ = 5.f + player->GetLastSpaceJumpPosition().GetZ();
     float targetZ = ceilingZ;
     rstl::reserved_vector< TUniqueId, 1024 > blockers;
     TUniqueId hitId = kInvalidUniqueId;
     CVector3f forward(GetTransform().GetForward().ToVec2f(), 0.f);
     if (forward.CanBeNormalized()) {
       forward.Normalize();
-      CVector3f castPos(finalPos.GetX(), finalPos.GetY(), ceilingZ + 0.6f);
-      for (;;) {
+      CVector3f castPos(finalPos.GetX(), finalPos.GetY(), ceilingZ);
+      castPos[kDZ] += 0.6f;
+      bool done = false;
+      while (!done) {
         mgr.BuildNearList(blockers, castPos, forward, 10.f, skLineOfSightFilter, nullptr);
         const CRayCastResult hit =
             mgr.RayWorldIntersection(hitId, castPos, forward, 10.f, skLineOfSightFilter, blockers);
-        if (!hit.IsValid()) {
-          break;
+        if (hit.IsValid()) {
+          targetZ -= 0.6f;
+          castPos[kDZ] -= 0.6f;
+        } else {
+          done = true;
         }
-        targetZ -= 0.6f;
-        castPos.SetZ(castPos.GetZ() - 0.6f);
       }
     }
     const float upwardDistance = targetZ - finalPos.GetZ();
+    const CVector3f up = CVector3f::Up();
     if (upwardDistance > 0.f) {
-      mgr.BuildNearList(blockers, finalPos, CVector3f::Up(), upwardDistance, skLineOfSightFilter,
-                        nullptr);
-      const CRayCastResult hit = mgr.RayWorldIntersection(
-          hitId, finalPos, CVector3f::Up(), upwardDistance, skLineOfSightFilter, blockers);
+      mgr.BuildNearList(blockers, finalPos, up, upwardDistance, skLineOfSightFilter, nullptr);
+      const CRayCastResult hit =
+          mgr.RayWorldIntersection(hitId, finalPos, up, upwardDistance, skLineOfSightFilter, blockers);
       if (hit.IsValid()) {
-        targetZ = rstl::min_val(targetZ, hit.GetPoint().GetZ() - 0.6f);
+        targetZ = rstl::min_val(hit.GetPoint().GetZ() - 0.6f, targetZ);
       }
     }
     const float deltaZ = targetZ - finalPos.GetZ();
     const float step = 8.f * dt * CMath::Clamp(0.f, CMath::AbsF(deltaZ / 0.25f), 1.f);
-    if (!close_enough(deltaZ, 0.05f)) {
-      finalPos.SetZ(finalPos.GetZ() + (deltaZ < 0.f ? -step : step));
-    } else {
+    if (close_enough(deltaZ, 0.05f)) {
       finalPos.SetZ(ceilingZ);
+    } else {
+      finalPos.SetZ(finalPos.GetZ() + (deltaZ < 0.f ? -step : step));
     }
   }
 
-  if (mClearLOS && morphBall->GetBallState() != CMorphBall::kBS_ScrewAttack) {
+  if (mClearLOS && player->GetMorphBall()->GetBallState() != CMorphBall::kBS_ScrewAttack) {
     float movementFactor = 0.f;
     if (player->GetVelocityWR().Magnitude() > 15.f) {
       movementFactor = CMath::Limit((player->GetVelocityWR().Magnitude() - 15.f) / 15.f, 1.f);
@@ -1516,11 +1522,12 @@ void CBallCamera::UpdateUsingColliders(float dt, CStateManager& mgr) {
       mFixedLookPos.SetZ(mFixedLookPos.GetZ() + mBallDelta.GetZ());
     } else {
       movementFactor *= alignment;
-      finalPos += movementFactor * mBallDeltaFlat;
+      finalPos += CVector3f(movementFactor * mBallDeltaFlat.GetX(),
+                            movementFactor * mBallDeltaFlat.GetY(), 0.f);
     }
   }
 
-  if (morphBall->GetBallState() != CMorphBall::kBS_ScrewAttack) {
+  if (player->GetMorphBall()->GetBallState() != CMorphBall::kBS_ScrewAttack) {
     if (interpolateElevation && mState != kBCS_ToBall) {
       finalPos = InterpolateCameraElevation(finalPos, dt);
     }
