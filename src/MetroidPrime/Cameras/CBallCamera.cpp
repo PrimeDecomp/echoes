@@ -832,6 +832,8 @@ void CBallCamera::UpdatePlayerMovement(float dt, CStateManager& mgr) {
   const CPlayer& player = Player(mgr);
   mMaxBallVel = CMath::AbsF(player.GetActualBallMaxVelocity(dt));
   CVector3f ballPos = player.GetBallPosition();
+  // Never read; the target still calls the out-of-line constructor here.
+  const CVector2f prevBallDeltaFlat(mBallDelta.GetX(), mBallDelta.GetY());
   mBallDelta = ballPos - mPrevBallPos;
   mBallDeltaFlat = mBallDelta;
   mBallDeltaFlat.SetZ(0.f);
