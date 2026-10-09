@@ -10,9 +10,12 @@ public:
     kHT_Unknown0 = 0,
     kHT_Hop = 1,         // Guessed name
     kHT_SunlightHop = 2, // Guessed name
+    kHT_Unknown12 = 12,
+    kHT_Unknown13 = 13,
     kHT_BloggHint = 16,   // Guessed name
     kHT_SplinterPad = 18, // Guessed name
     kHT_ShadowDashPoint = 19, // Guessed name; DarkCommando shadow dash destinations.
+    kHT_Maneuver = 20, // Guessed name
     kHT_GrenadeLauncherRaisedAim = 23,
     kHT_SplinterAttackBlock = 24, // Guessed name
     kHT_SplinterHide = 25,        // Guessed name
