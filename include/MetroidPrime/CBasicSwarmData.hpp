@@ -13,6 +13,7 @@ class CBasicSwarmData {
   friend CBasicSwarmData LdrToBasicSwarmData(const SLdrBasicSwarmProperties& data);
   friend class CSwarmBasics;
   friend class CMetareeSwarm;
+  friend class CBacteriaSwarm;
   friend class CIngBlobSwarm;
   friend class CPlantScarabSwarm;
 
