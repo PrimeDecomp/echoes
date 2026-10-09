@@ -62,6 +62,9 @@ enum EPatternedAI {
   kPAI_WispTentacle = 0x42,            // Guessed name; WispTentacle REL constructor.
   kPAI_GunTurretBase = 0x43,           // Guessed name; GunTurretBase REL constructor.
   kPAI_GunTurretTop = 0x44,            // Guessed name; GunTurretTop REL constructor.
+  kPAI_SporbBase = 0x47,               // Guessed name; SporbBase REL constructor.
+  kPAI_SporbTop = 0x48,                // Guessed name; SporbTop REL constructor.
+  kPAI_SporbProjectile = 0x49,         // Guessed name; SporbProjectile REL constructor.
   kPAI_Shrieker = 0x4a,                // Guessed name; Shrieker REL constructor.
   kPAI_WallWalker = 0x4d,              // Guessed name; WallWalker REL constructor.
   kPAI_Shredder = 0x4e,                // Guessed name; Shredder REL constructor.
@@ -275,6 +278,8 @@ public:
   void fn_801524fc(CStateManager& mgr);
 
   bool GetAlive() const { return mAlive; }
+  bool GetHitByPlayerProjectile() const { return mHitByPlayerProjectile; }
+  void SetHitByPlayerProjectile(bool hit) { mHitByPlayerProjectile = hit; }
   void SetPendingDeath(bool pending) { mPendingDeath = pending; }
   TUniqueId GetDestObj() const { return mDestObj; }
   EFlavorType GetFlavorType() const { return mFlavor; }

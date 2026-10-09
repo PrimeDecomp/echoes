@@ -25,6 +25,7 @@ public:
   const CDamageVulnerability& GetDamageVulnerability() const { return mDamageVulnerability; }
   const CDamageInfo& GetContactDamage() const { return mContactDamageInfo; }
   const float& GetHalfExtent() const { return mHalfExtent; }
+  const CVector3f& GetBodyOrigin() const { return mBodyOrigin; }
   uint GetPathfindingIndex() const { return mPathfindingIndex; }
   bool IsAnEncounter() const { return mIngPossessionData.isAnEncounter; } // Guessed name
   float GetHeight() const { return mHeight; }
