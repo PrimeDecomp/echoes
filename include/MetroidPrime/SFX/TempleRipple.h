@@ -3,7 +3,7 @@
 
 #define GRPTempleRipple 0x0184
 
-#define SFXsb1_c_mtlhitbigdull_00_oneshot 0x1223
-#define SFXlth_x_mtlhitbigrattle_00_oneshot 0x1224
+#define SFXtem_x_ripple_lp_00L_looped 0x02DE
+#define SFXtem_x_ripple_lp_00R_looped 0x02EF
 
 #endif

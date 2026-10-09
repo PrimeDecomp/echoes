@@ -3,8 +3,8 @@
 
 #define GRPTempleCableCar 0x0181
 
-#define SFXsn2_x_09button_00_oneshot 0x11F9
-#define SFXsw2_x_08nrg_lp_00_looped 0x11FA
-#define SFXswp_x_bubbles_lp_00_looped 0x11FB
+#define SFXtem_x_10armdown_00_oneshot 0x0128
+#define SFXtem_x_10carstop_00_oneshot 0x0129
+#define SFXtem_x_10sideup_00_oneshot 0x012A
 
 #endif

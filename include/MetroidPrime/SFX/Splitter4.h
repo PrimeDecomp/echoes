@@ -3,17 +3,17 @@
 
 #define GRPSplitter4 0x0087
 
-#define SFXsb1_b_swim_01_oneshot 0x007E
-#define SFXsb1_b_dive_00_oneshot 0x0084
-#define SFXsb1_b_jumpvox_00_oneshot 0x0085
-#define SFXsb1_a_voxattack_oneshot 0x0087
-#define SFXsb1_a_tongue_lp_00 0x0089
-#define SFXdks_b_glide_lp_01_looped 0x008A
-#define SFXdks_b_glide_lp_00_looped 0x008B
-#define SFXdks_b_glidedive_lp_00_looped 0x008E
-#define SFXei3_b_walksm_00_oneshot 0x0099
-#define SFXei3_b_walkbig_01_oneshot 0x009E
-#define SFXei3_b_voxrecharge_01_oneshot 0x00A8
-#define SFXei3_c_voxtaunt_01_oneshot 0x00A9
+#define SFXspt_b_movefast_00_oneshot 0x02BD
+#define SFXspt_b_movefast_01_oneshot 0x02BE
+#define SFXspt_b_shieldon_00_oneshot 0x02C1
+#define SFXspt_r_headexp_00_oneshot 0x02C2
+#define SFXspt_r_active_00_oneshot 0x02C3
+#define SFXspt_r_flinch_00_oneshot 0x02C5
+#define SFXspt_r_hit_00_oneshot 0x02C7
+#define SFXspt_r_shieldcrk_00_oneshot 0x02C8
+#define SFXspt_r_spinbnce_00_oneshot 0x02C9
+#define SFXspt_r_turtle_00_oneshot 0x02CA
+#define SFXspt_b_spin_lp_00_looped 0x02CB
+#define SFXspt_b_eject_00_oneshot 0x02CC
 
 #endif

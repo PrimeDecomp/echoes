@@ -3,8 +3,8 @@
 
 #define GRPCineDarkSamusDeath1_4 0x023E
 
-#define SFXti2_x_oneminute_00_oneshot 0x1427
-#define SFXti2_x_randomizer_01_oneshot 0x1428
-#define SFXdob_x_stop_00_oneshot 0x1429
+#define SFXdks_c_voxdeath_00_oneshot 0x2412
+#define SFXdks_c_voxdeath_01_oneshot 0x2413
+#define SFXdks_c_voxdeath_02_oneshot 0x2414
 
 #endif

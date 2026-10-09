@@ -3,6 +3,6 @@
 
 #define GRPRockScrape 0x02CB
 
-#define SFXsp3_r_voxsnatch_00_oneshot 0x0627
+#define SFXrok_x_rockscrape_lp_00_looped 0x276A
 
 #endif

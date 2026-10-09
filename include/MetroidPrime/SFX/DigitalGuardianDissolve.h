@@ -3,6 +3,6 @@
 
 #define GRPDigitalGuardianDissolve 0x0070
 
-#define SFXgba_c_samland_00_oneshot 0x135E
+#define SFXdgd_c_dissolve_00_oneshot 0x0568
 
 #endif

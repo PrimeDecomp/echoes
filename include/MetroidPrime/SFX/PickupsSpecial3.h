@@ -3,7 +3,7 @@
 
 #define GRPPickupsSpecial3 0x02E9
 
-#define SFXing_b_walk_01_oneshot 0x06B6
-#define SFXfn2_x_mapzoomin_00_oneshot 0x15C4
+#define SFXpik_x_powerup_00_oneshot 0x2749
+#define SFXcin_c_powerup_00_oneshot 0x274B
 
 #endif

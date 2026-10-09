@@ -3,6 +3,6 @@
 
 #define GRPCliffside0ESpin 0x0166
 
-#define SFXdk3_c_land_00_oneshot 0x1255
+#define SFXclf_x_0espin_lp_00_looped 0x048B
 
 #endif

@@ -3,7 +3,7 @@
 
 #define GRPSplitterLaser 0x0074
 
-#define SFXei3_c_walk_02_oneshot 0x00A3
-#define SFXmtd_b_voxglass_01_oneshot 0x0586
+#define SFXspt_a_laser_lp_00_looped 0x21B8
+#define SFXrez_a_sptlazer_lp_00_looped 0x051A
 
 #endif

@@ -3,7 +3,7 @@
 
 #define GRPPickupsSpecial 0x02B5
 
-#define SFXing_b_walk_00_oneshot 0x06B4
-#define SFXdsi_c_ingland_00_oneshot 0x06BD
+#define SFXpik_x_elevamb_lp_00_looped 0x2747
+#define SFXpik_x_map_00_oneshot 0x274A
 
 #endif

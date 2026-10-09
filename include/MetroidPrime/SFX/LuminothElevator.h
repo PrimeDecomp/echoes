@@ -3,6 +3,6 @@
 
 #define GRPLuminothElevator 0x01D3
 
-#define SFXamo_c_podup_00_oneshot 0x1274
+#define SFXlth_x_elev_lp_00_looped 0x042D
 
 #endif

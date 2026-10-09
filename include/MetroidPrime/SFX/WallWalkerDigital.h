@@ -3,10 +3,10 @@
 
 #define GRPWallWalkerDigital 0x007A
 
-#define SFXsb1_c_bossfly_00_oneshot 0x001D
-#define SFXsb1_c_jumpvox_00_oneshot 0x001E
-#define SFXsb1_c_voxattack_00_oneshot 0x001F
-#define SFXsb1_c_voxflinch_00_oneshot 0x0020
-#define SFXsb1_c_riverin_lp_00_looped 0x0021
+#define SFXwa2_a_bomb_00_oneshot 0x04E8
+#define SFXwa2_b_voxidle_00_oneshot 0x04E9
+#define SFXwa2_b_voxidle_01_oneshot 0x04EA
+#define SFXwa2_b_walk_00_oneshot 0x04EB
+#define SFXwa2_b_walk_01_oneshot 0x04EC
 
 #endif

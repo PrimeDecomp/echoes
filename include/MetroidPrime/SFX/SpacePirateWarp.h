@@ -3,7 +3,7 @@
 
 #define GRPSpacePirateWarp 0x0124
 
-#define SFXsts_r_voxawake_00_oneshot 0x02EC
-#define SFXsts_r_voxreact_00_oneshot 0x02ED
+#define SFXspr_b_warpout_00_oneshot 0x1E12
+#define SFXspr_b_warpin_00_oneshot 0x1E13
 
 #endif

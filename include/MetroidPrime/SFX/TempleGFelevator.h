@@ -3,6 +3,6 @@
 
 #define GRPTempleGFelevator 0x0171
 
-#define SFXswp_x_03bridgestop_00_oneshot 0x1220
+#define SFXtem_x_gfelevact_00_oneshot 0x0147
 
 #endif

@@ -3,6 +3,6 @@
 
 #define GRPCineDarkSamusAppears4 0x0202
 
-#define SFXsam_a_phazcharge_lp_00_looped 0x165B
+#define SFXdsi_c_crysplode_00_oneshot 0x0286
 
 #endif

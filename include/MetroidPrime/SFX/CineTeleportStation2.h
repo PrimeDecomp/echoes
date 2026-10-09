@@ -3,6 +3,6 @@
 
 #define GRPCineTeleportStation2 0x0241
 
-#define SFXsa2_b_grap_lp_00_looped 0x150A
+#define SFXtel_c_beamstart_00_oneshot 0x0141
 
 #endif

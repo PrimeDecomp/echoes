@@ -3,6 +3,6 @@
 
 #define GRPCineDarkSamusDeath3_4 0x01DD
 
-#define SFXmtl_x_minidebris_01_oneshot 0x1672
+#define SFXdk3_c_lastbreath_00_oneshot 0x0542
 
 #endif

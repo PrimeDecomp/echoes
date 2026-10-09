@@ -3,13 +3,13 @@
 
 #define GRPLightBeam 0x02DD
 
-#define SFXsp3_b_walk_01_oneshot 0x05FD
-#define SFXsp3_b_walksm_00_oneshot 0x05FE
-#define SFXsp3_b_walksm_01_oneshot 0x05FF
-#define SFXdce_c_splvoxalert_00_oneshot 0x0600
-#define SFXdce_c_splvoxalert_01_oneshot 0x0601
-#define SFXdce_c_splvoxidle_00_oneshot 0x0602
-#define SFXdce_c_splvoxidle_01_oneshot 0x0603
-#define SFXsa2_r_elechit_00_oneshot 0x1505
+#define SFXlbm_x_beam_lp_00_looped 0x018D
+#define SFXtel_c_beam_lp_looped 0x0285
+#define SFXlbm_c_beam_lp_01_looped 0x028D
+#define SFXlbm_x_beam_lp_02_looped 0x02DF
+#define SFXlbm_x_beam_lp_01_looped 0x02E0
+#define SFXlth_x_lighton_00_oneshot 0x040E
+#define SFXlth_x_lighton_lp_looped 0x040F
+#define SFXlth_c_lighton_lp_00_looped 0x05F4
 
 #endif

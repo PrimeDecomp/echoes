@@ -3,7 +3,7 @@
 
 #define GRPCommandoPirateShield 0x0076
 
-#define SFXshk_r_voxdeath_lp_00_looped 0x045C
-#define SFXmok_r_sachit_00_oneshot 0x0588
+#define SFXcpr_b_shieldoff_00_oneshot 0x1EB2
+#define SFXrez_b_cprshieldoff_00_oneshot 0x0517
 
 #endif

@@ -3,7 +3,7 @@
 
 #define GRPOctopede2 0x012B
 
-#define SFXei3_a_litfire_lp_00_looped 0x006D
-#define SFXsb1_r_voxpain_00_oneshot 0x006E
+#define SFXoct_b_elecshield_lp_00_looped 0x05F1
+#define SFXoct_b_eleczap_lp_00_oneshot 0x05F2
 
 #endif

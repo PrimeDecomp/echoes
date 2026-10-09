@@ -3,13 +3,13 @@
 
 #define GRPDarkSamusVox2 0x0054
 
-#define SFXdsi_c_wind_00R_looped 0x12B8
-#define SFXdk2_c_dieelec_lp_00_looped 0x13B4
-#define SFXtel_c_beamstop_00_oneshot 0x13C4
-#define SFXskr_c_zingdraw_00R_oneshot 0x13D0
-#define SFXdce_c_samdraw_00_oneshot 0x13D1
-#define SFXdk2_c_fall_00_oneshot 0x13E8
-#define SFXdk2_c_voxdeath_01_oneshot 0x13EA
-#define SFXrec_x_charge_lp_00_looped 0x1413
+#define SFXdks_b_voxlaugh_00_oneshot 0x2876
+#define SFXdks_b_voxtaunt2_00_oneshot 0x2877
+#define SFXdks_b_voxtaunt1_00_oneshot 0x2878
+#define SFXdks_b_voxpissed_00_oneshot 0x2879
+#define SFXdks_c_voxpissed_00_oneshot 0x287A
+#define SFXdk2_b_voxinvisout_00_oneshot 0x008C
+#define SFXdk3_b_voxenrage_00_oneshot 0x017D
+#define SFXdk3_b_voxenrageout_00_oneshot 0x041A
 
 #endif

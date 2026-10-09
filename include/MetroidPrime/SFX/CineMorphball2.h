@@ -3,8 +3,8 @@
 
 #define GRPCineMorphball2 0x01F2
 
-#define SFXsa2_a_litcharge_lp_00_looped 0x1567
-#define SFXsa2_a_powexpl_00_oneshot 0x1572
-#define SFXsa2_a_nilchhit_00_oneshot 0x1577
+#define SFXmph_c_sammorph_R_00_oneshot 0x006D
+#define SFXmph_c_mpsweet_R_oneshot 0x006F
+#define SFXmph_c_swoosh_01_oneshot 0x24BE
 
 #endif

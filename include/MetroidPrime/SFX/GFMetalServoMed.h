@@ -3,7 +3,7 @@
 
 #define GRPGFMetalServoMed 0x0150
 
-#define SFXtem_x_gflockhum_lp_00_looped 0x1180
-#define SFXsn2_x_03keymove_lp_00_looped 0x11F4
+#define SFXtem_x_10car_lp_00_looped 0x0114
+#define SFXgft_x_mtlservomed_lp_00_looped 0x0371
 
 #endif

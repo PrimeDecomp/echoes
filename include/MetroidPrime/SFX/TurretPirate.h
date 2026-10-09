@@ -3,13 +3,13 @@
 
 #define GRPTurretPirate 0x00C5
 
-#define SFXijg_a_preland_00_oneshot 0x036D
-#define SFXijg_a_jumpchrg_00_oneshot 0x036E
-#define SFXdsi_c_ingfall_00_oneshot 0x0373
-#define SFXigg_b_voxalert_00_oneshot 0x0374
-#define SFXigg_b_voxangry_01_oneshot 0x0377
-#define SFXigg_b_run_00_oneshot 0x037C
-#define SFXigg_b_walk_01_oneshot 0x0382
-#define SFXigg_b_walksm_00_oneshot 0x0383
+#define SFXtur_a_charge_00_oneshot 0x058B
+#define SFXtur_a_fire_00_oneshot 0x1E9E
+#define SFXtur_a_lockon_00_oneshot 0x057B
+#define SFXtur_b_retract_00_oneshot 0x1E9F
+#define SFXtur_r_malfxn_lp_00_looped 0x058C
+#define SFXtur_r_deathlower_lp_00_looped 0x1EB4
+#define SFXtur_b_raise_00_oneshot 0x1EA0
+#define SFXtur_b_pan_lp_00_looped 0x1EA1
 
 #endif

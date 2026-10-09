@@ -3,7 +3,7 @@
 
 #define GRPSandlandWeb 0x019A
 
-#define SFXsn2_x_05doorup_lp_00_looped 0x11BA
-#define SFXsn2_x_05doorstop_00_oneshot 0x11BB
+#define SFXsnd_x_webburn_00_oneshot 0x286E
+#define SFXsnd_x_webburn_01_oneshot 0x286F
 
 #endif

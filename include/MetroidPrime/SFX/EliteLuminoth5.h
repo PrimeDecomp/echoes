@@ -3,14 +3,14 @@
 
 #define GRPEliteLuminoth5 0x008C
 
-#define SFXmtd_b_suckglas_lp_00_looped 0x03A8
-#define SFXmt3_a_impact_00_oneshot 0x03A9
-#define SFXspr_b_walksand_03_oneshot 0x03B0
-#define SFXspw_r_acidsac_00_oneshot 0x03B1
-#define SFXwar_a_spithit_00_oneshot 0x03B2
-#define SFXipg_b_plantout_00_oneshot 0x03B3
-#define SFXipg_r_voxpain_00_oneshot 0x03B4
-#define SFXipg_a_pbombfire_00_oneshot 0x03B5
-#define SFXipg_b_pbombexp_00_oneshot 0x03B6
+#define SFXelu_b_voxabsorb_00_oneshot 0x243A
+#define SFXelu_b_voxalert_00_oneshot 0x243B
+#define SFXelu_b_voxalert_01_oneshot 0x243C
+#define SFXelu_b_voxangry_00_oneshot 0x243D
+#define SFXelu_b_voxangry_01_oneshot 0x243E
+#define SFXelu_b_voxidle_00_oneshot 0x243F
+#define SFXelu_b_voxidle_01_oneshot 0x2440
+#define SFXelu_r_voxpain_00_oneshot 0x2447
+#define SFXelu_r_voxpainbig_00_oneshot 0x2448
 
 #endif

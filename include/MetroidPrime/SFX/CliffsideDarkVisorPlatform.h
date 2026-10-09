@@ -3,6 +3,6 @@
 
 #define GRPCliffsideDarkVisorPlatform 0x016A
 
-#define SFXlth_x_mtlhitmedratch_00_oneshot 0x122C
+#define SFXclf_x_darkvisplat_lp_00_looped 0x057F
 
 #endif

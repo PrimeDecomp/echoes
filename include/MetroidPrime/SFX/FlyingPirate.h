@@ -3,20 +3,20 @@
 
 #define GRPFlyingPirate 0x00D0
 
-#define SFXcnt_b_elecfloor_00_looped 0x0256
-#define SFXpds_b_turnover_00_oneshot 0x0257
-#define SFXeye_x_activate_00_oneshot 0x0259
-#define SFXeye_x_laser_lp_looped 0x025A
-#define SFXeye_x_stunned_00_oneshot 0x025B
-#define SFXeye_x_activate_01_oneshot 0x025C
-#define SFXbl3_a_sonic_01_oneshot 0x0265
-#define SFXrez_a_boltout_00_oneshot 0x026A
-#define SFXrez_b_activate_00_oneshot 0x026B
-#define SFXrez_a_samvirus_lp_00_looped 0x026C
-#define SFXrez_a_laserin_lp_00_looped 0x026D
-#define SFXspt_b_shieldon_00_oneshot 0x0274
-#define SFXspt_r_headexp_00_oneshot 0x0275
-#define SFXspt_r_active_00_oneshot 0x0276
-#define SFXspt_r_shieldcrk_00_oneshot 0x0279
+#define SFXfpr_a_gun_00_oneshot 0x04AF
+#define SFXfpr_a_mislfire_00_oneshot 0x04B1
+#define SFXfpr_b_thrust_01_oneshot 0x0578
+#define SFXfpr_a_misl_lp_00_looped 0x04B3
+#define SFXfpr_b_engine_lp_00_looped 0x04B4
+#define SFXfpr_b_engine_lp_01_looped 0x04B5
+#define SFXfpr_b_engine_lp_02_looped 0x04B6
+#define SFXfpr_b_thrust_00_oneshot 0x04B8
+#define SFXfpr_b_engine_lp_03_looped 0x0649
+#define SFXfpr_a_mislload_00_oneshot 0x0B60
+#define SFXfpr_b_engidle_lp_00_looped 0x064A
+#define SFXfpr_a_mislhit_00_oneshot 0x04B2
+#define SFXfpr_b_blastoff_lp_00_looped 0x070B
+#define SFXfpr_b_blastoff_01_oneshot 0x0B61
+#define SFXfpr_r_die_00_oneshot 0x047B
 
 #endif

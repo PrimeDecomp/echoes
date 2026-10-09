@@ -3,26 +3,26 @@
 
 #define GRPProjectile 0x02B3
 
-#define SFXei3_a_stampede_01_oneshot 0x00B4
-#define SFXei3_a_stabhitmini_00_oneshot 0x00B5
-#define SFXei2_b_acid_lp_00L_looped 0x00F9
-#define SFXspt_r_flinch_00_oneshot 0x0277
-#define SFXspt_r_hit_00_oneshot 0x0278
-#define SFXsp3_r_snatch_lp_00_looped 0x02DC
-#define SFXspr_r_snatch_lp_00_looped 0x02DD
-#define SFXmt3_b_voxangry_01_oneshot 0x0311
-#define SFXigg_b_run_01_oneshot 0x0380
-#define SFXigg_b_walk_00_oneshot 0x0381
-#define SFXspb_a_needlexp_00_oneshot 0x0464
-#define SFXspb_a_needlfire_00_oneshot 0x0465
-#define SFXshk_b_idle_lp_01_looped 0x0473
-#define SFXspr_b_moan_00_oneshot 0x053C
-#define SFXgrz_b_idle_01_oneshot 0x0544
-#define SFXspl_c_voxidle_01_oneshot 0x05EC
-#define SFXibg_b_tauntchg_00_oneshot 0x0D6A
-#define SFXshr_b_popup_01_oneshot 0x0DCD
-#define SFXsja_c_nrgfade_01_oneshot 0x12A2
-#define SFXwpn_c_powerup_02_oneshot 0x13D5
-#define SFXwpn_c_gunglowing_00_oneshot 0x13D6
+#define SFXdrn_a_laser_lp_00_looped 0x2695
+#define SFXfpr_a_gun_lp_00_looped 0x2696
+#define SFXfpr_a_gunhit_00_oneshot 0x2697
+#define SFXsh2_a_fireball_lp_00_looped 0x2698
+#define SFXshe_a_fireball_lp_00_looped 0x2699
+#define SFXspr_a_gunfire_lp_00_looped 0x269A
+#define SFXspr_a_gunhit_00_oneshot 0x269B
+#define SFXtur_a_laser_lp_00_looped 0x269C
+#define SFXtur_a_turhit_00_oneshot 0x269D
+#define SFXcpr_a_gunfire_lp_00_looped 0x269E
+#define SFXcpr_a_gunhit_00_oneshot 0x269F
+#define SFXspb_a_needle_lp_00_looped 0x26A0
+#define SFXdks_a_missile_lp_00_looped 0x26A1
+#define SFXdks_a_smissile_lp_00_looped 0x26A2
+#define SFXin2_a_fire_lp_00_looped 0x26A3
+#define SFXlum_a_bigshot_lp_00_looped 0x26A4
+#define SFXlum_a_shot_lp_00_looped 0x26A5
+#define SFXdk2_a_icefire_lp_00_looped 0x0029
+#define SFXgf2_a_mislfire_lp_00_looped 0x0053
+#define SFXwar_a_spit_lp_00_looped 0x0429
+#define SFXcp2_a_drkfire_lp_00_looped 0x049E
 
 #endif

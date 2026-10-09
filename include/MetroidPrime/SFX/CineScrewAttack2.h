@@ -3,6 +3,6 @@
 
 #define GRPCineScrewAttack2 0x0246
 
-#define SFXsa2_a_boosthit_00_oneshot 0x1543
+#define SFXscw_c_screw_00_oneshot 0x290C
 
 #endif

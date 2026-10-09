@@ -3,7 +3,7 @@
 
 #define GRPSwampTree 0x01B7
 
-#define SFXtem_x_02gondolastop_00_oneshot 0x118F
-#define SFXtem_x_piston_lp_00_looped 0x1199
+#define SFXswp_x_treebrk_00_oneshot 0x037C
+#define SFXswp_x_treefall_00_oneshot 0x03E4
 
 #endif

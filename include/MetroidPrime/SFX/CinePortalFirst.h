@@ -3,7 +3,7 @@
 
 #define GRPCinePortalFirst 0x0225
 
-#define SFXsd2_a_boost_00_oneshot 0x0702
-#define SFXdks_c_slump_00_oneshot 0x13AF
+#define SFXprt_c_exit_00_oneshot 0x26C4
+#define SFXprt_c_swoosh_lp_00_looped 0x26C7
 
 #endif

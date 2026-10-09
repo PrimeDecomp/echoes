@@ -3,6 +3,6 @@
 
 #define GRPTempleRingsSmall 0x0174
 
-#define SFXswp_x_treebrk_00_oneshot 0x1202
+#define SFXtem_x_smrings_lp_00_looped 0x1FFE
 
 #endif

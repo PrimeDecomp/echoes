@@ -3,9 +3,9 @@
 
 #define GRPGibCrystal 0x028E
 
-#define SFXcpr_b_boost_00_oneshot 0x0650
-#define SFXcpr_b_dash_00_oneshot 0x0651
-#define SFXcpr_a_bayonet_00_oneshot 0x0652
-#define SFXcpr_b_shieldon_lp_00_looped 0x0653
+#define SFXgib_x_crystal_00_oneshot 0x04D2
+#define SFXgib_x_crystal_01_oneshot 0x04D3
+#define SFXgib_x_crystalsmall_00_oneshot 0x04D4
+#define SFXgib_x_crystalsmall_01_oneshot 0x04D5
 
 #endif

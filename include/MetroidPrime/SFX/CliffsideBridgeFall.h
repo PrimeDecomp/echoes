@@ -3,8 +3,8 @@
 
 #define GRPCliffsideBridgeFall 0x015C
 
-#define SFXcnt_b_floormove_lp_00_looped 0x123F
-#define SFXlth_x_mtlhitmed_01_oneshot 0x1240
-#define SFXlth_x_mtlhitmeddull_00_oneshot 0x1241
+#define SFXclf_x_btower_00_oneshot 0x0408
+#define SFXclf_x_bwiresnap_00_oneshot 0x0409
+#define SFXclf_x_bwronk_00_oneshot 0x040A
 
 #endif

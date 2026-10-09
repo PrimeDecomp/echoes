@@ -3,21 +3,21 @@
 
 #define GRPPillbugIng 0x010F
 
-#define SFXblg_b_swimfast_01_oneshot 0x0405
-#define SFXbl3_b_swim_01_oneshot 0x040D
-#define SFXbl3_b_swimfast_01_oneshot 0x040F
-#define SFXbl3_r_hitwall_00_oneshot 0x0410
-#define SFXbl3_r_hitwall_01_oneshot 0x0411
-#define SFXblg_a_charge_00_oneshot 0x0412
-#define SFXblg_a_charge_01_oneshot 0x0414
-#define SFXblg_a_grabball_00_oneshot 0x0415
-#define SFXblg_a_grabball_01_oneshot 0x0416
-#define SFXblg_a_sonic_00_oneshot 0x0417
-#define SFXblg_a_sonic_lp_00_looped 0x0418
-#define SFXblg_a_charge_lp_00_looped 0x041A
-#define SFXblg_a_sonichit_00_oneshot 0x041B
-#define SFXblg_a_grabball_lp_00_looped 0x041C
-#define SFXbl3_a_charge_00_oneshot 0x041D
-#define SFXbl3_a_charge_01_oneshot 0x041E
+#define SFXipg_b_spidroll_lp_00_looped 0x002E
+#define SFXisg_b_elec_lp_00_looped 0x0110
+#define SFXisg_b_rollelec_00_oneshot 0x0117
+#define SFXisg_b_rollelec_01_oneshot 0x0118
+#define SFXisg_b_rollelec_lp_00_looped 0x0119
+#define SFXisg_b_rollzap_lp_00_looped 0x011A
+#define SFXisg_b_rollelecslow_00_oneshot 0x03CC
+#define SFXisg_b_rollelecslow_01_oneshot 0x03CD
+#define SFXisg_b_rollelecslow_lp_00_looped 0x03CE
+#define SFXisg_b_rollzapslow_lp_00_looped 0x03CF
+#define SFXisg_b_spidrollslow_lp_00_looped 0x03D0
+#define SFXisg_b_rollelecfast_00_oneshot 0x03D5
+#define SFXisg_b_rollelecfast_01_oneshot 0x03D6
+#define SFXisg_b_rollelecfast_lp_00_looped 0x03D7
+#define SFXisg_b_rollzapfast_lp_00_looped 0x03D8
+#define SFXisg_b_spidrollfast_lp_00_looped 0x03D9
 
 #endif

@@ -3,10 +3,10 @@
 
 #define GRPDarkSamus3_3 0x0036
 
-#define SFXtls_c_windowon_00_oneshot 0x127F
-#define SFXspt_b_voxidleholo_01_oneshot 0x1280
-#define SFXspt_b_voxidleholo_01_looped 0x1281
-#define SFXlum_c_ingvoxidle_00_oneshot 0x1283
-#define SFXlum_c_athrsplit_00_oneshot 0x1289
+#define SFXdk3_a_phaz_lp_00_looped 0x0173
+#define SFXdk3_a_phazchg_00_oneshot 0x0174
+#define SFXdk3_a_phazfire_00_oneshot 0x0175
+#define SFXdk3_a_phazchg_01_oneshot 0x017C
+#define SFXdk3_a_phazmisl_lp_00_looped 0x03E9
 
 #endif

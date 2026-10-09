@@ -3,8 +3,8 @@
 
 #define GRPDarkSamusVox3 0x0055
 
-#define SFXskr_c_chargeup_00_oneshot 0x13CD
-#define SFXskr_c_skrfire_00_oneshot 0x13CE
-#define SFXskr_c_zingdraw_00L_oneshot 0x13CF
+#define SFXdks_r_voxpain_00_oneshot 0x288C
+#define SFXdks_r_voxpainsm_00_oneshot 0x288D
+#define SFXdks_r_voxpainsm_01_oneshot 0x288E
 
 #endif

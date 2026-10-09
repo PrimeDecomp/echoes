@@ -3,7 +3,7 @@
 
 #define GRPMetalDebrisHuge 0x02D7
 
-#define SFXtu2_b_lower_lp_00_looped 0x0645
-#define SFXtu2_b_loweroff_00_oneshot 0x0646
+#define SFXmtl_x_hugedebris_00_oneshot 0x284E
+#define SFXmtl_x_hugedebris_01_oneshot 0x284F
 
 #endif

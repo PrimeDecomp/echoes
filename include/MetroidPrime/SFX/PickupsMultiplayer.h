@@ -3,27 +3,27 @@
 
 #define GRPPickupsMultiplayer 0x0268
 
-#define SFXelu_a_hitgrnd_00_oneshot 0x0766
-#define SFXelu_a_hitgrnd_01_oneshot 0x0767
-#define SFXelu_a_hitgrnd_02_oneshot 0x0768
-#define SFXelu_a_rocket_00_oneshot 0x0769
-#define SFXelu_a_rocket_02_oneshot 0x076C
-#define SFXelu_a_shokwave_00_oneshot 0x076D
-#define SFXelu_a_shokwavebig_00_oneshot 0x076E
-#define SFXelu_a_shokwave_01_oneshot 0x076F
-#define SFXelu_a_shokwavebig_01_oneshot 0x0770
-#define SFXelu_b_powerup_02_oneshot 0x0771
-#define SFXin3_b_voxalert_00_oneshot 0x0772
-#define SFXin3_b_voxangry_00_oneshot 0x0773
-#define SFXin3_b_voxangry_01_oneshot 0x0774
-#define SFXin3_r_voxdeath_00_oneshot 0x0775
-#define SFXin3_r_voxpain_00_oneshot 0x0777
-#define SFXin3_r_voxpainbig_00_oneshot 0x0778
-#define SFXblg_r_voxpain_00_oneshot 0x077B
-#define SFXblg_r_voxpain_01_oneshot 0x077C
-#define SFXblg_r_voxflinch_00_oneshot 0x077D
-#define SFXbl3_r_voxdeath_01_oneshot 0x077F
-#define SFXbl3_r_voxflinch_00_oneshot 0x0780
-#define SFXbl3_r_voxpain_00_oneshot 0x0781
+#define SFXpi2_x_nrgtank_00_oneshot 0x2827
+#define SFXpi2_x_cloak_00_oneshot 0x282B
+#define SFXpi2_x_invuln_00_oneshot 0x282F
+#define SFXpi2_x_powerup_00_oneshot 0x2830
+#define SFXpi2_x_weapon_00_oneshot 0x2831
+#define SFXpi2_x_deathball_00_oneshot 0x2832
+#define SFXpi2_x_absorb_00_oneshot 0x2834
+#define SFXpi2_x_drkshield_00_oneshot 0x2835
+#define SFXpi2_x_litshield_00_oneshot 0x2836
+#define SFXpi2_x_unlimammo_00_oneshot 0x2837
+#define SFXpi2_x_unlimmissile_00_oneshot 0x2838
+#define SFXpi2_x_litbeam_00_oneshot 0x0446
+#define SFXpi2_x_pbomb_00_oneshot 0x044D
+#define SFXpi2_x_nihilbeam_00_oneshot 0x0455
+#define SFXpi2_x_drkbeam_00_oneshot 0x0459
+#define SFXpi2_x_litammo_00_oneshot 0x282A
+#define SFXpi2_x_drkammo_00_oneshot 0x282C
+#define SFXpi2_x_healthbig_00_oneshot 0x282D
+#define SFXpi2_x_healthmed_00_oneshot 0x282E
+#define SFXpi2_x_missile_00_oneshot 0x0454
+#define SFXpi2_x_healthsm_00_oneshot 0x0456
+#define SFXpi2_x_smissile_00_oneshot 0x049B
 
 #endif

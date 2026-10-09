@@ -3,8 +3,8 @@
 
 #define GRPCineScrewAttack1 0x0245
 
-#define SFXsa2_b_spidlach_00_oneshot 0x1541
-#define SFXsa2_b_spidlach_lp_00_looped 0x1542
-#define SFXsa2_a_deathball_lp_00_looped 0x1546
+#define SFXscw_c_pixiedust_00_oneshot 0x2908
+#define SFXscw_c_screwout_00_oneshot 0x290D
+#define SFXscw_c_zing_00_oneshot 0x290E
 
 #endif

@@ -3,9 +3,9 @@
 
 #define GRPEmperorIng1_6 0x003B
 
-#define SFXptx_c_riftdark_lp_01L_looped 0x12C8
-#define SFXprt_c_riftdark_lp_01R_looped 0x12CC
-#define SFXprt_x_inportalight_lp_00_looped 0x12CD
-#define SFXptx_c_lightdark_00_oneshot 0x12E0
+#define SFXein_b_voxtaunt_01_oneshot 0x28A6
+#define SFXein_b_voxtaunt_00_oneshot 0x28A5
+#define SFXein_a_shocktele_00_oneshot 0x2945
+#define SFXein_b_tentmovesm_lp_00_looped 0x01E5
 
 #endif

@@ -3,6 +3,6 @@
 
 #define GRPDarkPortal8 0x029F
 
-#define SFXsd2_a_bombbounce_00_oneshot 0x070B
+#define SFXprt_x_riftdark_01_oneshot 0x2738
 
 #endif

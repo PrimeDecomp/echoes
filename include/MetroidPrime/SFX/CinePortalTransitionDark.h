@@ -3,17 +3,17 @@
 
 #define GRPCinePortalTransitionDark 0x0208
 
-#define SFXin3_b_mist_lp_00_looped 0x06FE
-#define SFXin3_b_mistin_00_oneshot 0x06FF
-#define SFXsd2_r_voxpain_01_oneshot 0x071C
-#define SFXsa2_b_rollfabr_lp_00_looped 0x152F
-#define SFXsa2_b_rollgras_lp_00_looped 0x1530
-#define SFXsa2_b_rollgrat_lp_00_looped 0x1531
-#define SFXsa2_b_rollcrus_lp_00_looped 0x1533
-#define SFXsa2_b_rollmetl_lp_00_looped 0x1534
-#define SFXsa2_b_rollmoth_lp_00_looped 0x1535
-#define SFXsa2_b_rollplas_lp_00_looped 0x1538
-#define SFXsa2_b_rollsnow_lp_00_looped 0x153B
-#define SFXsa2_b_rollston_lp_00_looped 0x153C
+#define SFXptx_c_riftdark_lp_01L_looped 0x00CE
+#define SFXptx_c_riftdark_lp_01R_looped 0x00CF
+#define SFXptx_c_lightdark_lp_00_looped 0x00D0
+#define SFXprt_c_riftdark_lp_01L_looped 0x26A9
+#define SFXprt_c_riftdark_lp_01R_looped 0x26AA
+#define SFXprt_x_inportalight_lp_00_looped 0x2450
+#define SFXptx_c_riftlight_lp_00L_looped 0x00D1
+#define SFXptx_c_riftlight_lp_00R_looped 0x00D2
+#define SFXptx_c_darklight_lp_00_looped 0x00D4
+#define SFXprt_x_riftdark_lp_01L_looped 0x0002
+#define SFXprt_x_riftdark_lp_01R_looped 0x0003
+#define SFXprt_x_riftdarkcomp_lp_01_looped 0x0004
 
 #endif

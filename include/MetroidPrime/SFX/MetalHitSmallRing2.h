@@ -3,6 +3,6 @@
 
 #define GRPMetalHitSmallRing2 0x0298
 
-#define SFXsp3_a_voxattack_01_oneshot 0x05F5
+#define SFXmtl_x_hitsmring_01_oneshot 0x0368
 
 #endif

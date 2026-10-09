@@ -3,12 +3,12 @@
 
 #define GRPSwarmIngBlob 0x0110
 
-#define SFXsb2_a_spitsuck_lp_00_looped 0x0049
-#define SFXsb2_a_voxattack_00_oneshot 0x004A
-#define SFXsb2_a_voxattack_01_oneshot 0x004B
-#define SFXsb2_b_dark2light_00_oneshot 0x004C
-#define SFXdgd_c_windL_lp_00_looped 0x004D
-#define SFXdgd_c_windR_lp_00_looped 0x004E
-#define SFXdgd_c_eye_00_oneshot 0x004F
+#define SFXswi_b_move_lp_00_looped 0x008D
+#define SFXswi_b_voxattack_00_oneshot 0x0093
+#define SFXswi_b_voxidle_00_oneshot 0x0095
+#define SFXswi_b_voxidle_01_oneshot 0x0096
+#define SFXswi_r_voxdeath_00_oneshot 0x009A
+#define SFXswi_r_voxdeath_01_oneshot 0x009D
+#define SFXswi_b_voxattack_01_oneshot 0x00E9
 
 #endif

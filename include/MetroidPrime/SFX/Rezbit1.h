@@ -3,9 +3,10 @@
 
 #define GRPRezbit1 0x009B
 
-#define SFXspr_b_voxtaunt_01_oneshot 0x05A3
-#define SFXspr_b_voxtaunt_01a_oneshot 0x05A4
-#define SFXspr_b_voxtaunt_02_oneshot 0x05A5
-#define SFXspr_b_voxtaunt_02a_oneshot 0x05A6
+#define SFXrez_b_derez_lp_00_looped 0x0032
+#define SFXrez_b_rezbit_lp_00_looped 0x0042
+#define SFXrez_b_rezbit_lp_01_looped 0x0043
+#define SFXrez_b_rezbit_lp_02_looped 0x0044
+#define SFXrez_b_rezzz_lp_00_looped 0x0051
 
 #endif

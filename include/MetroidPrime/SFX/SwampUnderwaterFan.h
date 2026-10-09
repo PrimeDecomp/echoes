@@ -3,6 +3,6 @@
 
 #define GRPSwampUnderwaterFan 0x01B5
 
-#define SFXtem_x_floormove_00_oneshot 0x118D
+#define SFXswp_x_uwaterfan_lp_00_looped 0x0411
 
 #endif

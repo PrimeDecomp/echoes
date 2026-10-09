@@ -3,7 +3,7 @@
 
 #define GRPCineSpin 0x020E
 
-#define SFXsa2_a_litchhit_00_oneshot 0x1569
-#define SFXgib_x_wetsmall_00_oneshot 0x1600
+#define SFXmph_c_samspin_lp_00_looped 0x25E4
+#define SFXint_c_samspin_lp_00_looped 0x25E5
 
 #endif

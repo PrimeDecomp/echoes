@@ -3,10 +3,10 @@
 
 #define GRPSandwormIng3 0x00F4
 
-#define SFXsdb_r_voxflinch_01_oneshot 0x0180
-#define SFXdgd_a_chrgin_00_oneshot 0x01B4
-#define SFXdgd_a_chrgout_00_oneshot 0x01B5
-#define SFXdgd_r_gib_00_oneshot 0x01B8
-#define SFXdgd_b_emittrout_00_oneshot 0x01B9
+#define SFXsd2_a_melee_00_oneshot 0x20E6
+#define SFXsd2_a_bombbounce_00_oneshot 0x2136
+#define SFXsd2_a_bombspit_00_oneshot 0x2137
+#define SFXsd2_a_bombspittemp_00_oneshot 0x218A
+#define SFXsd2_r_snatch_00_oneshot 0x013A
 
 #endif

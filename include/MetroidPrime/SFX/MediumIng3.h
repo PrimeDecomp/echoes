@@ -3,9 +3,9 @@
 
 #define GRPMediumIng3 0x00F1
 
-#define SFXdgd_b_walk_00_oneshot 0x00CD
-#define SFXdgd_b_walk_01_oneshot 0x00CE
-#define SFXdgd_r_bombhit_00_oneshot 0x00CF
-#define SFXdgd_b_headnrg_lp_00_looped 0x00D0
+#define SFXin3_b_float_lp_00_looped 0x20D5
+#define SFXin3_b_mist_lp_00_looped 0x20D6
+#define SFXin3_b_mistin_00_oneshot 0x20D7
+#define SFXin3_b_mistout_00_oneshot 0x20D8
 
 #endif

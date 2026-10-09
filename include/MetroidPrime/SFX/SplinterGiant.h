@@ -3,11 +3,11 @@
 
 #define GRPSplinterGiant 0x0099
 
-#define SFXdks_c_intobluebits_00_oneshot 0x0207
-#define SFXdks_c_electric_lp_00_looped 0x020B
-#define SFXdks_c_electricup_lp_00_looped 0x020C
-#define SFXspt_a_laser_lp_00_looped 0x021D
-#define SFXrez_a_sptlazer_lp_00_looped 0x021E
-#define SFXelu_b_litshield_lp_00_looped 0x021F
+#define SFXsp3_a_spit_00_oneshot 0x0138
+#define SFXsp3_r_hivegib_00_oneshot 0x02A4
+#define SFXsp3_b_land_00_oneshot 0x0298
+#define SFXsp3_b_land_01_oneshot 0x0299
+#define SFXsp3_a_spit_lp_00_looped 0x0023
+#define SFXsp3_a_spithti_00_oneshot 0x0038
 
 #endif

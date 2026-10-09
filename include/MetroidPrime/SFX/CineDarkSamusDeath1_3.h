@@ -3,8 +3,8 @@
 
 #define GRPCineDarkSamusDeath1_3 0x023D
 
-#define SFXcan_x_stop_00_oneshot 0x141E
-#define SFXgas_x_release_lp_00_looped 0x1423
-#define SFXsa2_b_wlkplas_00_oneshot 0x14DA
+#define SFXdks_c_dienrg_lp_00_looped 0x2407
+#define SFXdks_c_phase2_00_oneshot 0x240B
+#define SFXdk2_c_dienrg_lp_00_looped 0x0551
 
 #endif

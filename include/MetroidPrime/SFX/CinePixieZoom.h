@@ -3,7 +3,7 @@
 
 #define GRPCinePixieZoom 0x01FF
 
-#define SFXsa2_r_hitlight_01_oneshot 0x151F
-#define SFXeko_x_mlfxn_00_oneshot 0x163C
+#define SFXdsa_c_nrgzoom_00_oneshot 0x0049
+#define SFXsja_c_nrgzoom_00_oneshot 0x0066
 
 #endif

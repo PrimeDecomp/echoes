@@ -3,9 +3,9 @@
 
 #define GRPDarkSamusPhaze 0x0040
 
-#define SFXgrp_c_nrgfade_00_oneshot 0x12A3
-#define SFXdks_c_samstand_00_oneshot 0x12A4
-#define SFXcan_x_raise_lp_00_looped 0x141D
-#define SFXpi2_x_massdam_00r_oneshot 0x142C
+#define SFXdks_c_phase2_lp_00L_looped 0x2411
+#define SFXdks_c_phase2_lp_00R_looped 0x2418
+#define SFXdk2_b_phase2_lp_00L_looped 0x0016
+#define SFXdk2_b_phase2_lp_00R_looped 0x0017
 
 #endif

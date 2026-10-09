@@ -3,15 +3,15 @@
 
 #define GRPSamusDeath_MP 0x026D
 
-#define SFXipg_b_plantin_00_oneshot 0x06D8
-#define SFXing_b_swarmmove_lp_00_looped 0x06DB
-#define SFXing_b_voxswarm_00_oneshot 0x06DC
-#define SFXsam_b_landice_02_oneshot 0x1039
-#define SFXsam_b_landsnow_00_oneshot 0x103A
-#define SFXsam_b_landsnow_02_oneshot 0x103B
-#define SFXsam_b_mlandice_00_oneshot 0x103C
-#define SFXsam_b_mlandsnw_00_oneshot 0x103D
-#define SFXsam_b_wlkice_00_oneshot 0x103E
-#define SFXsam_b_wlkice_01_oneshot 0x103F
+#define SFXsa2_r_die_00_oneshot 0x2579
+#define SFXsa2_r_deathland_00_oneshot 0x257A
+#define SFXsa2_r_deathlegs_00_oneshot 0x257B
+#define SFXsa2_r_gibball_00_oneshot 0x257C
+#define SFXsa2_r_gibball_01_oneshot 0x257D
+#define SFXsa2_r_gibsamus_00_oneshot 0x257E
+#define SFXsa2_r_gibsamus_01_oneshot 0x257F
+#define SFXsa2_r_ash_00_oneshot 0x2580
+#define SFXef2_x_ashbig_00_oneshot 0x2581
+#define SFXef2_x_ashsmall_01_oneshot 0x2582
 
 #endif

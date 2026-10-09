@@ -3,6 +3,6 @@
 
 #define GRPSandland09Button 0x01B0
 
-#define SFXtem_x_gfunlock_00_oneshot 0x1181
+#define SFXsn2_x_09button_00_oneshot 0x0588
 
 #endif

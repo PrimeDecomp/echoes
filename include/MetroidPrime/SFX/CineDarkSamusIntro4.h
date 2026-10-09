@@ -3,8 +3,8 @@
 
 #define GRPCineDarkSamusIntro4 0x024F
 
-#define SFXgen_c_antenna_00_oneshot 0x13F7
-#define SFXlum_c_pixie_lp_00_looped 0x13FD
-#define SFXlsa_c_boom_00_oneshot 0x13FE
+#define SFXdks_c_absorb_lp_00_looped 0x267E
+#define SFXdks_c_absorbend_00_oneshot 0x267F
+#define SFXdks_c_absorbup_lp_00_looped 0x2684
 
 #endif

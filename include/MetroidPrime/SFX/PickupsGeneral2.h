@@ -3,7 +3,7 @@
 
 #define GRPPickupsGeneral2 0x0145
 
-#define SFXing_b_walksm_00_oneshot 0x06B9
-#define SFXing_b_walksm_01_oneshot 0x06BA
+#define SFXpik_x_idle_lp_00_looped 0x1F6C
+#define SFXpik_x_idle_01_lp_looped 0x1F6D
 
 #endif

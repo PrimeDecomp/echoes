@@ -3,7 +3,7 @@
 
 #define GRPCineEnergyReturn3 0x0259
 
-#define SFXsa2_b_landplas_00_oneshot 0x14CB
-#define SFXsa2_b_landplas_02_oneshot 0x14CC
+#define SFXgen_c_nrgdispurse_00_oneshot 0x0593
+#define SFXgen_c_samglow_00_oneshot 0x0596
 
 #endif

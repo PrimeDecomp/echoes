@@ -3,9 +3,9 @@
 
 #define GRPSwampBoss1_6 0x001C
 
-#define SFXui2_x_visor_lp_02_looped 0x1486
-#define SFXsa2_b_highland_00_oneshot 0x148C
-#define SFXsa2_b_landgras_02_oneshot 0x1490
-#define SFXsa2_b_landsand_00_oneshot 0x1497
+#define SFXsb1_b_swim_lp_00_looped 0x0340
+#define SFXsb1_b_mtlwronk_00_oneshot 0x02B0
+#define SFXsb1_b_splashbig_00_oneshot 0x02AA
+#define SFXsb1_b_beachoff_00_oneshot 0x0402
 
 #endif

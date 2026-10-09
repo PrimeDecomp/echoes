@@ -3,6 +3,6 @@
 
 #define GRPDarkWind 0x0148
 
-#define SFXtem_x_gfgateup_lp_01_looped 0x1182
+#define SFXgen_x_wind_lp_03_looped 0x05AD
 
 #endif

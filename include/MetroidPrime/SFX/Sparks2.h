@@ -3,9 +3,9 @@
 
 #define GRPSparks2 0x02CF
 
-#define SFXei2_r_tentdie_00_oneshot 0x01C2
-#define SFXigg_b_voxangry_00_oneshot 0x0376
-#define SFXspl_c_voxtauntclose_00_oneshot 0x061B
-#define SFXspl_b_voxclimb_00_oneshot 0x061C
+#define SFXspk_x_bigspark_lp_00_looped 0x26C8
+#define SFXspk_x_bigspark_lp_01_looped 0x26C9
+#define SFXtu2_r_sparks_lp_00_looped 0x26CA
+#define SFXtur_r_sparks_lp_00_looped 0x26CB
 
 #endif

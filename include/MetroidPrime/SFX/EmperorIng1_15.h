@@ -3,9 +3,9 @@
 
 #define GRPEmperorIng1_15 0x0006
 
-#define SFXdsi_c_samhead_01_oneshot 0x12BC
-#define SFXdsi_c_samstand_00_oneshot 0x12BE
-#define SFXdsa_c_flash_00_oneshot 0x12E4
-#define SFXint_c_type_00_oneshot 0x12F6
+#define SFXein_c_retractpain_00_oneshot 0x054E
+#define SFXein_r_heartache_00_oneshot 0x045F
+#define SFXein_r_heartache_01_oneshot 0x046C
+#define SFXein_r_tentpainbig_00_oneshot 0x28A9
 
 #endif

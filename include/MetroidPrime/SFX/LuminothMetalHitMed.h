@@ -3,8 +3,8 @@
 
 #define GRPLuminothMetalHitMed 0x01C9
 
-#define SFXtem_x_10armdown_00_oneshot 0x1191
-#define SFXlth_x_rings_lp_00_looped 0x1219
-#define SFXdks_c_glassbrk_00_oneshot 0x126A
+#define SFXlth_x_mtlhitmed_00_oneshot 0x0375
+#define SFXtem_x_floorstop_00_oneshot 0x0060
+#define SFXswp_x_0iplatstop_00_oneshot 0x02CE
 
 #endif

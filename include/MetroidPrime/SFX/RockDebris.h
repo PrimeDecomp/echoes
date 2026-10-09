@@ -3,7 +3,7 @@
 
 #define GRPRockDebris 0x02C2
 
-#define SFXmt3_b_voxidle_00_oneshot 0x0301
-#define SFXsd2_b_dig_00_oneshot 0x067A
+#define SFXrok_x_smdebris_00_oneshot 0x27BC
+#define SFXdrn_a_hitrock_00_oneshot 0x27BD
 
 #endif

@@ -3,7 +3,7 @@
 
 #define GRPCineElevator 0x021C
 
-#define SFXfn2_x_optionin_00_oneshot 0x15A1
-#define SFXfn2_x_optionout_00_oneshot 0x15A2
+#define SFXele_c_activate_00_oneshot 0x279E
+#define SFXele_c_chargeup_00_oneshot 0x279F
 
 #endif

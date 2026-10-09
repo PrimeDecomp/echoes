@@ -3,15 +3,15 @@
 
 #define GRPEliteLuminoth4 0x008D
 
-#define SFXspr_b_runsand_00_oneshot 0x03AB
-#define SFXspr_b_runsand_01_oneshot 0x03AC
-#define SFXspr_b_walksand_00_oneshot 0x03AD
-#define SFXspr_b_walksand_01_oneshot 0x03AE
-#define SFXipg_a_pbombmove_00_oneshot 0x03B8
-#define SFXgf2_a_gunfire_lp_00_looped 0x03B9
-#define SFXgft_c_gunfire_lp_00_looped 0x03BC
-#define SFXgf2_a_mislfire_00_oneshot 0x03BD
-#define SFXgf2_a_mislhit_00_oneshot 0x03BE
-#define SFXin2_b_voxangry_00_oneshot 0x03D1
+#define SFXelu_a_swing_00_oneshot 0x2432
+#define SFXelu_a_swing_01_oneshot 0x2433
+#define SFXelu_b_run_00_oneshot 0x2437
+#define SFXelu_b_run_01_oneshot 0x2438
+#define SFXelu_b_walk_00_oneshot 0x2442
+#define SFXelu_b_walk_01_oneshot 0x2443
+#define SFXelu_b_walksm_00_oneshot 0x2444
+#define SFXelu_b_walksm_01_oneshot 0x2445
+#define SFXelu_a_swing_02_oneshot 0x24C1
+#define SFXelu_b_land_00_oneshot 0x2434
 
 #endif

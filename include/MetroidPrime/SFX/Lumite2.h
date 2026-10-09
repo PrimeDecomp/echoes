@@ -3,11 +3,11 @@
 
 #define GRPLumite2 0x00F9
 
-#define SFXei3_b_voxenraged_00_oneshot 0x00AA
-#define SFXei3_r_voxflinch_00_oneshot 0x00AB
-#define SFXei3_r_voxpain_00_oneshot 0x00AD
-#define SFXei3_a_stabmini_00_oneshot 0x00AE
-#define SFXei3_a_litbeam_00_oneshot 0x00B6
-#define SFXei3_a_litswarm_00_oneshot 0x00B7
+#define SFXlum_b_voxidle_00_oneshot 0x2109
+#define SFXlum_b_voxidle_01_oneshot 0x210A
+#define SFXlum_r_voxpain_00_oneshot 0x22F6
+#define SFXlum_b_voxangry_00_oneshot 0x22FC
+#define SFXlum_b_voxangry_01_oneshot 0x22FD
+#define SFXlum_r_voxdeath_00_oneshot 0x22FE
 
 #endif

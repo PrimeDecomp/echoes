@@ -3,7 +3,7 @@
 
 #define GRPCineEnergyReturnShared 0x01D9
 
-#define SFXsa2_b_landdwal_02_oneshot 0x14C8
-#define SFXsa2_b_landwire_02_oneshot 0x14CE
+#define SFXgen_c_litbeamon_00_oneshot 0x059F
+#define SFXgen_c_wild_lp_00_looped 0x0599
 
 #endif

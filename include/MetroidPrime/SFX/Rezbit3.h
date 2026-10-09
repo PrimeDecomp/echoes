@@ -3,7 +3,7 @@
 
 #define GRPRezbit3 0x0085
 
-#define SFXspr_b_voxidle_01_oneshot 0x0593
-#define SFXspr_r_impact_00_oneshot 0x05A0
+#define SFXrez_a_samvirus_lp_00_looped 0x0040
+#define SFXrez_a_laserin_lp_00_looped 0x003D
 
 #endif

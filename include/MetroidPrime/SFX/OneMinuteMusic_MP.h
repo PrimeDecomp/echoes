@@ -3,7 +3,7 @@
 
 #define GRPOneMinuteMusic_MP 0x0278
 
-#define SFXsam_b_mlandwire_00_oneshot 0x1027
-#define SFXsam_b_wlkfabr_00_oneshot 0x1028
+#define SFXmulti_defbgm_speed_doon32L_oneshot 0x050D
+#define SFXmulti_defbgm_speed_doon32R_oneshot 0x050E
 
 #endif

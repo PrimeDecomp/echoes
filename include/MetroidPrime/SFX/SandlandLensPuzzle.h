@@ -3,7 +3,7 @@
 
 #define GRPSandlandLensPuzzle 0x0197
 
-#define SFXsnd_x_05laser_lp_00_looped 0x11B4
-#define SFXsnd_x_05lensdown_00_oneshot 0x11B8
+#define SFXsnd_x_05liftstart_00_oneshot 0x0161
+#define SFXsnd_x_05lift_lp_00_looped 0x0162
 
 #endif

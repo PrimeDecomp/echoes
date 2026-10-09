@@ -3,8 +3,8 @@
 
 #define GRPSandBoss3 0x004E
 
-#define SFXsja_c_samspin_00_oneshot 0x13A5
-#define SFXsja_c_electric_lp_00_looped 0x13A6
-#define SFXsja_c_samstand_00_oneshot 0x13A7
+#define SFXsdb_a_suckin_00_oneshot 0x2172
+#define SFXsdb_a_spitout_00_oneshot 0x2173
+#define SFXsdb_a_suck_lp_00_looped 0x2174
 
 #endif

@@ -3,13 +3,13 @@
 
 #define GRPSandworm 0x00E0
 
-#define SFXsdb_r_armorbrk_01_oneshot 0x018B
-#define SFXsdb_c_blowaway_00_oneshot 0x0199
-#define SFXsdb_c_swoosh_00_oneshot 0x019F
-#define SFXdks_a_sshothit_00_oneshot 0x01A0
-#define SFXdks_b_voxtaunt2_00_oneshot 0x01A8
-#define SFXdks_b_voxtaunt1_00_oneshot 0x01A9
-#define SFXdks_b_voxpissed_00_oneshot 0x01AA
-#define SFXdk2_b_voxinvisout_00_oneshot 0x01AD
+#define SFXsdw_a_boost_00_oneshot 0x1EBE
+#define SFXsdw_a_grabball_00_oneshot 0x1EBF
+#define SFXsdw_a_spit_00_oneshot 0x1EC0
+#define SFXsdw_a_boost_01_oneshot 0x1EF9
+#define SFXsdw_a_grabball_01_oneshot 0x1EFA
+#define SFXsdw_a_spit_01_oneshot 0x1EFB
+#define SFXsdw_a_throwball_00_oneshot 0x1F04
+#define SFXsd2_a_throwball_00_oneshot 0x20E5
 
 #endif

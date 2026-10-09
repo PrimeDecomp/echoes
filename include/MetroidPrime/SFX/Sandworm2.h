@@ -3,21 +3,21 @@
 
 #define GRPSandworm2 0x00E2
 
-#define SFXsdb_a_dblfire_lp_00_looped 0x0182
-#define SFXsdb_a_trplfire_lp_00_looped 0x0183
-#define SFXsdb_a_dblcharge_lp_00_looped 0x0184
-#define SFXsdb_a_trpcharge_lp_00_looped 0x0185
-#define SFXsdb_a_suckin_00_oneshot 0x0187
-#define SFXsdb_a_spitout_00_oneshot 0x0188
-#define SFXsdb_a_suck_lp_00_looped 0x0189
-#define SFXsdb_r_armorbrk_00_oneshot 0x018A
-#define SFXsdb_c_erupt_00_oneshot 0x0193
-#define SFXsdb_b_land_01_oneshot 0x0194
-#define SFXsdb_c_passby_00_oneshot 0x0197
-#define SFXsdb_r_eyeglow_00_oneshot 0x0198
-#define SFXsdb_c_dissolve_lp_00_looped 0x019A
-#define SFXsdb_c_detach_00_oneshot 0x019B
-#define SFXdks_b_pissed_00_oneshot 0x01A2
-#define SFXdks_c_charge_00_oneshot 0x01A3
+#define SFXsdw_b_dig_00_oneshot 0x1EC4
+#define SFXsdw_b_erupt_00_oneshot 0x1EC5
+#define SFXsdw_b_land_00_oneshot 0x1EC7
+#define SFXsdw_b_moveslow_lp_00_looped 0x1EDE
+#define SFXsdw_b_movefast_lp_00_looped 0x1EDF
+#define SFXsdw_b_landlight_00_oneshot 0x1EE0
+#define SFXsdw_a_spit_lp_00_looped 0x1ED9
+#define SFXsdw_a_spithit_00_oneshot 0x1EDA
+#define SFXsd2_a_spit_lp_00_looped 0x20F2
+#define SFXsd2_a_spithit_00_oneshot 0x20F3
+#define SFXsd2_b_dig_00_oneshot 0x20F4
+#define SFXsd2_b_erupt_00_oneshot 0x20F5
+#define SFXsd2_b_land_00_oneshot 0x20F6
+#define SFXsd2_b_landlight_00_oneshot 0x20F7
+#define SFXsd2_b_movefast_lp_00_looped 0x20F8
+#define SFXsd2_b_moveslow_lp_00_looped 0x20F9
 
 #endif

@@ -3,8 +3,8 @@
 
 #define GRPLuminothMetalServoMed 0x01D0
 
-#define SFXsb1_c_riverin_lp_01_looped 0x0016
-#define SFXtem_x_gfgatemal_02_oneshot 0x118A
-#define SFXamo_c_podlower_00_oneshot 0x1273
+#define SFXlth_x_mtlservomed_lp_00_looped 0x0388
+#define SFXsw2_x_10spinner_lp_00_looped 0x03FF
+#define SFXcnt_b_floormove_lp_00_looped 0x05BF
 
 #endif

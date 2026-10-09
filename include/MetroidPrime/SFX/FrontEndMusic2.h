@@ -3,6 +3,6 @@
 
 #define GRPFrontEndMusic2 0x027C
 
-#define SFXdk2_a_icefire_lp_00_looped 0x16A9
+#define SFXfnt_x_titlemusic_lp_00R_looped 0x2687
 
 #endif

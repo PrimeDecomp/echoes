@@ -3,7 +3,7 @@
 
 #define GRPSwampWaterPump 0x01BB
 
-#define SFXtem_x_piston_00_oneshot 0x119A
-#define SFXui2_x_visor_lp_00_looped 0x1484
+#define SFXswp_x_watrpump_00_oneshot 0x0378
+#define SFXsb1_c_watrpump_00_oneshot 0x04FB
 
 #endif

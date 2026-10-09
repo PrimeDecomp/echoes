@@ -3,6 +3,6 @@
 
 #define GRPDigitalGuardianKneeLoop 0x0072
 
-#define SFXprt_c_exit_00_oneshot 0x135F
+#define SFXdgd_b_knee_lp_00_looped 0x05C5
 
 #endif

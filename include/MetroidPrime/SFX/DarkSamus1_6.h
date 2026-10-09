@@ -3,8 +3,8 @@
 
 #define GRPDarkSamus1_6 0x0002
 
-#define SFXsp2_r_collapse_00_oneshot 0x12AA
-#define SFXwpn_c_swinggun_01_oneshot 0x13DA
-#define SFXint_c_shipfall_lp_01_looped 0x1681
+#define SFXdks_a_dive_01_oneshot 0x207B
+#define SFXdk2_a_dive_01_oneshot 0x0019
+#define SFXgae_c_phazexplode_03_oneshot 0x05E6
 
 #endif

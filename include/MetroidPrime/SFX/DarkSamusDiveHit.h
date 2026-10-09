@@ -3,8 +3,8 @@
 
 #define GRPDarkSamusDiveHit 0x0062
 
-#define SFXdks_c_dieboom_01_oneshot 0x13B1
-#define SFXwpn_c_wpnswitch_04a_oneshot 0x13DB
-#define SFXprt_x_indarkportal_lp_00_looped 0x167C
+#define SFXdks_a_divehit_00_oneshot 0x207C
+#define SFXgae_c_phazexplode_00_oneshot 0x05D2
+#define SFXdks_b_landenrage_00_oneshot 0x05E9
 
 #endif

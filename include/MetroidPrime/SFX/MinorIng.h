@@ -3,20 +3,20 @@
 
 #define GRPMinorIng 0x00AB
 
-#define SFXrip_b_scream_00_oneshot 0x051C
-#define SFXrip_b_scream_01a_oneshot 0x051D
-#define SFXrip_r_impact_00_oneshot 0x051F
-#define SFXpds_a_slam_00_oneshot 0x0521
-#define SFXmtd_b_float_lp_00_looped 0x0528
-#define SFXmtd_b_float_lp_01_looped 0x0529
-#define SFXmtd_b_pincer_00_oneshot 0x052A
-#define SFXmtd_b_pincer_01_oneshot 0x052B
-#define SFXmtd_b_float_lp_02_looped 0x052C
-#define SFXmtr_a_scream_00_oneshot 0x0534
-#define SFXmtr_a_scream_01_oneshot 0x0535
-#define SFXmtr_b_spin_lp_06_looped 0x0536
-#define SFXmtr_b_spin_lp_07_looped 0x0537
-#define SFXspr_b_exhale_00_oneshot 0x053A
-#define SFXspr_b_exhale_01_oneshot 0x053B
+#define SFXin2_a_fire_00_oneshot 0x2208
+#define SFXin2_a_firehit_00_oneshot 0x2209
+#define SFXin2_b_spotin_00_oneshot 0x220A
+#define SFXin2_b_spotout_00_oneshot 0x220B
+#define SFXin2_b_spotidle_lp_00_looped 0x21C6
+#define SFXin2_b_spotmove_lp_00_looped 0x21C8
+#define SFXibg_a_firehit_00_oneshot 0x227B
+#define SFXibg_b_spotidle_lp_00_looped 0x227C
+#define SFXibg_b_spotin_00_oneshot 0x227D
+#define SFXibg_b_spotmove_lp_00_looped 0x2299
+#define SFXibg_b_spotout_00_oneshot 0x227F
+#define SFXibg_b_henshin_00_oneshot 0x2286
+#define SFXibg_b_henshinout_00_oneshot 0x229B
+#define SFXin2_b_ei2idle_lp_00_looped 0x00B5
+#define SFXin2_b_ei2move_lp_00_looped 0x00B6
 
 #endif

@@ -3,9 +3,9 @@
 
 #define GRPDigitalGuardian0 0x005D
 
-#define SFXtls_c_explode_00_oneshot 0x12FA
-#define SFXgft_c_gunhit_01_oneshot 0x1309
-#define SFXsav_c_affirm_00_oneshot 0x1344
-#define SFXmap_c_download_lp_00_looped 0x134A
+#define SFXdgd_a_homing_00_oneshot 0x01E4
+#define SFXdgd_a_nilfire_lp_00_looped 0x01EC
+#define SFXdgd_a_gun_00_oneshot 0x0362
+#define SFXdgd_a_misslfire_00_oneshot 0x03A1
 
 #endif

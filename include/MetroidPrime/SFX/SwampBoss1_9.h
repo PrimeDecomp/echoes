@@ -3,7 +3,7 @@
 
 #define GRPSwampBoss1_9 0x000A
 
-#define SFXui2_x_scanup_00_oneshot 0x147D
-#define SFXui2_x_static_lp_01_looped 0x147F
+#define SFXsb1_c_swimby_00_oneshot 0x04E0
+#define SFXsb1_c_bossfly_00_oneshot 0x04F0
 
 #endif

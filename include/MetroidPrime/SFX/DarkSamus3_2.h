@@ -3,8 +3,8 @@
 
 #define GRPDarkSamus3_2 0x0037
 
-#define SFXtls_c_samstand_00_oneshot 0x1278
-#define SFXtls_c_samhookup_00_oneshot 0x127D
-#define SFXgrp_c_nrgfade_01_oneshot 0x12A1
+#define SFXdk3_a_enragefire_lp_00_looped 0x0171
+#define SFXdk3_a_phazhit_lp_00_looped 0x017B
+#define SFXdk3_b_enrageland_00_oneshot 0x0419
 
 #endif

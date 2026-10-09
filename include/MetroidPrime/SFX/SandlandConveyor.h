@@ -3,6 +3,6 @@
 
 #define GRPSandlandConveyor 0x01A9
 
-#define SFXsnd_x_gears_lp_03_looped 0x11E3
+#define SFXsnd_x_0bconveyor_lp_00_looped 0x017E
 
 #endif

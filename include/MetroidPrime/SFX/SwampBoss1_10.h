@@ -3,10 +3,10 @@
 
 #define GRPSwampBoss1_10 0x0009
 
-#define SFXui2_x_freeoff_00_oneshot 0x1471
-#define SFXui2_x_freeon_00_oneshot 0x1472
-#define SFXui2_x_graplock_00_oneshot 0x1473
-#define SFXui2_x_hudoff_00_oneshot 0x1474
-#define SFXui2_x_type_00_oneshot 0x1480
+#define SFXsb1_c_riverin_lp_01_looped 0x04DA
+#define SFXsb1_c_ccnfall_00_oneshot 0x051F
+#define SFXsb1_c_ccnfall_01_oneshot 0x04DC
+#define SFXsb1_c_ccnfall_02_oneshot 0x04DD
+#define SFXsb1_c_ccnsplit_00_oneshot 0x04DE
 
 #endif

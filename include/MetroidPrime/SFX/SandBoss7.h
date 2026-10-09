@@ -3,12 +3,12 @@
 
 #define GRPSandBoss7 0x0044
 
-#define SFXint_c_swoosh_00_oneshot 0x137C
-#define SFXint_c_thunderbig_01_oneshot 0x137F
-#define SFXgft_c_fall_03_oneshot 0x1392
-#define SFXgrp_c_pixieflash_00_oneshot 0x1393
-#define SFXcin_c_electric_lp_00_looped 0x1398
-#define SFXdgd_c_electric_lp_00_looped 0x1399
-#define SFXlsa_c_lumfly_lp_00_looped 0x13A9
+#define SFXsdb_b_voxangry_00_oneshot 0x213B
+#define SFXsdb_b_voxangry_01_oneshot 0x213C
+#define SFXsdb_c_voxangry_00_oneshot 0x2141
+#define SFXsdb_c_voxangry_01_oneshot 0x2142
+#define SFXsdb_b_voxangry_02_oneshot 0x214A
+#define SFXsdb_c_voxangry_02_oneshot 0x214D
+#define SFXsdb_b_voxbreaksphere_00_oneshot 0x2176
 
 #endif

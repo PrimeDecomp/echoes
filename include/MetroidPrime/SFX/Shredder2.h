@@ -3,9 +3,9 @@
 
 #define GRPShredder2 0x0107
 
-#define SFXfif_b_light_00_oneshot 0x0557
-#define SFXfif_r_impact_00_oneshot 0x055B
-#define SFXfif_r_lighton_00_oneshot 0x055C
-#define SFXcry_b_walk_10_oneshot 0x0562
+#define SFXshr_b_voxalert_00_oneshot 0x237D
+#define SFXshr_b_voxangry_00_oneshot 0x237E
+#define SFXshr_b_voxangry_01_oneshot 0x237F
+#define SFXshr_r_voxpain_00_oneshot 0x2383
 
 #endif

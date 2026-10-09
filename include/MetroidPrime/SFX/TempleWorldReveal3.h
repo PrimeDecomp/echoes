@@ -3,6 +3,6 @@
 
 #define GRPTempleWorldReveal3 0x0172
 
-#define SFXswp_b_plantform_lp_00_looped 0x1209
+#define SFXtem_c_wind_lp_00r_looped 0x281A
 
 #endif

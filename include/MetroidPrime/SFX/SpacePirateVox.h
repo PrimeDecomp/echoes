@@ -3,15 +3,15 @@
 
 #define GRPSpacePirateVox 0x00D6
 
-#define SFXelu_b_run_01_oneshot 0x02A0
-#define SFXwar_a_stab_00_oneshot 0x02B5
-#define SFXwar_a_stinger_00_oneshot 0x02BB
-#define SFXwar_b_agitated_lp_00_looped 0x02BC
-#define SFXwar_b_idle_lp_00_looped 0x02C1
-#define SFXwar_b_idle_lp_01_looped 0x02C2
-#define SFXwar_b_noise_00_oneshot 0x02C3
-#define SFXwar_b_noise_01_oneshot 0x02CC
-#define SFXwar_r_wingbuzz_01_oneshot 0x02D6
-#define SFXspt_r_snatch_lp_00_looped 0x02E4
+#define SFXspr_b_voxaffirm_00_oneshot 0x1DCC
+#define SFXspr_b_voxangry_01_oneshot 0x1DD3
+#define SFXspr_b_voxidle_00_oneshot 0x1DCE
+#define SFXspr_b_voxidle_01_oneshot 0x1DCF
+#define SFXspr_b_voxidle_02_oneshot 0x1DD0
+#define SFXspr_b_voxangry_00_oneshot 0x022D
+#define SFXspr_b_voxidle_03_oneshot 0x1DD1
+#define SFXspr_b_voxalert_00_oneshot 0x026C
+#define SFXspr_b_voxattack_00_oneshot 0x1DD4
+#define SFXspr_b_voxidle_04_oneshot 0x1DD5
 
 #endif

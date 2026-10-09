@@ -3,17 +3,17 @@
 
 #define GRPSandBoss4 0x004F
 
-#define SFXprt_c_swoosh_lp_00_looped 0x1360
-#define SFXint_c_planetbuild_00_oneshot 0x136E
-#define SFXint_c_shipflinch_00_oneshot 0x1372
-#define SFXint_c_shipnrgdwn_00_oneshot 0x1374
-#define SFXgft_c_voxdeath_01_oneshot 0x138B
-#define SFXgft_c_voxdeath_02_oneshot 0x138C
-#define SFXgft_c_impact_00_oneshot 0x1390
-#define SFXgft_c_impact_01_oneshot 0x1391
-#define SFXsja_c_pixieflash_00_oneshot 0x1396
-#define SFXgrp_c_electric_lp_00_looped 0x1397
-#define SFXkey_c_emerge_00_oneshot 0x13A2
-#define SFXsja_c_swoosh_01_oneshot 0x13A8
+#define SFXsdb_r_armorbrk_00_oneshot 0x230C
+#define SFXsdb_r_armorbrk_01_oneshot 0x230D
+#define SFXsdb_b_armor_00_oneshot 0x230E
+#define SFXsdb_b_helmetform_00_oneshot 0x230F
+#define SFXsdb_r_helmetbrk_00_oneshot 0x2310
+#define SFXsdb_r_armorbrkstamp_00_oneshot 0x2311
+#define SFXsdb_b_dig_00_oneshot 0x2312
+#define SFXsdb_b_erupt_00_oneshot 0x2313
+#define SFXsdb_c_dig_00_oneshot 0x2314
+#define SFXsdb_c_erupt_00_oneshot 0x2315
+#define SFXsdb_b_land_01_oneshot 0x2316
+#define SFXsdb_c_land_01_oneshot 0x2317
 
 #endif

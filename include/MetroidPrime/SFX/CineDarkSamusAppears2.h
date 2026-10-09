@@ -3,7 +3,7 @@
 
 #define GRPCineDarkSamusAppears2 0x0204
 
-#define SFXsam_a_phazhit_00_oneshot 0x165D
-#define SFXprt_x_riftlightclose_00_oneshot 0x1660
+#define SFXdsi_c_samroll_00_oneshot 0x01F0
+#define SFXdsi_c_wind_00L_looped 0x01EE
 
 #endif

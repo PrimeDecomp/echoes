@@ -3,6 +3,6 @@
 
 #define GRPCineSeeker1 0x0247
 
-#define SFXrok_x_rockscrape_lp_01_looped 0x1631
+#define SFXskr_c_charge_00_oneshot 0x28E8
 
 #endif

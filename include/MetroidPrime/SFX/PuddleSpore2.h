@@ -3,11 +3,11 @@
 
 #define GRPPuddleSpore2 0x0098
 
-#define SFXspt_r_turtle_00_oneshot 0x027B
-#define SFXspt_b_spin_lp_00_looped 0x027C
-#define SFXspt_b_eject_00_oneshot 0x027D
-#define SFXkcs_b_voxidle_00_oneshot 0x027E
-#define SFXelu_r_voxstun_00_oneshot 0x028A
-#define SFXelu_b_voxabsorb_00_oneshot 0x028C
+#define SFXpds_b_nrgoff_00_oneshot 0x28D4
+#define SFXpds_b_nrglow_lp_00_looped 0x28DA
+#define SFXpds_b_nrgon_00_oneshot 0x28DB
+#define SFXpds_b_voxcomp_00_oneshot 0x293F
+#define SFXpds_b_voxcomp_01_oneshot 0x2940
+#define SFXpds_b_open_00_oneshot 0x015B
 
 #endif

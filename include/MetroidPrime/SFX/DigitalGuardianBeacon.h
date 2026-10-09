@@ -3,7 +3,7 @@
 
 #define GRPDigitalGuardianBeacon 0x0071
 
-#define SFXspl_c_walkmtl_00_oneshot 0x1305
-#define SFXmph_c_swoosh_00_oneshot 0x1340
+#define SFXdgd_b_beacon_lp_00_looped 0x030F
+#define SFXdgd_b_beacon_lp_01_looped 0x02E1
 
 #endif

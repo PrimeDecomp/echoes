@@ -3,10 +3,10 @@
 
 #define GRPSplitter5 0x0081
 
-#define SFXsb1_a_tongue_00_oneshot 0x0077
-#define SFXsb1_a_tonguemiss_00_oneshot 0x0078
-#define SFXsb1_c_voxflinch_000_oneshot 0x0079
-#define SFXdks_b_glidesup_lp_00_looped 0x008D
-#define SFXei3_b_voxtaunt_00_oneshot 0x00A5
+#define SFXspt_r_voxsnatch_00_oneshot 0x035E
+#define SFXspt_r_gibbig_00_oneshot 0x02C6
+#define SFXspt_b_scan_lp_00_looped 0x21BB
+#define SFXspt_r_gibbig_01_oneshot 0x0493
+#define SFXspt_r_gibbig_02_oneshot 0x0494
 
 #endif

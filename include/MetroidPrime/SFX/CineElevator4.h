@@ -3,9 +3,9 @@
 
 #define GRPCineElevator4 0x01E3
 
-#define SFXfnt_x_select_00_oneshot 0x1599
-#define SFXfnt_x_goback_00_oneshot 0x159A
-#define SFXfnt_x_highlight_00_oneshot 0x15A7
-#define SFXfnt_x_next_00_oneshot 0x15A8
+#define SFXele_c_elev_lp_00_looped 0x21C1
+#define SFXele_c_thruston_00_oneshot 0x1E24
+#define SFXele_c_elev_lp_00L_looped 0x22B8
+#define SFXele_c_elev_lp_00R_looped 0x22B9
 
 #endif

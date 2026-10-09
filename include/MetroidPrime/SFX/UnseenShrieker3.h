@@ -3,12 +3,12 @@
 
 #define GRPUnseenShrieker3 0x00B2
 
-#define SFXshk_b_idle_00_oneshot 0x0475
-#define SFXing_b_spotmove_lp_00_looped 0x0478
-#define SFXing_b_spotidle_lp_00_looped 0x0479
-#define SFXing_b_spotmove_lp_01_looped 0x047A
-#define SFXing_b_spotidle_lp_01_looped 0x047B
-#define SFXin3_b_spotidle_lp_00_looped 0x047C
-#define SFXing_r_voxpain_02_oneshot 0x0488
+#define SFXshk_b_voxidle_00_oneshot 0x1FF6
+#define SFXshk_b_voxidle_01_oneshot 0x1FF7
+#define SFXshk_r_voxpain_00_oneshot 0x1FF9
+#define SFXshk_r_voxpain_01_oneshot 0x1FFA
+#define SFXshk_r_rico_00_oneshot 0x2024
+#define SFXshk_r_voxdeath_lp_00_looped 0x202A
+#define SFXshk_r_voxdeath_00_oneshot 0x1FF8
 
 #endif

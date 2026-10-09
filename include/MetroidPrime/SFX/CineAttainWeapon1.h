@@ -3,8 +3,8 @@
 
 #define GRPCineAttainWeapon1 0x024B
 
-#define SFXsa2_b_wlkrubb_01_oneshot 0x14ED
-#define SFXsa2_b_landmoth_00_oneshot 0x14EE
-#define SFXsa2_b_landmoth_02_oneshot 0x14EF
+#define SFXwpn_c_powerup_01_oneshot 0x03C1
+#define SFXwpn_c_powerup_02_oneshot 0x03C2
+#define SFXwpn_c_gunglowing_00_oneshot 0x03AA
 
 #endif

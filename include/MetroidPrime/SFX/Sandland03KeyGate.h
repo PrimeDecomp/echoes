@@ -3,8 +3,8 @@
 
 #define GRPSandland03KeyGate 0x01AC
 
-#define SFXsnd_x_lift_lp_00_looped 0x11E5
-#define SFXsnd_x_liftstop_00_oneshot 0x11E6
-#define SFXsnd_x_tankhum_lp_00_looped 0x11E7
+#define SFXsn2_x_03keyappear_00_oneshot 0x00FA
+#define SFXsn2_x_03keyin_00_oneshot 0x02D3
+#define SFXsn2_x_03keymove_lp_00_looped 0x02D4
 
 #endif

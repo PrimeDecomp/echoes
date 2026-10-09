@@ -3,6 +3,6 @@
 
 #define GRPLuminothMetalScrapeBig 0x01CC
 
-#define SFXdk2_c_armswoosh_00_oneshot 0x126F
+#define SFXlth_x_mtlscrapebig_lp_00_looped 0x0387
 
 #endif

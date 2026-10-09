@@ -3,6 +3,6 @@
 
 #define GRPCineLightSuit4 0x025B
 
-#define SFXsa2_r_hitlight_00_oneshot 0x1519
+#define SFXlsa_c_boom_00_oneshot 0x013D
 
 #endif

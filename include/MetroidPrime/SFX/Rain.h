@@ -3,7 +3,7 @@
 
 #define GRPRain 0x02B2
 
-#define SFXtem_x_10sideup_00_oneshot 0x1193
-#define SFXtem_x_powerdown_00_oneshot 0x1194
+#define SFXswp_x_rain_lp_00l_looped 0x2841
+#define SFXswp_x_rain_lp_00r_looped 0x2842
 
 #endif

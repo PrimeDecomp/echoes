@@ -3,6 +3,6 @@
 
 #define GRPGrenchler4 0x0083
 
-#define SFXing_b_voxangry_00_oneshot 0x048B
+#define SFXgrn_r_voxsnatch_00_oneshot 0x02F5
 
 #endif

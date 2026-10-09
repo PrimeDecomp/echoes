@@ -3,8 +3,8 @@
 
 #define GRPSwampSnakeweed 0x01BC
 
-#define SFXgf2_b_voxidle_00_oneshot 0x0BCE
-#define SFXgf2_b_voxidle_01_oneshot 0x0C54
-#define SFXgf2_r_voxdeath_00_oneshot 0x0C57
+#define SFXsnk_b_idle_lp_00_looped 0x0585
+#define SFXsnk_b_in_00_oneshot 0x0586
+#define SFXsnk_b_out_00_oneshot 0x0587
 
 #endif

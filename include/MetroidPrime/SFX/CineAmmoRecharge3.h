@@ -3,6 +3,6 @@
 
 #define GRPCineAmmoRecharge3 0x01E6
 
-#define SFXsaf_x_nihilon_00_oneshot 0x1667
+#define SFXamo_c_samarmswish_00_oneshot 0x03C7
 
 #endif

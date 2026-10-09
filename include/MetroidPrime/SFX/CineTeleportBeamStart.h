@@ -3,6 +3,6 @@
 
 #define GRPCineTeleportBeamStart 0x01D8
 
-#define SFXsa2_b_butpress_01_oneshot 0x150D
+#define SFXtel_c_beamstart_lp_00_looped 0x028B
 
 #endif

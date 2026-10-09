@@ -3,23 +3,23 @@
 
 #define GRPIngVox 0x00B9
 
-#define SFXdk3_a_phazmisl_lp_00_looped 0x0106
-#define SFXdk2_a_sweephit_00_oneshot 0x0110
-#define SFXdk2_a_sweep_01_oneshot 0x0111
-#define SFXein_b_voxtaunt_00_oneshot 0x0117
-#define SFXein_a_shocktele_00_oneshot 0x0118
-#define SFXein_b_tentmove_02_oneshot 0x0123
-#define SFXdks_c_phase2_lp_00L_looped 0x0134
-#define SFXdks_c_phase2_lp_00R_looped 0x0135
-#define SFXsdb_b_voxidle_01_oneshot 0x013D
-#define SFXsdb_c_voxidle_00_oneshot 0x013E
-#define SFXsdb_c_voxidle_01_oneshot 0x013F
-#define SFXsdb_c_voxidlesq_01_oneshot 0x0143
-#define SFXsdb_c_airrumble_lp_00_looped 0x0155
-#define SFXsdb_c_rumble_lp_00_looped 0x0156
-#define SFXsdb_b_airrumble_lp_00_looped 0x0157
-#define SFXsdb_b_rumble_lp_01_looped 0x0159
-#define SFXsdb_b_body_lp_00_looped 0x015A
-#define SFXdks_c_voxidle_00_oneshot 0x0162
+#define SFXing_a_voxswipe_00_oneshot 0x1F20
+#define SFXing_b_voxalert_00_oneshot 0x1F2E
+#define SFXing_b_voxangry_00_oneshot 0x1F25
+#define SFXing_b_voxidle_00_oneshot 0x1F26
+#define SFXing_b_voxidle_01_oneshot 0x1F27
+#define SFXing_b_voxtaunt_00_oneshot 0x1F28
+#define SFXing_b_voxidle_02_oneshot 0x1F5C
+#define SFXijg_a_voxjump_00_oneshot 0x22F4
+#define SFXijg_a_voxjump_01_oneshot 0x22F5
+#define SFXing_c_voxalert_00_oneshot 0x0288
+#define SFXing_c_voxidle_00_oneshot 0x0289
+#define SFXing_c_voxangry_00_oneshot 0x028A
+#define SFXing_c_dsi_voxalert_00_oneshot 0x00F8
+#define SFXing_c_dsi_voxangry_00_oneshot 0x00F9
+#define SFXing_c_voxidle_00a_oneshot 0x05D6
+#define SFXing_c_voxidle_01_oneshot 0x05D7
+#define SFXing_c_voxidle_02_oneshot 0x05DB
+#define SFXing_c_voxattack_00_oneshot 0x05E8
 
 #endif

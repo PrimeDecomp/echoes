@@ -3,8 +3,8 @@
 
 #define GRPCommandoPirateLight3 0x007B
 
-#define SFXgrn_b_swim_01_oneshot 0x043B
-#define SFXgrn_b_walk_00_oneshot 0x043C
-#define SFXgrn_b_walk_01_oneshot 0x043D
+#define SFXcp2_a_drkchrg_00_oneshot 0x0496
+#define SFXcp2_a_drkfire_00_oneshot 0x0497
+#define SFXcp2_a_drkhit_00_oneshot 0x0498
 
 #endif

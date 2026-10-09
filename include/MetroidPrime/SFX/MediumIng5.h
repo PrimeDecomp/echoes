@@ -3,8 +3,8 @@
 
 #define GRPMediumIng5 0x0102
 
-#define SFXdgd_b_emitterin_00_oneshot 0x00D4
-#define SFXdgd_r_headhithvy_00_oneshot 0x00D6
-#define SFXdgd_c_headnrg_lp_01_looped 0x00D7
+#define SFXin3_r_voxdeath_00_oneshot 0x2318
+#define SFXin3_r_voxpain_00_oneshot 0x2319
+#define SFXin3_r_voxpainbig_00_oneshot 0x231A
 
 #endif

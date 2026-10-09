@@ -3,6 +3,6 @@
 
 #define GRPIngVox3 0x00A2
 
-#define SFXsdb_c_voxangry_00_oneshot 0x0146
+#define SFXing_r_voxdeath_00_oneshot 0x1F2B
 
 #endif

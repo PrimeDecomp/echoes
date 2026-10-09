@@ -3,6 +3,6 @@
 
 #define GRPTempleGateMalfxn 0x017C
 
-#define SFXlum_x_holo_lp_00_looped 0x1212
+#define SFXtem_x_gfgatemal_00_oneshot 0x201B
 
 #endif

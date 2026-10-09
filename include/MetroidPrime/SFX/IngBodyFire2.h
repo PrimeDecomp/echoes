@@ -3,8 +3,8 @@
 
 #define GRPIngBodyFire2 0x011D
 
-#define SFXein_b_tentin_00_oneshot 0x011D
-#define SFXsdb_b_voxdig_00_oneshot 0x013A
-#define SFXsdb_b_landlight_00_oneshot 0x015F
+#define SFXing_a_bodyhit_00_oneshot 0x1F1D
+#define SFXing_r_dethpuddle_00_oneshot 0x202C
+#define SFXing_c_swarmhit_00_oneshot 0x0341
 
 #endif

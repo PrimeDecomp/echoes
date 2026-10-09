@@ -3,23 +3,23 @@
 
 #define GRPUI2 0x0146
 
-#define SFXwal_b_voxidle_01_oneshot 0x0E9E
-#define SFXwal_b_walk_00_oneshot 0x0EA2
-#define SFXwal_b_walk_01_oneshot 0x0EA3
-#define SFXspr_b_jump_01_oneshot 0x0ECE
-#define SFXcpr_b_decloak_00_oneshot 0x0ED6
-#define SFXsam_a_mislrico_00_oneshot 0x0EEA
-#define SFXsam_a_mislemp_01_oneshot 0x0EEC
-#define SFXsam_a_skrfire_00_oneshot 0x0EED
-#define SFXsam_a_skrcharge_lp_00_looped 0x0EF0
-#define SFXsam_a_nilcharge_lp_00_looped 0x0EFA
-#define SFXsam_a_nilcofire_00_oneshot 0x0EFD
-#define SFXsam_a_nilcohit_00_oneshot 0x0EFF
-#define SFXsam_a_litchhit_00_oneshot 0x0F0F
-#define SFXsam_a_litcofire_00_oneshot 0x0F10
-#define SFXsam_a_litcofire_lp_00_looped 0x0F11
-#define SFXsam_a_litcorico_00_oneshot 0x0F12
-#define SFXsa2_a_skrfire_02_oneshot 0x1591
-#define SFXsa2_a_skrhit_00_oneshot 0x1592
+#define SFXvis_x_echo_00_oneshot 0x295C
+#define SFXvis_x_echodis_lp_00_looped 0x295D
+#define SFXvis_x_echo_03L_oneshot 0x0014
+#define SFXvis_x_echo_03R_oneshot 0x0015
+#define SFXvis_x_echodis_00_oneshot 0x0436
+#define SFXsam_r_damage_lp_00_looped 0x0955
+#define SFXui_x_visor_lp_00_looped 0x0080
+#define SFXui_x_visor_lp_01_looped 0x0160
+#define SFXvis_c_visor_lp_00_looped 0x1E8F
+#define SFXvis_c_visor_lp_01_looped 0x1E90
+#define SFXui_x_visor_lp_02_looped 0x0036
+#define SFXui_x_samrot_lp_00_looped 0x019B
+#define SFXui_x_download_lp_00_looped 0x03AE
+#define SFXlog_x_modfade_00_oneshot 0x056C
+#define SFXui_x_static_lp_00_looped 0x0275
+#define SFXui_x_static_lp_01_looped 0x0276
+#define SFXui_x_static_lp_00a_looped 0x0BE0
+#define SFXui_c_download_lp_00_looped 0x05EF
 
 #endif

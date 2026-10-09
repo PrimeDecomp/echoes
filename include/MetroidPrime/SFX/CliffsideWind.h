@@ -3,6 +3,6 @@
 
 #define GRPCliffsideWind 0x0158
 
-#define SFXlth_x_mtlscrapebigratch_lp_01_looped 0x1238
+#define SFXclf_x_wind_lp_00_looped 0x0426
 
 #endif

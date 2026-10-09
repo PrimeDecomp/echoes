@@ -3,9 +3,9 @@
 
 #define GRPKrokus2 0x0088
 
-#define SFXatm_r_explode_01_oneshot 0x0573
-#define SFXatm_r_explode_01_edit_oneshot 0x0574
-#define SFXmtd_a_facehug_00_oneshot 0x0575
-#define SFXmtd_b_idle_00_oneshot 0x0578
+#define SFXkcs_b_voxidle_00_oneshot 0x0521
+#define SFXkcs_r_voxdeath_00_oneshot 0x0523
+#define SFXkcs_b_voxidle_01_oneshot 0x0525
+#define SFXkcs_r_voxpain_00_oneshot 0x0526
 
 #endif

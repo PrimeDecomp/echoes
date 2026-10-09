@@ -3,14 +3,14 @@
 
 #define GRPShredder 0x0106
 
-#define SFXfif_b_idle_lp_01_looped 0x0556
-#define SFXfif_r_death_00_oneshot 0x0558
-#define SFXfif_r_death_01_oneshot 0x0559
-#define SFXfif_r_explode_00_oneshot 0x055A
-#define SFXcry_b_idle_00_oneshot 0x055E
-#define SFXcry_b_idle_01_oneshot 0x055F
-#define SFXcry_r_death_00_oneshot 0x0560
-#define SFXcry_b_walk_lp_00_looped 0x0561
-#define SFXcry_b_walk_11_oneshot 0x0564
+#define SFXshr_b_inflate_00_oneshot 0x2376
+#define SFXshr_b_popup_00_oneshot 0x2378
+#define SFXshr_b_popup_01_oneshot 0x2379
+#define SFXshr_b_spin_lp_00_looped 0x237A
+#define SFXshr_b_spinwtr_lp_00_looped 0x237C
+#define SFXshr_r_drkexplode_01_oneshot 0x2380
+#define SFXshr_r_explode_00_oneshot 0x2381
+#define SFXshr_r_explode_01_oneshot 0x2382
+#define SFXshr_b_popup_02_oneshot 0x2384
 
 #endif

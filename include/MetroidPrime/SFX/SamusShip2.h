@@ -3,9 +3,9 @@
 
 #define GRPSamusShip2 0x02AE
 
-#define SFXdkc_b_eye_00_oneshot 0x15F5
-#define SFXgib_x_rockbig_01_oneshot 0x160C
-#define SFXgib_x_metalbig_00_oneshot 0x1616
-#define SFXgib_x_crystal_00_oneshot 0x1628
+#define SFXint_c_ship_lp_00_looped 0x283C
+#define SFXint_c_shipfall_lp_00_looped 0x283D
+#define SFXint_c_ship_lp_01_looped 0x283E
+#define SFXint_c_shipfall_lp_01_looped 0x283F
 
 #endif

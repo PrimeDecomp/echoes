@@ -3,8 +3,8 @@
 
 #define GRPMetalHitBigRing 0x029A
 
-#define SFXsp3_a_voxattack_00_oneshot 0x05F3
-#define SFXsja_c_glow_00_oneshot 0x12B4
-#define SFXdsi_c_samarm_00_oneshot 0x12BB
+#define SFXmtl_x_hitbigring_00_oneshot 0x036A
+#define SFXdk2_a_boosthit_01_oneshot 0x0488
+#define SFXdk2_a_boosthit_00_oneshot 0x2912
 
 #endif

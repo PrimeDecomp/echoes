@@ -3,6 +3,6 @@
 
 #define GRPTempleLastStandMusic1 0x0189
 
-#define SFXlth_x_mtlhitmed_00_oneshot 0x1229
+#define SFXtem_x_laststandmusic_00L_oneshot 0x05B9
 
 #endif

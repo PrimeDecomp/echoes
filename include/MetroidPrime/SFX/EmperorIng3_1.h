@@ -3,7 +3,7 @@
 
 #define GRPEmperorIng3_1 0x0058
 
-#define SFXsa2_b_wpnswitch_01_oneshot 0x145B
-#define SFXsa2_b_drkswitch_02_oneshot 0x145C
+#define SFXei3_a_jump_00_oneshot 0x01E6
+#define SFXei3_a_jump_01_oneshot 0x01E9
 
 #endif

@@ -3,6 +3,6 @@
 
 #define GRPCineLightSuit2 0x01F5
 
-#define SFXsa2_b_panlopen_00_oneshot 0x1511
+#define SFXlsa_c_trans_00_oneshot 0x0137
 
 #endif

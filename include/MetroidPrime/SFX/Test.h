@@ -3,6 +3,6 @@
 
 #define GRPTest 0x02CD
 
-#define SFXin3_a_melee_lp_00_looped 0x06F8
+#define SFXdarktestamb 0x2786
 
 #endif

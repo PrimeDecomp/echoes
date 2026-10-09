@@ -3,7 +3,7 @@
 
 #define GRPMothTempleRoll 0x0177
 
-#define SFXsam_b_mlandwoo_00_oneshot 0x0FDF
-#define SFXsam_b_voxhighland_00_oneshot 0x0FE7
+#define SFXsam_b_rollmoth_lp_00_looped 0x1D91
+#define SFXsam_b_rollweb_lp_00_looped 0x1D92
 
 #endif

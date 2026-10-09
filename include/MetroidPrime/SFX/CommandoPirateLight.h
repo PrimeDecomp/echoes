@@ -3,10 +3,10 @@
 
 #define GRPCommandoPirateLight 0x007D
 
-#define SFXgrn_b_voxalert_00_oneshot 0x0442
-#define SFXgrn_b_voxangry_00_oneshot 0x0443
-#define SFXgrn_b_voxangry_01_oneshot 0x0444
-#define SFXspb_a_spitout_00_oneshot 0x0471
-#define SFXshk_a_popup_00_oneshot 0x0472
+#define SFXcp2_b_voxalert_00_oneshot 0x0471
+#define SFXcp2_b_voxangry_00_oneshot 0x0472
+#define SFXcp2_b_voxangry_01_oneshot 0x0478
+#define SFXcp2_a_voxattack_00_oneshot 0x049C
+#define SFXcp2_a_voxattack_01_oneshot 0x049D
 
 #endif

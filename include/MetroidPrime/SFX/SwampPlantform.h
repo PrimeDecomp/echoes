@@ -3,6 +3,6 @@
 
 #define GRPSwampPlantform 0x01BA
 
-#define SFXtem_x_10carstop_00_oneshot 0x1192
+#define SFXswp_b_plantform_lp_00_looped 0x2957
 
 #endif

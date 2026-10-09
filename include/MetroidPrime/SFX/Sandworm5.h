@@ -3,9 +3,9 @@
 
 #define GRPSandworm5 0x00E1
 
-#define SFXsdb_c_samfall_00_oneshot 0x019C
-#define SFXsdb_c_voxalert_00_oneshot 0x019E
-#define SFXdks_a_sshot_00_oneshot 0x01A6
-#define SFXdk3_b_voxenrage_00_oneshot 0x01AE
+#define SFXsdw_r_voxdeath_00_oneshot 0x1EC1
+#define SFXsdw_r_voxpain_00_oneshot 0x1EC2
+#define SFXsdw_r_voxpain_01_oneshot 0x1EC3
+#define SFXsdw_r_voxdeath_01_oneshot 0x1F63
 
 #endif

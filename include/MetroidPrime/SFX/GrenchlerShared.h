@@ -3,16 +3,16 @@
 
 #define GRPGrenchlerShared 0x0114
 
-#define SFXing_b_voxidle_01_oneshot 0x048D
-#define SFXing_b_voxtaunt_00_oneshot 0x048E
-#define SFXing_c_dsi_voxangry_00_oneshot 0x0496
-#define SFXing_c_voxidle_00a_oneshot 0x0497
-#define SFXcpr_b_voxalert_00_oneshot 0x04AC
-#define SFXcpr_a_voxattack_01_oneshot 0x04AF
-#define SFXwst_a_voxgrab_00_oneshot 0x04B6
-#define SFXwst_a_voxgrab_01_oneshot 0x04B7
-#define SFXpil_b_voxinroll_01_oneshot 0x04D4
-#define SFXspr_a_grenexpl_00_oneshot 0x04D8
-#define SFXspr_a_grenchrg_00_oneshot 0x04D9
+#define SFXigg_r_tailbrk_00_oneshot 0x24A2
+#define SFXgrn_r_tailbrk_00_oneshot 0x0197
+#define SFXigg_r_electric_lp_00_looped 0x28CF
+#define SFXgrn_r_electric_lp_00_looped 0x0198
+#define SFXgrn_b_land_00_oneshot 0x205D
+#define SFXgrn_b_landsm_00_oneshot 0x2066
+#define SFXigg_b_land_00_oneshot 0x2484
+#define SFXigg_b_landsm_00_oneshot 0x2485
+#define SFXgrn_r_armorbrk_00_oneshot 0x2054
+#define SFXgrn_r_armorbrk_01_oneshot 0x2055
+#define SFXigg_r_tailbrk_01_oneshot 0x0062
 
 #endif

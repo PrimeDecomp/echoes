@@ -3,13 +3,13 @@
 
 #define GRPSaveStation 0x0214
 
-#define SFXfn2_x_bigboxdown_00_oneshot 0x15AD
-#define SFXfn2_x_bigboxup_00_oneshot 0x15AE
-#define SFXfn2_x_scoreup_00_oneshot 0x15AF
-#define SFXfn2_x_smboxup_00_oneshot 0x15B2
-#define SFXfn2_x_smboxdown_00_oneshot 0x15B4
-#define SFXfnt_x_continue_00_oneshot 0x15B7
-#define SFXfnt_x_startblink_00_oneshot 0x15B9
-#define SFXfn2_x_joinstart_00_oneshot 0x15BA
+#define SFXsav_x_savestn_lp_00_looped 0x2609
+#define SFXsav_c_armstop_00_oneshot 0x260A
+#define SFXsav_c_download_lp_00_looped 0x260B
+#define SFXsav_c_turnon_00_oneshot 0x260C
+#define SFXsav_c_armlock_00_oneshot 0x260D
+#define SFXsav_c_powrdown_00_oneshot 0x260E
+#define SFXsav_c_suiton_00_oneshot 0x260F
+#define SFXsav_c_laser_00_oneshot 0x2610
 
 #endif

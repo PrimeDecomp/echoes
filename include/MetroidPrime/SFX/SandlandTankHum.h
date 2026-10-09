@@ -3,6 +3,6 @@
 
 #define GRPSandlandTankHum 0x01A6
 
-#define SFXsdb_c_dissolve_lp_01_looped 0x11D5
+#define SFXsnd_x_tankhum_lp_00_looped 0x27CB
 
 #endif

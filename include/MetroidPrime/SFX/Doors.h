@@ -3,8 +3,8 @@
 
 #define GRPDoors 0x0136
 
-#define SFXkra_b_walk_01_oneshot 0x069E
-#define SFXkra_r_explode_00_oneshot 0x06A3
-#define SFXglo_a_arc_00_oneshot 0x06A6
+#define SFXdor_x_close_00_oneshot 0x1D0E
+#define SFXdor_x_open_00_oneshot 0x1D11
+#define SFXdor_x_openglow_00_oneshot 0x0111
 
 #endif

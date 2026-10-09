@@ -3,6 +3,6 @@
 
 #define GRPCliffside0MBeam 0x0157
 
-#define SFXsn2_x_0opuzzle_lp_00_looped 0x1237
+#define SFXclf_x_0Mbeam_lp_00_looped 0x042C
 
 #endif

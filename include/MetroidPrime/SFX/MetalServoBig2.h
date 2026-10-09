@@ -3,6 +3,6 @@
 
 #define GRPMetalServoBig2 0x02E6
 
-#define SFXin3_a_charge_00_oneshot 0x06FC
+#define SFXmtl_x_servobig_lp_01_looped 0x036D
 
 #endif

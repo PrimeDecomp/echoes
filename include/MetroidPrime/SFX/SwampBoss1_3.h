@@ -3,11 +3,11 @@
 
 #define GRPSwampBoss1_3 0x0021
 
-#define SFXsa2_b_litswitch_02_oneshot 0x146B
-#define SFXsa2_a_screw_lp_00_looped 0x146C
-#define SFXsa2_b_highlandmetl_00_oneshot 0x148B
-#define SFXsa2_b_landdirt_00_oneshot 0x148D
-#define SFXsa2_b_landmetl_00_oneshot 0x1493
-#define SFXsa2_b_landmetl_02_oneshot 0x1494
+#define SFXsb1_b_splash_00_oneshot 0x02A8
+#define SFXsb1_b_splash_01_oneshot 0x02A9
+#define SFXsb1_b_swim_00_oneshot 0x02AB
+#define SFXsb1_b_swim_01_oneshot 0x02AC
+#define SFXsb1_c_splash_00_oneshot 0x0549
+#define SFXsb1_c_splash_01_oneshot 0x0565
 
 #endif

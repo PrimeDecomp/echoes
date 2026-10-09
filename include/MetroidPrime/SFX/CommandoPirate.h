@@ -3,11 +3,11 @@
 
 #define GRPCommandoPirate 0x00BD
 
-#define SFXshk_a_shriek_lp_00_looped 0x045F
-#define SFXshk_a_shriekhit_00_oneshot 0x0460
-#define SFXshk_b_spin_00_oneshot 0x0461
-#define SFXshk_b_spin_lp_00_looped 0x0462
-#define SFXspb_a_needlhit_00_oneshot 0x0466
-#define SFXspb_a_needlhit_01_oneshot 0x0467
+#define SFXcpr_a_grenbnce_00_oneshot 0x1E60
+#define SFXcpr_a_grenchrg_00_oneshot 0x1E61
+#define SFXcpr_a_grenexpl_00_oneshot 0x1E62
+#define SFXcpr_a_grenfire_00_oneshot 0x1E63
+#define SFXcpr_a_gunfire_00_oneshot 0x1E64
+#define SFXcpr_a_grenfire_lp_00_looped 0x1E67
 
 #endif

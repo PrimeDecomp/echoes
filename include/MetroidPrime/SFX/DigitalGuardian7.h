@@ -3,14 +3,14 @@
 
 #define GRPDigitalGuardian7 0x002D
 
-#define SFXspl_c_walkmtl_01_oneshot 0x1306
-#define SFXgft_c_fall_00_oneshot 0x1307
-#define SFXgft_c_gunhit_00_oneshot 0x1308
-#define SFXsav_c_armlock_00_oneshot 0x1316
-#define SFXvis_c_glow_00_oneshot 0x131B
-#define SFXgrp_c_nrgzing_01_oneshot 0x1327
-#define SFXcin_c_intohud_00_oneshot 0x132A
-#define SFXtel_c_swoosh_00_oneshot 0x1343
-#define SFXvis_c_arpegg_lp_00_looped 0x135A
+#define SFXdgd_r_bombhit_00_oneshot 0x28F2
+#define SFXdgd_b_headnrg_lp_00_looped 0x24F1
+#define SFXdgd_b_headnrg_lp_01_looped 0x24F2
+#define SFXdgd_b_headspin_lp_00_looped 0x24F3
+#define SFXdgd_r_headhit_00_oneshot 0x28FC
+#define SFXdgd_b_emitterin_00_oneshot 0x02FB
+#define SFXdgd_b_shieldon_00_oneshot 0x02FC
+#define SFXdgd_r_headhithvy_00_oneshot 0x02FD
+#define SFXdgd_c_headnrg_lp_01_looped 0x0449
 
 #endif

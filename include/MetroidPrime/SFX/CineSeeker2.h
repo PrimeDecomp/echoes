@@ -3,10 +3,10 @@
 
 #define GRPCineSeeker2 0x0248
 
-#define SFXgib_x_crystalsmall_00_oneshot 0x162C
-#define SFXgib_x_crystalsmall_01_oneshot 0x162D
-#define SFXein_c_generator_lp_00_looped 0x162E
-#define SFXein_b_generator_lp_00_looped 0x162F
-#define SFXdbm_x_beam_lp_00_looped 0x1630
+#define SFXskr_c_chargeenigma_00_oneshot 0x28E9
+#define SFXskr_c_chargeup_00_oneshot 0x28EA
+#define SFXskr_c_skrfire_00_oneshot 0x28EB
+#define SFXskr_c_zingdraw_00L_oneshot 0x28ED
+#define SFXskr_c_zingdraw_00R_oneshot 0x28EE
 
 #endif

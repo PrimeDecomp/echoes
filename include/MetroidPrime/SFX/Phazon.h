@@ -3,9 +3,9 @@
 
 #define GRPPhazon 0x02BC
 
-#define SFXbrz_r_voxpain_00_oneshot 0x0721
-#define SFXbrz_r_voxshellcrk_00_oneshot 0x0722
-#define SFXbrz_a_poison_00_oneshot 0x0723
-#define SFXint_c_ship_lp_01_looped 0x1680
+#define SFXpha_x_geiger_lp_00_looped 0x2863
+#define SFXpha_x_phazon_lp_00_looped 0x2865
+#define SFXdks_c_phazondown_lp_00_looped 0x2866
+#define SFXgae_c_phazon_lp_00_looped 0x05C9
 
 #endif

@@ -3,10 +3,10 @@
 
 #define GRPSporb3 0x00B4
 
-#define SFXdgd_a_stab_00_oneshot 0x00EE
-#define SFXdgd_r_impact_00_oneshot 0x00EF
-#define SFXei2_r_gas_lp_00_looped 0x00F5
-#define SFXei2_b_acid_lp_00R_looped 0x00FA
-#define SFXdk3_b_voxphazein_00_oneshot 0x00FB
+#define SFXspb_a_needlexp_00_oneshot 0x1F7D
+#define SFXspb_a_needlfire_00_oneshot 0x1F7E
+#define SFXspb_a_needlhit_00_oneshot 0x1F7F
+#define SFXspb_a_needlhit_01_oneshot 0x1F80
+#define SFXspb_a_needltele_00_oneshot 0x1F81
 
 #endif

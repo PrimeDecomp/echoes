@@ -3,6 +3,6 @@
 
 #define GRPCliffside0IFan 0x0156
 
-#define SFXlth_x_translower_lp_00_looped 0x1234
+#define SFXclf_x_0ifan_lp_00_looped 0x056B
 
 #endif

@@ -3,12 +3,12 @@
 
 #define GRPExplosions 0x02BF
 
-#define SFXgrn_b_voxsniff_00_oneshot 0x022D
-#define SFXspt_r_gibbig_01_oneshot 0x0262
-#define SFXmt3_b_voxidle_01_oneshot 0x0317
-#define SFXsd2_b_erupt_00_oneshot 0x067B
-#define SFXsd2_b_land_00_oneshot 0x067C
-#define SFXsd2_b_landlight_00_oneshot 0x067D
-#define SFXsd2_b_movefast_lp_00_looped 0x067E
+#define SFXexp_x_barrel_00_oneshot 0x27AA
+#define SFXexp_x_barrel_01_oneshot 0x27AB
+#define SFXdrn_r_wavdeath_00_oneshot 0x27AD
+#define SFXfpr_r_explode_00_oneshot 0x27AE
+#define SFXpuf_r_explode_00_oneshot 0x27AF
+#define SFXtls_c_explode_04_oneshot 0x27B0
+#define SFXtls_c_explode_05_oneshot 0x27B1
 
 #endif

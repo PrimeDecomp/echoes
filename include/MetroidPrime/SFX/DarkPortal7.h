@@ -3,6 +3,6 @@
 
 #define GRPDarkPortal7 0x02A1
 
-#define SFXin3_b_float_lp_00_looped 0x06FD
+#define SFXprt_x_darkportalopen_00_oneshot 0x019D
 
 #endif

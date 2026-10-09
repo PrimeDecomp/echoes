@@ -3,9 +3,9 @@
 
 #define GRPDigitalGuardian2 0x0031
 
-#define SFXcin_c_armswoosh_00_oneshot 0x132B
-#define SFXele_c_thrustoff_00_oneshot 0x1336
-#define SFXele_c_light_00_oneshot 0x1337
-#define SFXmap_c_holoclose_00_oneshot 0x134B
+#define SFXdgd_r_knee1_00_oneshot 0x24D2
+#define SFXdgd_r_knee4_00_oneshot 0x24D5
+#define SFXdgd_a_stab_00_oneshot 0x24ED
+#define SFXdgd_r_impact_00_oneshot 0x02D5
 
 #endif

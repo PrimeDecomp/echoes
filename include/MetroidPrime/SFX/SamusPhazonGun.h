@@ -3,9 +3,9 @@
 
 #define GRPSamusPhazonGun 0x029E
 
-#define SFXgrn_r_electric_lp_00_looped 0x0E8D
-#define SFXgrn_b_land_00_oneshot 0x0E8E
-#define SFXgrn_b_landsm_00_oneshot 0x0E8F
-#define SFXigg_b_land_00_oneshot 0x0E90
+#define SFXsam_a_phazcharge_lp_00_looped 0x0179
+#define SFXsam_a_phazfire_00_oneshot 0x01C4
+#define SFXsam_a_phazhit_00_oneshot 0x01D0
+#define SFXsam_a_phazsuck_00_oneshot 0x01D1
 
 #endif

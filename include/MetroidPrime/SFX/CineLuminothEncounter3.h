@@ -3,8 +3,8 @@
 
 #define GRPCineLuminothEncounter3 0x01EB
 
-#define SFXmtl_x_smdebris_short_00_oneshot 0x1643
-#define SFXmtl_x_smdebris_short_01_oneshot 0x1644
-#define SFXmtl_x_hitbig_00_oneshot 0x1656
+#define SFXspt_b_voxidleholo_01_oneshot 0x02F4
+#define SFXspt_b_voxidleholo_01_looped 0x02F6
+#define SFXspt_b_voxidleholo_02_looped 0x02F7
 
 #endif

@@ -3,7 +3,7 @@
 
 #define GRPSparks 0x02B6
 
-#define SFXmt3_r_voxpain_00_oneshot 0x0303
-#define SFXcin_c_affirm_00_oneshot 0x1346
+#define SFXdrn_r_empelec_00_oneshot 0x27EF
+#define SFXdgd_r_electro_lp_01_looped 0x28FF
 
 #endif

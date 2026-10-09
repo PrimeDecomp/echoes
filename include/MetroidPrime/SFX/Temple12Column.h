@@ -3,6 +3,6 @@
 
 #define GRPTemple12Column 0x0186
 
-#define SFXsb1_c_mtlhitbigrattle_00_oneshot 0x1228
+#define SFXte2_x_12columnon_00_oneshot 0x0491
 
 #endif

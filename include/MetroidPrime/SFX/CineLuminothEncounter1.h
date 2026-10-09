@@ -3,8 +3,8 @@
 
 #define GRPCineLuminothEncounter1 0x01ED
 
-#define SFXmet_x_passby_00_oneshot 0x164D
-#define SFXmet_x_impact_00_oneshot 0x164E
-#define SFXmet_x_impact_01_oneshot 0x164F
+#define SFXlum_c_athrshift_00_oneshot 0x02E3
+#define SFXlum_c_meteor_00_oneshot 0x02E4
+#define SFXlum_c_athrsplit_00_oneshot 0x02E6
 
 #endif

@@ -3,6 +3,6 @@
 
 #define GRPLuminothRings 0x01C3
 
-#define SFXdk3_c_flame_lp_00_looped 0x125F
+#define SFXlth_x_rings_lp_00_looped 0x0063
 
 #endif

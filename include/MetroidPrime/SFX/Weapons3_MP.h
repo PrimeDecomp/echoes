@@ -3,19 +3,19 @@
 
 #define GRPWeapons3_MP 0x027A
 
-#define SFXmap_x_rotate_00_looped 0x10F8
-#define SFXmap_x_zoom_lp_00_looped 0x10F9
-#define SFXui_x_pause_00_oneshot 0x10FA
-#define SFXui_x_invslide_lp_00_looped 0x110F
-#define SFXlog_x_pagedown_00_oneshot 0x1118
-#define SFXui_x_default_00_oneshot 0x1119
-#define SFXgen_x_wind_lp_03_looped 0x111A
-#define SFXgft_x_mtlhitbigrattle_00_oneshot 0x111D
-#define SFXgft_x_mtlhitbigring_00_oneshot 0x1120
-#define SFXgft_x_mtlhitmedhollow_00_oneshot 0x1121
-#define SFXcnt_b_floorstop_00_oneshot 0x1122
-#define SFXgft_x_mtlhitsmdull_00_oneshot 0x1123
-#define SFXclf_x_0gspinstop_00_oneshot 0x1124
-#define SFXtem_x_gfelevstop_00_oneshot 0x1125
+#define SFXsa2_a_litcharge_lp_00_looped 0x25C3
+#define SFXsa2_a_litchfire_00_oneshot 0x25C4
+#define SFXsa2_a_litchhit_00_oneshot 0x25C5
+#define SFXsa2_a_litchric_00_oneshot 0x25C6
+#define SFXsa2_a_litcofire_00_oneshot 0x25C8
+#define SFXsa2_a_litfire_00_oneshot 0x25C9
+#define SFXsa2_a_lithit_00_oneshot 0x25CA
+#define SFXsa2_a_litrico_00_oneshot 0x25CB
+#define SFXsa2_a_litcohit_00_oneshot 0x25E1
+#define SFXsa2_a_litcorico_00_oneshot 0x2906
+#define SFXsa2_a_litcofire_lp_00_looped 0x2907
+#define SFXsa2_a_powexpl_00_oneshot 0x25C1
+#define SFXsa2_a_powset_00_oneshot 0x25C2
+#define SFXsa2_r_diemorph_00_oneshot 0x25B8
 
 #endif

@@ -3,25 +3,25 @@
 
 #define GRPWeapons2 0x012F
 
-#define SFXing_a_offsamus_00_oneshot 0x06DF
-#define SFXing_a_offsamus_01_oneshot 0x06E0
-#define SFXshr_r_explode_01_oneshot 0x0DED
-#define SFXshr_r_voxpain_00_oneshot 0x0DF2
-#define SFXspu_b_open_oneshot 0x0E14
-#define SFXspu_b_idle_lp_00_looped 0x0E16
-#define SFXrez_r_voxalert_00_oneshot 0x0E2E
-#define SFXrez_r_voxpain_00_oneshot 0x0E2F
-#define SFXrez_b_sphere_00_oneshot 0x0E30
-#define SFXisg_b_rollelecfast_00_oneshot 0x0E44
-#define SFXisg_b_rollelecfast_01_oneshot 0x0E45
-#define SFXisg_b_rollelecfast_lp_00_looped 0x0E46
-#define SFXisg_b_rollzapfast_lp_00_looped 0x0E47
-#define SFXswi_b_voxattack_00_oneshot 0x0E4A
-#define SFXswb_b_bacteria_00_oneshot 0x0E61
-#define SFXswb_b_bacteria_01_oneshot 0x0E62
-#define SFXblp_b_idle_00_oneshot 0x0E96
-#define SFXui_x_abutton_00_oneshot 0x0FBA
-#define SFXui_c_scandone_00_oneshot 0x0FBF
-#define SFXui_c_scanoff_01_oneshot 0x0FC0
+#define SFXsam_a_drkcharge_lp_00_looped 0x1FC6
+#define SFXsam_a_drkchric_00_oneshot 0x1FC7
+#define SFXsam_a_drkchfire_00_oneshot 0x1FC8
+#define SFXsam_a_icefreez_00_oneshot 0x12AD
+#define SFXsam_a_drkfire_00_oneshot 0x1FC9
+#define SFXsam_a_drkhit_00_oneshot 0x1F9F
+#define SFXsam_a_icefreez_01_oneshot 0x12AE
+#define SFXsam_a_drkcoric_00_oneshot 0x1FCE
+#define SFXsam_a_drkric_00_oneshot 0x1FA0
+#define SFXsam_a_drkchhit_00_oneshot 0x1FD8
+#define SFXsam_a_drkcofire_00_oneshot 0x1FE3
+#define SFXsam_a_drkcohit_00_oneshot 0x1FDA
+#define SFXeff_x_frozen_00_oneshot 0x1CDA
+#define SFXeff_x_frozen_01_oneshot 0x1CDB
+#define SFXsam_r_icecrack_00_oneshot 0x1AED
+#define SFXsam_r_icecrack_01_oneshot 0x1AEE
+#define SFXsam_c_drkchfire_00_oneshot 0x055D
+#define SFXsam_c_drkcharge_lp_00_looped 0x045D
+#define SFXsam_c_drkcofire_00_oneshot 0x0575
+#define SFXsam_r_frozen_00_oneshot 0x1AEB
 
 #endif

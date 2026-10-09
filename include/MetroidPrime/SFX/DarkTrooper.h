@@ -3,11 +3,11 @@
 
 #define GRPDarkTrooper 0x00A8
 
-#define SFXfpr_b_engine_lp_00_looped 0x054A
-#define SFXfpr_b_engine_lp_01_looped 0x054B
-#define SFXfpr_b_engine_lp_03_looped 0x054E
-#define SFXfpr_a_mislload_00_oneshot 0x054F
-#define SFXdkc_b_voxidle_00_oneshot 0x15E4
-#define SFXdkc_b_voxidle_01_oneshot 0x15E5
+#define SFXgf2_a_melee_00_oneshot 0x22A2
+#define SFXgf2_b_land_00_oneshot 0x22A3
+#define SFXgf2_b_walk_00_oneshot 0x22A6
+#define SFXgf2_b_walk_01_oneshot 0x22A7
+#define SFXgft_c_walk_00_oneshot 0x20B2
+#define SFXgft_c_walk_01_oneshot 0x20B3
 
 #endif

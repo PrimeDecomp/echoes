@@ -3,7 +3,7 @@
 
 #define GRPGibRockBig 0x0287
 
-#define SFXsdw_a_throwball_00_oneshot 0x0662
-#define SFXsd2_a_throwball_00_oneshot 0x0663
+#define SFXgib_x_rockbig_00_oneshot 0x04BA
+#define SFXgib_x_rockbig_01_oneshot 0x04BB
 
 #endif

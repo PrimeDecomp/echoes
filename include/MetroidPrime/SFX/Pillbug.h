@@ -3,20 +3,20 @@
 
 #define GRPPillbug 0x00C1
 
-#define SFXin2_b_spotin_00_oneshot 0x03F5
-#define SFXin2_b_spotout_00_oneshot 0x03F6
-#define SFXin2_b_spotidle_lp_00_looped 0x03F7
-#define SFXin2_b_spotmove_lp_00_looped 0x03F8
-#define SFXibg_a_firehit_00_oneshot 0x03F9
-#define SFXibg_b_spotidle_lp_00_looped 0x03FA
-#define SFXibg_b_spotin_00_oneshot 0x03FB
-#define SFXibg_b_spotmove_lp_00_looped 0x03FC
-#define SFXibg_b_spotout_00_oneshot 0x03FD
-#define SFXibg_b_henshin_00_oneshot 0x03FE
-#define SFXibg_b_henshinout_00_oneshot 0x03FF
-#define SFXin2_b_ei2idle_lp_00_looped 0x0400
-#define SFXblg_b_swim_00_oneshot 0x0402
-#define SFXblg_b_swim_01_oneshot 0x0403
-#define SFXblg_b_swimfast_00_oneshot 0x0404
+#define SFXpil_b_land_00_oneshot 0x1E15
+#define SFXpil_b_roll_lp_00_looped 0x1E16
+#define SFXpil_b_scrape_00_oneshot 0x1E17
+#define SFXpil_b_voxangry_00_oneshot 0x1E18
+#define SFXpil_b_voxangry_01_oneshot 0x1E19
+#define SFXpil_b_voxidle_00_oneshot 0x1E1A
+#define SFXpil_b_voxidle_01_oneshot 0x1E1B
+#define SFXpil_b_walkscrap_00_oneshot 0x1E1C
+#define SFXpil_b_walkscrap_01_oneshot 0x1E1D
+#define SFXpil_r_voxdeath_00_oneshot 0x1E1E
+#define SFXpil_r_voxonback_00_oneshot 0x1E1F
+#define SFXpil_r_voxpain_00_oneshot 0x1E20
+#define SFXpil_b_voxinroll_00_oneshot 0x1E3B
+#define SFXpil_b_voxinroll_01_oneshot 0x1E3C
+#define SFXpil_r_voxonback_lp_00_looped 0x1E5C
 
 #endif

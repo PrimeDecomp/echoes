@@ -3,8 +3,8 @@
 
 #define GRPCineLightSuit 0x023A
 
-#define SFXsa2_r_mhitheavy_00_oneshot 0x1516
-#define SFXsa2_r_mhitlight_00_oneshot 0x1517
-#define SFXsa2_r_mhitmed_00_oneshot 0x1518
+#define SFXlsa_c_lumfly_lp_00_looped 0x011F
+#define SFXlsa_c_globe_lp_00_looped 0x0121
+#define SFXlsa_c_rings_00_oneshot 0x013C
 
 #endif

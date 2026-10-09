@@ -3,8 +3,8 @@
 
 #define GRPCineDarkSuit1 0x01FD
 
-#define SFXpik_x_key_00_oneshot 0x1638
-#define SFXsnd_x_eyemove_00_oneshot 0x1639
-#define SFXeko_x_transmit_00_oneshot 0x163B
+#define SFXdsa_c_samfade_00_oneshot 0x2938
+#define SFXdsa_c_samnrg_00_oneshot 0x293A
+#define SFXdsa_c_samrise_00_oneshot 0x293B
 
 #endif

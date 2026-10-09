@@ -3,19 +3,19 @@
 
 #define GRPMinorIng2 0x00AA
 
-#define SFXspr_a_gun_00_oneshot 0x051A
-#define SFXrip_b_float_lp_00_looped 0x051B
-#define SFXpds_b_voxidle_00_oneshot 0x0523
-#define SFXpds_a_spray_00_oneshot 0x0524
-#define SFXmtd_a_swoosh_00 0x0525
-#define SFXmtd_a_swoosh_01_oneshot 0x0526
-#define SFXmtd_a_thunk_00_oneshot 0x0527
-#define SFXmtd_b_grow_00_oneshot 0x052F
-#define SFXmtd_b_suck_lp_00_looped 0x0530
-#define SFXmtd_b_glass_lp_01_looped 0x0531
-#define SFXmtd_b_glass_lp_00_looped 0x0532
-#define SFXmt3_b_swoosh_00_oneshot 0x0533
-#define SFXspr_b_breathe_00_oneshot 0x0538
-#define SFXspr_b_breathe_01_oneshot 0x0539
+#define SFXin2_r_gib_01_oneshot 0x220C
+#define SFXin2_b_bounce_00_oneshot 0x220D
+#define SFXin2_b_voxangry_00_oneshot 0x220E
+#define SFXin2_b_voxangry_01_oneshot 0x220F
+#define SFXin2_r_voxpain_00_oneshot 0x21CB
+#define SFXibg_r_gib_01_oneshot 0x2283
+#define SFXibg_r_voxdeath_00_oneshot 0x2284
+#define SFXin2_r_gib_00_oneshot 0x21CA
+#define SFXin2_r_voxdeath_00_oneshot 0x2210
+#define SFXibg_r_gib_00_oneshot 0x2282
+#define SFXibg_b_voxangry_00_oneshot 0x2280
+#define SFXibg_b_voxangry_01_oneshot 0x2281
+#define SFXin2_r_voxpainpud_00_oneshot 0x01F5
+#define SFXin2_r_pudhit_00_oneshot 0x0251
 
 #endif

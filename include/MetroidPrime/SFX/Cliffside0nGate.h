@@ -3,6 +3,6 @@
 
 #define GRPCliffside0nGate 0x0153
 
-#define SFXlth_x_mtlhitsm_00_oneshot 0x122D
+#define SFXclf_x_0ngate_00_oneshot 0x04DB
 
 #endif

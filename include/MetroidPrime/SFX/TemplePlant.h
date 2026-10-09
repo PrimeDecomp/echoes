@@ -3,6 +3,6 @@
 
 #define GRPTemplePlant 0x0176
 
-#define SFXswp_x_waterdrip_00_oneshot 0x1204
+#define SFXtem_x_redplant_lp_00_looped 0x1F6F
 
 #endif

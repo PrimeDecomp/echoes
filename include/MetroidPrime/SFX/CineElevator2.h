@@ -3,10 +3,10 @@
 
 #define GRPCineElevator2 0x021D
 
-#define SFXfnt_x_select_01_oneshot 0x159C
-#define SFXfnt_x_choose_00l_oneshot 0x159E
-#define SFXfn2_x_leftright_00_oneshot 0x159F
-#define SFXfn2_x_playerin_00_oneshot 0x15A0
-#define SFXfnt_x_back_00_oneshot 0x15A6
+#define SFXele_c_thrustoff_00_oneshot 0x2648
+#define SFXele_c_light_00_oneshot 0x2649
+#define SFXele_c_latch_00_oneshot 0x264A
+#define SFXele_c_swoosh_00_oneshot 0x264B
+#define SFXele_c_latch_01_oneshot 0x264C
 
 #endif

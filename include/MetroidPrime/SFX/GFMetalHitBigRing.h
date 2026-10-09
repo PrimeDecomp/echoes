@@ -3,6 +3,6 @@
 
 #define GRPGFMetalHitBigRing 0x014A
 
-#define SFXtem_x_rings_lp_00_looped 0x117A
+#define SFXgft_x_mtlhitbigring_00_oneshot 0x0365
 
 #endif

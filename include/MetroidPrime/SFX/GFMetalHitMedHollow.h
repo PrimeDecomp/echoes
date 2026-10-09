@@ -3,7 +3,7 @@
 
 #define GRPGFMetalHitMedHollow 0x014B
 
-#define SFXsb1_c_ccnsplit_01_oneshot 0x0015
-#define SFXtem_x_redplant_lp_00_looped 0x117B
+#define SFXgft_x_mtlhitmedhollow_00_oneshot 0x0441
+#define SFXcnt_b_floorstop_00_oneshot 0x05C0
 
 #endif

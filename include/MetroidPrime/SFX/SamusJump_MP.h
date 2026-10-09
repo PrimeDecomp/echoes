@@ -3,10 +3,10 @@
 
 #define GRPSamusJump_MP 0x0273
 
-#define SFXsam_b_rollice_lp_00_looped 0x10CA
-#define SFXsam_b_rollmetl_lp_00_looped 0x10CB
-#define SFXsam_b_rollorg_lp_00_looped 0x10CC
-#define SFXsam_b_rollphaz_lp_00_looped 0x10CD
-#define SFXsam_b_rollplas_lp_00_looped 0x10CE
+#define SFXsa2_b_jump_00_oneshot 0x2824
+#define SFXsa2_b_jump_01_oneshot 0x2825
+#define SFXsa2_b_sidejump_00_oneshot 0x2826
+#define SFXsa2_b_gravboost_lp_looped 0x030E
+#define SFXsa2_b_gravfall_00_oneshot 0x035F
 
 #endif

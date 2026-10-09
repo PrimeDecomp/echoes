@@ -3,11 +3,11 @@
 
 #define GRPMetroidTank 0x00A1
 
-#define SFXpds_b_water_01_oneshot 0x033D
-#define SFXpds_b_nrgoff_00_oneshot 0x0341
-#define SFXpds_b_nrglow_lp_00_looped 0x0342
-#define SFXpds_b_nrgon_00_oneshot 0x0343
-#define SFXsdf_b_voxidle_01_oneshot 0x0363
-#define SFXei3_r_drkswarmdie_00_oneshot 0x0365
+#define SFXmtd_b_hitglass_00_oneshot 0x23F8
+#define SFXmtd_b_suckglas_00_oneshot 0x23F9
+#define SFXmtd_b_suckglas_01_oneshot 0x23FA
+#define SFXmtd_b_suckglas_02_oneshot 0x23FB
+#define SFXmtd_b_suckglas_lp_00_looped 0x2400
+#define SFXmt3_a_impact_00_oneshot 0x00EB
 
 #endif

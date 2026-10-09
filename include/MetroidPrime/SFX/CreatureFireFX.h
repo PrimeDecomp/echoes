@@ -3,11 +3,11 @@
 
 #define GRPCreatureFireFX 0x0138
 
-#define SFXsdw_b_moveslow_lp_00_looped 0x0672
-#define SFXsdw_a_spit_lp_00_looped 0x0675
-#define SFXsd2_a_spit_lp_00_looped 0x0677
-#define SFXing_b_swarmmini_01_oneshot 0x06E3
-#define SFXing_b_voxswarmmini_lp_00_looped 0x06E4
-#define SFXgba_c_gravbrst_02_oneshot 0x1293
+#define SFXeff_x_fire_lp_00_looped 0x1CE1
+#define SFXeff_x_fire_lp_01_looped 0x1CE2
+#define SFXfir_x_crispfire_lp_00_looped 0x1CE3
+#define SFXtls_c_fire_lp_00_looped 0x209A
+#define SFXei2_r_fire_lp_00_looped 0x0052
+#define SFXfir_x_crispfire6voice_lp_00_looped 0x03AB
 
 #endif

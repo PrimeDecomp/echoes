@@ -3,12 +3,13 @@
 
 #define GRPEmperorIng1_4 0x003D
 
-#define SFXlme_c_samarm_00_oneshot 0x12C1
-#define SFXlme_c_samtrans_00_oneshot 0x12C2
-#define SFXlum_c_holoon_00_oneshot 0x12C3
-#define SFXlum_c_lumholo_lp_00_looped 0x12C4
-#define SFXptx_c_riftlight_lp_00L_looped 0x12CE
-#define SFXprt_c_thunder_01_oneshot 0x12DA
-#define SFXprt_c_inportal_lp_01_looped 0x12DB
+#define SFXein_b_headout_00_oneshot 0x2943
+#define SFXein_b_headin_00_oneshot 0x2944
+#define SFXein_b_retract_00_oneshot 0x2925
+#define SFXein_b_tentmove_00_oneshot 0x000A
+#define SFXein_b_tentmove_01_oneshot 0x000B
+#define SFXein_b_tentmove_02_oneshot 0x000C
+#define SFXein_b_tentmove_03_oneshot 0x000D
+#define SFXein_b_tentspawn_00_oneshot 0x28A2
 
 #endif

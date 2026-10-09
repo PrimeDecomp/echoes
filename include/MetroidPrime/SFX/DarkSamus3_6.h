@@ -3,7 +3,7 @@
 
 #define GRPDarkSamus3_6 0x006B
 
-#define SFXgba_c_nrgzing_00_oneshot 0x128A
-#define SFXdk2_c_footstepsmall_01_oneshot 0x13EE
+#define SFXdk3_b_enrageout_00_oneshot 0x0417
+#define SFXdks_c_intobluebits_00_oneshot 0x04A5
 
 #endif

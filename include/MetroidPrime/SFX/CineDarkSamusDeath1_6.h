@@ -3,10 +3,10 @@
 
 #define GRPCineDarkSamusDeath1_6 0x01E4
 
-#define SFXclf_x_05spinstop_00_oneshot 0x1230
-#define SFXgas_x_open_00_oneshot 0x1421
-#define SFXgas_x_close_00_oneshot 0x1422
-#define SFXsa2_b_wlkice_00_oneshot 0x14E4
-#define SFXsa2_b_wlkice_01_oneshot 0x14E5
+#define SFXdks_c_glassbrk_00_oneshot 0x2409
+#define SFXdks_c_glassbrk_01_oneshot 0x240A
+#define SFXclf_x_07glassbrk_00_oneshot 0x0512
+#define SFXdk2_c_glassbrk_00_oneshot 0x0557
+#define SFXdk2_c_glassbrk_01_oneshot 0x05AC
 
 #endif

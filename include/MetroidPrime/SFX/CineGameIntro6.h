@@ -3,9 +3,9 @@
 
 #define GRPCineGameIntro6 0x022C
 
-#define SFXgib_x_rocksmall_00_oneshot 0x1606
-#define SFXgib_x_drysmall_00_oneshot 0x1621
-#define SFXgib_x_drysmall_01_oneshot 0x1622
-#define SFXgib_x_drymed_00_oneshot 0x1624
+#define SFXint_c_shipnrgdwn_00_oneshot 0x2765
+#define SFXint_c_shipthrust_00_oneshot 0x2767
+#define SFXint_c_shipthrust_01_oneshot 0x2768
+#define SFXint_c_shiptouch_00_oneshot 0x2769
 
 #endif

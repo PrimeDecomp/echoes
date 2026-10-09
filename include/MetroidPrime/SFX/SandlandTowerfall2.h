@@ -3,6 +3,6 @@
 
 #define GRPSandlandTowerfall2 0x0191
 
-#define SFXdce_c_force_lp_00_looped 0x11A7
+#define SFXsnd_x_0ptowerfall_lp_00_looped 0x035A
 
 #endif

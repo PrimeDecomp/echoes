@@ -3,6 +3,6 @@
 
 #define GRPLuminothHolo 0x01BF
 
-#define SFXdk3_c_walk_00_oneshot 0x1259
+#define SFXlum_x_holo_lp_00_looped 0x0134
 
 #endif

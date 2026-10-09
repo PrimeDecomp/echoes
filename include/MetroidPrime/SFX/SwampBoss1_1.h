@@ -3,8 +3,8 @@
 
 #define GRPSwampBoss1_1 0x0023
 
-#define SFXsa2_b_landgrat_00_oneshot 0x1491
-#define SFXsa2_b_landorg_00_oneshot 0x1495
-#define SFXsa2_b_mlanddrt_00_oneshot 0x149D
+#define SFXsb1_a_voxattack_oneshot 0x02B4
+#define SFXsb1_b_beach_00_oneshot 0x02B5
+#define SFXsb1_a_tongue_lp_00 0x03AC
 
 #endif

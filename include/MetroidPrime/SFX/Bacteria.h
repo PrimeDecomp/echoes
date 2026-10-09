@@ -3,11 +3,11 @@
 
 #define GRPBacteria 0x0111
 
-#define SFXsb1_b_wtrboil_lp_looped 0x0043
-#define SFXsb1_a_spit_lp_00_looped 0x0044
-#define SFXsb2_a_spithit_00_oneshot 0x0045
-#define SFXsb2_a_dive_lp_00_looped 0x0046
-#define SFXsb2_a_eggspit_00_oneshot 0x0047
-#define SFXsb2_a_spit_lp_00_looped 0x0048
+#define SFXswb_b_death_00_oneshot 0x00BB
+#define SFXswb_b_death_01_oneshot 0x00B0
+#define SFXswb_b_bactanrgry_00_oneshot 0x011B
+#define SFXswb_b_bactangry_01_oneshot 0x011C
+#define SFXswb_b_bacteria_00_oneshot 0x011D
+#define SFXswb_b_bacteria_01_oneshot 0x011E
 
 #endif

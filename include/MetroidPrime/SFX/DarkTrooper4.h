@@ -3,8 +3,8 @@
 
 #define GRPDarkTrooper4 0x0092
 
-#define SFXspr_b_gurgle_02_oneshot 0x0542
-#define SFXfpr_b_thrust_01_oneshot 0x0548
-#define SFXfpr_b_thrust_00_oneshot 0x054D
+#define SFXgf2_b_voxalert_00_oneshot 0x22A4
+#define SFXgf2_b_voxalert_01_oneshot 0x010D
+#define SFXgf2_r_voxpain_00_oneshot 0x22A9
 
 #endif

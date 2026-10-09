@@ -3,8 +3,8 @@
 
 #define GRPCineGravityBoost 0x0224
 
-#define SFXsa2_a_drkcohit_00_oneshot 0x155A
-#define SFXsa2_a_drkfire_00_oneshot 0x155C
-#define SFXsa2_a_icefreez_01_oneshot 0x1560
+#define SFXgba_c_gravglow_00_oneshot 0x006E
+#define SFXgba_c_samfeet_00_oneshot 0x0070
+#define SFXgba_c_samland_00_oneshot 0x0071
 
 #endif

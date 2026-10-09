@@ -3,6 +3,6 @@
 
 #define GRPTempleWind 0x0183
 
-#define SFXlth_x_metalblkstop_00_oneshot 0x121F
+#define SFXtem_x_wind_lp_looped 0x0146
 
 #endif

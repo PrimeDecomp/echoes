@@ -3,11 +3,11 @@
 
 #define GRPSwampBoss2_2 0x0016
 
-#define SFXsa2_b_wlkdirt_01_oneshot 0x14AB
-#define SFXsa2_b_wlkmetal_01_oneshot 0x14B1
-#define SFXsa2_b_wlkorg_00_oneshot 0x14B2
-#define SFXsa2_b_wlkorg_01_oneshot 0x14B3
-#define SFXsa2_b_wlksand_00_oneshot 0x14B4
-#define SFXsa2_b_highmove_01_oneshot 0x14BE
+#define SFXsb2_b_darksuck_lp_00_looped 0x0394
+#define SFXsb2_b_fly_lp_00_looped 0x0395
+#define SFXsb2_b_flydash_00_oneshot 0x0396
+#define SFXsb2_b_flydash_01_oneshot 0x0397
+#define SFXsb2_b_ligth2dark_00_oneshot 0x0398
+#define SFXsb2_b_fly_lp_01_looped 0x03BF
 
 #endif

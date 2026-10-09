@@ -3,8 +3,8 @@
 
 #define GRPEmperorIng3_8 0x001E
 
-#define SFXpi2_x_drkbeam_00_oneshot 0x143E
-#define SFXsa2_b_misswitch_31_oneshot 0x1465
-#define SFXsa2_b_nilswitch_02_oneshot 0x1468
+#define SFXei3_b_growheart_00_oneshot 0x0135
+#define SFXei3_b_metalhit_00_oneshot 0x0384
+#define SFXei3_a_litfire_lp_00_looped 0x0376
 
 #endif

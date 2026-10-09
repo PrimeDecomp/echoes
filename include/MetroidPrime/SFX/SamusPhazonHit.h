@@ -3,6 +3,6 @@
 
 #define GRPSamusPhazonHit 0x0144
 
-#define SFXsam_b_mlandplas_00_oneshot 0x1025
+#define SFXsam_r_phazhit_lp_00_looped 0x2862
 
 #endif

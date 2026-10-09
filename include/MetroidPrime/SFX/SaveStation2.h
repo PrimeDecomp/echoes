@@ -3,6 +3,6 @@
 
 #define GRPSaveStation2 0x020D
 
-#define SFXfnt_x_error_00_oneshot 0x15B8
+#define SFXsav_c_powerup_00_oneshot 0x286D
 
 #endif

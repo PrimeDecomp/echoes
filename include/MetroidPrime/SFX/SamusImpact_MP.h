@@ -3,17 +3,17 @@
 
 #define GRPSamusImpact_MP 0x0272
 
-#define SFXsam_b_screwjump_00_oneshot 0x10BE
-#define SFXsam_b_gravfall_00_oneshot 0x10BF
-#define SFXsam_c_jump_01_oneshot 0x10C0
-#define SFXsam_b_bombjump_00_oneshot 0x10C1
-#define SFXsam_b_morphboo_00_oneshot 0x10C2
-#define SFXsam_b_morphchg_lp_00_looped 0x10C3
-#define SFXsam_b_morphin_00_oneshot 0x10C4
-#define SFXsam_b_morphout_00_oneshot 0x10C5
-#define SFXsam_b_rolldirt_lp_00_looped 0x10C6
-#define SFXsam_b_rollfabr_lp_00_looped 0x10C7
-#define SFXsam_b_rollgras_lp_00_looped 0x10C8
-#define SFXsam_b_rollgrat_lp_00_looped 0x10C9
+#define SFXsa2_r_hit_00_oneshot 0x280B
+#define SFXsa2_r_hitbase_00_oneshot 0x280C
+#define SFXsa2_r_mhitheavy_00_oneshot 0x280D
+#define SFXsa2_r_mhitlight_00_oneshot 0x280E
+#define SFXsa2_r_mhitmed_00_oneshot 0x280F
+#define SFXsa2_r_hitlight_00_oneshot 0x2810
+#define SFXsa2_r_hitmed_00_oneshot 0x2811
+#define SFXsa2_r_hitheavy_00_oneshot 0x2812
+#define SFXsa2_r_hitheavy_01_oneshot 0x2813
+#define SFXsa2_r_hitlight_01_oneshot 0x2814
+#define SFXsa2_r_hitmed_01_oneshot 0x2815
+#define SFXsa2_r_mrphhit_00_oneshot 0x0468
 
 #endif

@@ -3,9 +3,9 @@
 
 #define GRPMeteorites 0x0297
 
-#define SFXlum_a_bigchrg_00_oneshot 0x0727
-#define SFXlum_a_bigshot_00_oneshot 0x0728
-#define SFXlum_b_phasein_00_oneshot 0x0729
-#define SFXlum_b_phaseout_00_oneshot 0x072A
+#define SFXmet_x_passby_00_oneshot 0x0383
+#define SFXmet_x_impact_00_oneshot 0x038A
+#define SFXmet_x_impact_01_oneshot 0x0334
+#define SFXmet_x_passby_01_oneshot 0x0361
 
 #endif

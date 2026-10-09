@@ -3,20 +3,20 @@
 
 #define GRPSpacePirateShared 0x00C7
 
-#define SFXgrn_r_voxsnatch_00_oneshot 0x0266
-#define SFXrez_a_samboot_00_oneshot 0x0267
-#define SFXrez_a_laserout_00_oneshot 0x0268
-#define SFXrez_b_dereztorez_oneshot 0x0269
-#define SFXelu_b_walk_01_oneshot 0x02A5
-#define SFXelu_b_walksm_00_oneshot 0x02A6
-#define SFXwar_b_noise_02_oneshot 0x02D1
-#define SFXwar_r_diescream_00_oneshot 0x02D2
-#define SFXing_a_snatch_lp_00_looped 0x02D9
-#define SFXgrn_r_snatch_lp_00_looped 0x02DA
-#define SFXsdw_r_snatch_lp_00_looped 0x02DB
-#define SFXgrn_a_beam_00_oneshot 0x044E
-#define SFXgrn_a_beam_01_oneshot 0x044F
-#define SFXgrn_a_bite_00_oneshot 0x0450
-#define SFXgrn_a_elecbubble_01_oneshot 0x0451
+#define SFXfpr_b_walk_00_oneshot 0x0479
+#define SFXfpr_b_walk_01_oneshot 0x047A
+#define SFXspr_b_run_00_oneshot 0x022B
+#define SFXspr_b_run_01_oneshot 0x022C
+#define SFXspr_b_walk_00_oneshot 0x022F
+#define SFXspr_b_walk_01_oneshot 0x0230
+#define SFXspr_b_walk_02_oneshot 0x059B
+#define SFXspr_b_walk_03_oneshot 0x059C
+#define SFXcpr_b_walk_00_oneshot 0x1E85
+#define SFXcpr_b_walk_01_oneshot 0x1E86
+#define SFXcpr_b_walk_02_oneshot 0x1E87
+#define SFXcpr_b_walk_03_oneshot 0x1E88
+#define SFXfpr_b_land_00_oneshot 0x0475
+#define SFXfpr_b_land_01_oneshot 0x0476
+#define SFXspr_b_land_00_oneshot 0x0227
 
 #endif

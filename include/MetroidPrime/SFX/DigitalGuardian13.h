@@ -3,7 +3,7 @@
 
 #define GRPDigitalGuardian13 0x0019
 
-#define SFXtls_c_explode_01a_oneshot 0x12FB
-#define SFXtls_c_explode_02_oneshot 0x12FC
+#define SFXdgd_c_windL_lp_00_looped 0x0354
+#define SFXdgd_c_windR_lp_00_looped 0x0355
 
 #endif

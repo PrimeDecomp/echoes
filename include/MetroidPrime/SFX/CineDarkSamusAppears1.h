@@ -3,10 +3,10 @@
 
 #define GRPCineDarkSamusAppears1 0x0205
 
-#define SFXipg_r_gib_00_oneshot 0x165A
-#define SFXprt_x_riftdark_01_oneshot 0x165F
-#define SFXprt_c_riftlightclose_00_oneshot 0x1661
-#define SFXprt_x_darkportalopen_00_oneshot 0x1662
-#define SFXprt_x_zap_00_oneshot 0x1663
+#define SFXdsi_c_samarm_00_oneshot 0x01F3
+#define SFXdsi_c_samhead_01_oneshot 0x01F4
+#define SFXdsi_c_samhead_00_oneshot 0x01F1
+#define SFXdsi_c_samstand_00_oneshot 0x01F2
+#define SFXdsi_c_samback_00_oneshot 0x0284
 
 #endif

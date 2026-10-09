@@ -3,6 +3,6 @@
 
 #define GRPLightPortal3 0x02D4
 
-#define SFXsd2_r_voxdeath_00_oneshot 0x0717
+#define SFXprt_x_lightportalopen_00_oneshot 0x019C
 
 #endif

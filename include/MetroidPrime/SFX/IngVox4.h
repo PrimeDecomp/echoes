@@ -3,7 +3,7 @@
 
 #define GRPIngVox4 0x011C
 
-#define SFXein_b_headout_00_oneshot 0x011E
-#define SFXdks_b_voxidle_00_oneshot 0x0160
+#define SFXing_r_voxoffsamus_00_oneshot 0x1FE7
+#define SFXing_c_voxswarmhit_00_oneshot 0x0349
 
 #endif

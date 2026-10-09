@@ -3,8 +3,8 @@
 
 #define GRPCliffside0JElevator 0x0161
 
-#define SFXgae_c_ingland_00_oneshot 0x1249
-#define SFXgae_c_ingland_01_oneshot 0x124A
-#define SFXdk3_c_heartbeat_00_oneshot 0x1257
+#define SFXclf_x_0Jelev_lp_00_looped 0x0431
+#define SFXclf_x_0Jelevstop_00_oneshot 0x0432
+#define SFXclf_x_0cring_lp_00_looped 0x050F
 
 #endif

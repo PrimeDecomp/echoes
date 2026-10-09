@@ -3,6 +3,6 @@
 
 #define GRPTempleHorrorStab 0x016F
 
-#define SFXsnd_x_04fanstop_00_oneshot 0x11F7
+#define SFXtem_x_0ehorror_00_oneshot 0x0195
 
 #endif

@@ -3,15 +3,15 @@
 
 #define GRPCineDarkSamusDeath1_1 0x023B
 
-#define SFXrec_x_servodwn_lp_00_looped 0x1414
-#define SFXcan_x_adjust_lp_00_looped 0x141A
-#define SFXcan_x_stop_01_oneshot 0x141F
-#define SFXti2_x_randomcnt_00_oneshot 0x1424
-#define SFXti2_x_countdown_00_oneshot 0x1426
-#define SFXsh2_x_ship_lp_00_looped 0x142A
-#define SFXpi2_x_massdam_00l_oneshot 0x142B
-#define SFXsa2_b_wlkfabr_01_oneshot 0x14D9
-#define SFXsa2_b_landsnow_00_oneshot 0x14E0
-#define SFXrok_x_meddebris_00_oneshot 0x167D
+#define SFXdks_c_dieboom_00_oneshot 0x2405
+#define SFXdks_c_dieelec_lp_00_looped 0x2406
+#define SFXdks_c_slump_00_oneshot 0x240D
+#define SFXdks_c_samfall_01_oneshot 0x2415
+#define SFXdks_c_dieboom_01_oneshot 0x2416
+#define SFXdks_c_dieboom_02_oneshot 0x2417
+#define SFXdks_c_dieelec_lp_01_looped 0x2419
+#define SFXdk2_c_dieelec_lp_00_looped 0x0552
+#define SFXdk2_c_slump_00_oneshot 0x0553
+#define SFXgae_c_phazexplode_01_oneshot 0x05CA
 
 #endif

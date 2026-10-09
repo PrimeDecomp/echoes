@@ -3,7 +3,7 @@
 
 #define GRPEmperorIng1_9 0x0064
 
-#define SFXdk2_c_footstep_01_oneshot 0x12ED
-#define SFXdk2_c_footstep_deth_00_oneshot 0x12EE
+#define SFXein_c_pullout_00_oneshot 0x043C
+#define SFXein_c_tentacle_lp_00_looped 0x043D
 
 #endif

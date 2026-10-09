@@ -3,9 +3,9 @@
 
 #define GRPDarkSamus2_4 0x0001
 
-#define SFXgrp_c_samstand_00_oneshot 0x12A5
-#define SFXkey_c_keyfly_00_oneshot 0x12A6
-#define SFXman_a_mislfire_00_oneshot 0x1682
-#define SFXman_a_mislhit_00_oneshot 0x1684
+#define SFXdk2_a_icehit_00_oneshot 0x0020
+#define SFXgae_c_phazexplode_04_oneshot 0x05E5
+#define SFXgae_c_phazexplode_02_oneshot 0x05E7
+#define SFXdk2_a_icefire_00_oneshot 0x0021
 
 #endif

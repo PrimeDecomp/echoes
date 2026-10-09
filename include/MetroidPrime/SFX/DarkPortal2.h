@@ -3,6 +3,6 @@
 
 #define GRPDarkPortal2 0x02AB
 
-#define SFXsd2_a_melee_00_oneshot 0x070A
+#define SFXprt_x_riftdark_00_oneshot 0x2737
 
 #endif

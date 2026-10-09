@@ -3,7 +3,7 @@
 
 #define GRPCliffsideSphere 0x0160
 
-#define SFXtel_c_travel_lp_02_looped 0x1245
-#define SFXtel_c_samusbycontrol_00_oneshot 0x1246
+#define SFXclf_x_sphere_lp_00_looped 0x0404
+#define SFXclf_x_sphereglow_lp_00_looped 0x0403
 
 #endif

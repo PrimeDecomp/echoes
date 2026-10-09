@@ -3,13 +3,13 @@
 
 #define GRPSporb2 0x00B5
 
-#define SFXdgd_a_stab_01_oneshot 0x00E8
-#define SFXdgd_a_samdef_00_oneshot 0x00E9
-#define SFXdgd_r_knee4_00_oneshot 0x00ED
-#define SFXdk3_b_voxrage_01_oneshot 0x00F3
-#define SFXdk3_r_voxpainbig_00_oneshot 0x00F4
-#define SFXei2_r_heal_00_oneshot 0x00F7
-#define SFXdk3_a_phazchg_00_oneshot 0x0100
-#define SFXdk3_a_phazchg_01_oneshot 0x0105
+#define SFXspb_a_gripfire_00_oneshot 0x1F79
+#define SFXspb_a_griphit_00_oneshot 0x1F7A
+#define SFXspb_a_griptele_00_oneshot 0x1F7C
+#define SFXspb_a_gripfire_lp_00_looped 0x1F8B
+#define SFXspb_a_gripsuck_01_oneshot 0x2005
+#define SFXspb_a_gripsuck_00_oneshot 0x2006
+#define SFXspb_a_gripsuck_02_oneshot 0x2009
+#define SFXspb_a_spitout_00_oneshot 0x1F82
 
 #endif

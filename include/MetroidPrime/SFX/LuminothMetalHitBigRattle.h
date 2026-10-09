@@ -3,10 +3,10 @@
 
 #define GRPLuminothMetalHitBigRattle 0x01C8
 
-#define SFXte2_x_12columnon_00_oneshot 0x119C
-#define SFXsnd_x_lasermech_00_oneshot 0x11B0
-#define SFXdk3_c_gone_00_oneshot 0x125C
-#define SFXele_c_elev_lp_00R_looped 0x1269
-#define SFXui2_x_lockon_00_oneshot 0x1476
+#define SFXlth_x_mtlhitbigrattle_00_oneshot 0x0374
+#define SFXlth_x_transstop_00_oneshot 0x00FB
+#define SFXsn2_x_0opuzzlestop_00_oneshot 0x015A
+#define SFXswp_x_0opistonstop_00_oneshot 0x0480
+#define SFXsb1_c_mtlhitbigrattle_00_oneshot 0x04FD
 
 #endif

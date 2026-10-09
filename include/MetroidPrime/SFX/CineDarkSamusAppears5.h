@@ -3,6 +3,6 @@
 
 #define GRPCineDarkSamusAppears5 0x024D
 
-#define SFXprt_x_riftdark_02_oneshot 0x1664
+#define SFXdsi_c_ingvoxecho_00_oneshot 0x03DC
 
 #endif

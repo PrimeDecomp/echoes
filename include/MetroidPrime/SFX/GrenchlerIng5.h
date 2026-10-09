@@ -3,6 +3,6 @@
 
 #define GRPGrenchlerIng5 0x011A
 
-#define SFXspr_a_grenbnce_00_oneshot 0x04D7
+#define SFXigg_r_stage_02_oneshot 0x28BB
 
 #endif

@@ -3,11 +3,11 @@
 
 #define GRPUnseenShrieker2 0x00B3
 
-#define SFXshk_b_land_00_oneshot 0x0474
-#define SFXin3_b_spotmove_lp_00_looped 0x047E
-#define SFXei3_b_puddle_lp_00_looped 0x0480
-#define SFXing_r_voxpain_00_oneshot 0x0484
-#define SFXing_r_voxpain_01_oneshot 0x0485
-#define SFXing_a_voxswipe_00_oneshot 0x0489
+#define SFXshk_a_shriek_00_oneshot 0x1FEE
+#define SFXshk_a_shriek_lp_00_looped 0x1FEF
+#define SFXshk_a_shriekhit_00_oneshot 0x1FF0
+#define SFXshk_b_spin_00_oneshot 0x1FF5
+#define SFXshk_b_spin_lp_00_looped 0x202D
+#define SFXshk_b_popexp_00_oneshot 0x03DF
 
 #endif

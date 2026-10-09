@@ -3,7 +3,7 @@
 
 #define GRPSandBossDeath2 0x0051
 
-#define SFXdks_c_samdland_00_oneshot 0x1367
-#define SFXint_c_elecbys_00L_oneshot 0x1368
+#define SFXsdb_c_blowaway_00_oneshot 0x231D
+#define SFXsdb_c_dissolve_lp_00_looped 0x231E
 
 #endif

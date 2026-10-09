@@ -3,7 +3,7 @@
 
 #define GRPIng2 0x00EB
 
-#define SFXein_b_tentmove_03_oneshot 0x0126
-#define SFXein_b_tentspawn_00_oneshot 0x0127
+#define SFXing_a_onsamus_lp_00_looped 0x1F54
+#define SFXing_a_onsamus_lp_01_looped 0x1F55
 
 #endif

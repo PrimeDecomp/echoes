@@ -3,6 +3,6 @@
 
 #define GRPCLiffside00ABeam 0x0168
 
-#define SFXdk3_c_voxdeth_00_oneshot 0x1258
+#define SFXclf_x_00abeam_lp_00_looped 0x056D
 
 #endif

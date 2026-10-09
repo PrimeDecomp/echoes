@@ -3,7 +3,7 @@
 
 #define GRPCineDarkSamusDeath2_2 0x0252
 
-#define SFXsa2_b_landice_00_oneshot 0x14DE
-#define SFXsa2_b_landice_02_oneshot 0x14DF
+#define SFXdk2_c_voxdeath_01_oneshot 0x054B
+#define SFXdk2_c_voxdeathfall_00_oneshot 0x054C
 
 #endif

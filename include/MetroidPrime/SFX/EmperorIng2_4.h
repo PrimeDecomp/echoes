@@ -3,6 +3,6 @@
 
 #define GRPEmperorIng2_4 0x005E
 
-#define SFXlsa_c_trans_00_oneshot 0x129E
+#define SFXei2_c_shellinto_lp_00_looped 0x03A0
 
 #endif

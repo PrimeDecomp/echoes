@@ -3,6 +3,6 @@
 
 #define GRPSamusFireHit 0x013D
 
-#define SFXsam_a_drkcoric_00_oneshot 0x0F24
+#define SFXsam_r_firehit_lp_00_looped 0x009B
 
 #endif

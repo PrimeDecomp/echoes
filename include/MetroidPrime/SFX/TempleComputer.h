@@ -3,6 +3,6 @@
 
 #define GRPTempleComputer 0x017E
 
-#define SFXlth_x_transdust_00_L_oneshot 0x1215
+#define SFXtem_x_gfcomp_lp_00_looped 0x2954
 
 #endif

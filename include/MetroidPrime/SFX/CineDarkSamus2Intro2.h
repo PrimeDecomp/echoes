@@ -3,6 +3,6 @@
 
 #define GRPCineDarkSamus2Intro2 0x01E5
 
-#define SFXlsa_c_swoosh_00_oneshot 0x129F
+#define SFXdk2_c_armswoosh_00_oneshot 0x0505
 
 #endif

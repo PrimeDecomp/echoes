@@ -3,9 +3,9 @@
 
 #define GRPCineGameIntro8 0x022E
 
-#define SFXdkc_r_voxpain_00_oneshot 0x15F3
-#define SFXgib_x_wetmed_00_oneshot 0x1602
-#define SFXgib_x_metalsmall_01_oneshot 0x1610
-#define SFXgib_x_metalmed_00_oneshot 0x1613
+#define SFXint_c_swoosh_00_oneshot 0x2691
+#define SFXint_c_thunder_00_oneshot 0x2692
+#define SFXint_c_thunderbig_00_oneshot 0x2693
+#define SFXint_c_thunderbig_01_oneshot 0x2694
 
 #endif

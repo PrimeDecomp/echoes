@@ -3,12 +3,12 @@
 
 #define GRPRechargeStation 0x0262
 
-#define SFXspt_b_move_00_oneshot 0x0744
-#define SFXspt_b_move_01_oneshot 0x0745
-#define SFXspt_b_nrg_lp_00_oneshot 0x0746
-#define SFXspt_b_shieldlitoff_00_oneshot 0x0747
-#define SFXspt_r_spinout_00_oneshot 0x0748
-#define SFXspt_b_sheilddrkoff_00_oneshot 0x0749
-#define SFXspt_a_laserchg_00_oneshot 0x074A
+#define SFXrec_x_chargefail_lp_00_looped 0x27FB
+#define SFXrec_x_charge_lp_00_looped 0x27FC
+#define SFXrec_x_servodwn_lp_00_looped 0x27FD
+#define SFXrec_x_servoup_lp_00_looped 0x27FE
+#define SFXrec_x_servo_lp_00_looped 0x27FF
+#define SFXrec_x_stop_00_oneshot 0x2800
+#define SFXrec_x_charge_00_oneshot 0x2801
 
 #endif

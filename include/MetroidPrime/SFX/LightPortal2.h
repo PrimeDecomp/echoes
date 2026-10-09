@@ -3,8 +3,8 @@
 
 #define GRPLightPortal2 0x02D3
 
-#define SFXsd2_r_voxdeath_01_oneshot 0x0718
-#define SFXbrz_b_voxidle_00_oneshot 0x071D
-#define SFXbrz_b_voxidle_01_oneshot 0x071E
+#define SFXprt_x_riftlightclosed_lp_00_looped 0x2854
+#define SFXprt_x_riftlightopen_00_oneshot 0x2855
+#define SFXptx_x_lightclose_00_oneshot 0x0145
 
 #endif

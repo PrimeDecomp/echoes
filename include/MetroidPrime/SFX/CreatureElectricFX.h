@@ -3,8 +3,8 @@
 
 #define GRPCreatureElectricFX 0x0137
 
-#define SFXing_c_swarmmove_lp_00_looped 0x06E5
-#define SFXing_c_voxswarm_00_oneshot 0x06E6
-#define SFXsav_c_suiton_00_oneshot 0x1318
+#define SFXeff_x_electro_lp_00_looped 0x1CD8
+#define SFXeff_x_electro_lp_01_looped 0x1CD9
+#define SFXdgd_r_electro_lp_00_looped 0x28F1
 
 #endif

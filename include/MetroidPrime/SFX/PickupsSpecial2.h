@@ -3,7 +3,7 @@
 
 #define GRPPickupsSpecial2 0x02E8
 
-#define SFXing_a_swipe_00_oneshot 0x06B0
-#define SFXing_b_run_00_oneshot 0x06B7
+#define SFXpik_x_morphamb_lp_00_looped 0x2748
+#define SFXpik_x_morpheko_lp_00_looped 0x047F
 
 #endif

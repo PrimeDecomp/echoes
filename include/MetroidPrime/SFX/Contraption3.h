@@ -3,7 +3,7 @@
 
 #define GRPContraption3 0x012A
 
-#define SFXsb2_b_flydash_03_oneshot 0x0014
-#define SFXsb1_c_ccnfall_00_oneshot 0x0018
+#define SFXcnt_b_sensornrg_lp_00_looped 0x05C1
+#define SFXcnt_c_explode_00_oneshot 0x05FB
 
 #endif

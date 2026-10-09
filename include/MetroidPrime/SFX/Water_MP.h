@@ -3,6 +3,6 @@
 
 #define GRPWater_MP 0x025F
 
-#define SFXtu2_a_shell_02_oneshot 0x0686
+#define SFXwtr_x_uwatermulti_lp_00_looped 0x283B
 
 #endif

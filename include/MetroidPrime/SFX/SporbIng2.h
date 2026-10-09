@@ -3,8 +3,8 @@
 
 #define GRPSporbIng2 0x00A5
 
-#define SFXdgd_a_spinin_00_oneshot 0x00DD
-#define SFXdgd_r_recover_00_oneshot 0x00DF
-#define SFXdgd_a_spinfast_lp_00_looped 0x00E5
+#define SFXipg_b_plantout_00_oneshot 0x22DE
+#define SFXipg_r_voxpain_00_oneshot 0x22DF
+#define SFXipg_a_pbombfire_00_oneshot 0x248D
 
 #endif

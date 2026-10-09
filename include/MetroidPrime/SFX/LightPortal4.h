@@ -3,7 +3,7 @@
 
 #define GRPLightPortal4 0x02A0
 
-#define SFXsd2_b_voxhypno_01_oneshot 0x0716
-#define SFXbrz_r_shellcrk_00_oneshot 0x071F
+#define SFXprt_x_riftlightclose_00_oneshot 0x2856
+#define SFXprt_c_riftlightclose_00_oneshot 0x01BD
 
 #endif

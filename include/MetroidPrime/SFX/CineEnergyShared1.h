@@ -3,9 +3,9 @@
 
 #define GRPCineEnergyShared1 0x0254
 
-#define SFXsa2_b_mlandplas_00_oneshot 0x14D2
-#define SFXsa2_b_mlandwire_00_oneshot 0x14D3
-#define SFXsa2_b_wlkdgrass_00_oneshot 0x14D4
-#define SFXsa2_b_wlkdgrass_01_oneshot 0x14D5
+#define SFXgen_c_recharge_lp_00_looped 0x05A4
+#define SFXgen_c_samhookupthrust_00_oneshot 0x05A5
+#define SFXgen_c_samtouch_00_oneshot 0x05A6
+#define SFXgen_c_zapstrong_lp_00_looped 0x05A7
 
 #endif

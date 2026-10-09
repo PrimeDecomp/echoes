@@ -3,11 +3,11 @@
 
 #define GRPMiniBat 0x0112
 
-#define SFXsb2_b_fly_lp_00_looped 0x0039
-#define SFXsb2_b_flydash_00_oneshot 0x003B
-#define SFXsb2_b_flydash_01_oneshot 0x003C
-#define SFXsb2_b_ligth2dark_00_oneshot 0x003E
-#define SFXsb2_b_fly_lp_01_looped 0x003F
-#define SFXsb1_a_spithit_00_oneshot 0x0040
+#define SFXbat_b_fly_00_oneshot 0x012B
+#define SFXbat_b_fly_02_oneshot 0x0131
+#define SFXbat_r_voxdeath_00_oneshot 0x0132
+#define SFXbat_r_voxdeath_01_oneshot 0x0133
+#define SFXbat_b_vox_00_oneshot 0x0414
+#define SFXbat_b_vox_01_oneshot 0x0415
 
 #endif

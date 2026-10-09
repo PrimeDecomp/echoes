@@ -3,8 +3,8 @@
 
 #define GRPCineCameraFlash 0x0201
 
-#define SFXsa2_r_mrphhit_00_oneshot 0x1521
-#define SFXfnt_x_next_02_oneshot 0x15BF
-#define SFXeko_x_lockaff_00_oneshot 0x1640
+#define SFXdsa_c_glow_00_oneshot 0x2933
+#define SFXsja_c_glow_00_oneshot 0x00DE
+#define SFXcin_a_flash_00_oneshot 0x02B7
 
 #endif

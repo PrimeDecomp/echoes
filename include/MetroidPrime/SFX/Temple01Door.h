@@ -3,6 +3,6 @@
 
 #define GRPTemple01Door 0x0170
 
-#define SFXsnd_x_ghosttree_lp_00_looped 0x11F8
+#define SFXtem_x_01door_00_oneshot 0x0192
 
 #endif

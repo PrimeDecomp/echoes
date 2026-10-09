@@ -3,6 +3,6 @@
 
 #define GRPTempleSpark 0x0188
 
-#define SFXgib_x_metalsmall_00_oneshot 0x160E
+#define SFXint_c_shipspark_lp_00_looped 0x2766
 
 #endif

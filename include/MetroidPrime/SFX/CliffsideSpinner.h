@@ -3,6 +3,6 @@
 
 #define GRPCliffsideSpinner 0x015F
 
-#define SFXtel_c_flash_00_oneshot 0x1248
+#define SFXclf_x_spin_lp_00_looped 0x0405
 
 #endif

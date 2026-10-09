@@ -3,7 +3,7 @@
 
 #define GRPSamusAcidHit_MP 0x026C
 
-#define SFXsam_b_wlkweb_01_oneshot 0x1037
-#define SFXsam_b_landice_00_oneshot 0x1038
+#define SFXsa2_r_acidhit_00_oneshot 0x27F6
+#define SFXsa2_r_acidhit_lp_00_looped 0x27F7
 
 #endif

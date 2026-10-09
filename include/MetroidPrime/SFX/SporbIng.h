@@ -3,8 +3,8 @@
 
 #define GRPSporbIng 0x00A6
 
-#define SFXdgd_a_missloop_lp_00_looped 0x00DC
-#define SFXdgd_a_jump_00_oneshot 0x00E3
-#define SFXdgd_a_spin_lp_00_looped 0x00E4
+#define SFXipg_b_pbombexp_00_oneshot 0x248C
+#define SFXipg_a_pbombtele_00_oneshot 0x22E1
+#define SFXipg_a_pbombmove_00_oneshot 0x24C7
 
 #endif

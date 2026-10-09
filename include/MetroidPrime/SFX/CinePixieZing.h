@@ -3,7 +3,7 @@
 
 #define GRPCinePixieZing 0x0200
 
-#define SFXsa2_r_hitheavy_01_oneshot 0x151E
-#define SFXeko_x_tone_00_oneshot 0x163D
+#define SFXdsa_c_nrgzing_00_oneshot 0x0039
+#define SFXsja_c_nrgzing_00_oneshot 0x0048
 
 #endif

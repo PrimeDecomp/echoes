@@ -3,6 +3,6 @@
 
 #define GRPSwampWaterCannon 0x01B6
 
-#define SFXtem_x_02gondolafall_00_oneshot 0x118E
+#define SFXswp_x_watrcannon_00_oneshot 0x03E5
 
 #endif
