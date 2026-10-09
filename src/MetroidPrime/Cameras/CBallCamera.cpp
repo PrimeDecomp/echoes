@@ -652,26 +652,31 @@ bool CBallCamera::ConstrainElevationAndDistance(float& elevation, float& distanc
     return false;
   }
 
-  const CPlayer& player = GetPlayer(mgr);
+  const CPlayer& player = Player(mgr);
   if (GetWatchedObject() != player.GetUniqueId()) {
     return false;
   }
 
-  const CVector3f ballToCamera = GetTranslation() - player.GetBallPosition();
+  CVector3f ballToCamera = GetTranslation() - player.GetBallPosition();
   float currentDistance = 0.f;
   if (ballToCamera.IsMagnitudeSafe()) {
-    currentDistance = CVector2f(ballToCamera.GetX(), ballToCamera.GetY()).Magnitude();
+    currentDistance = ballToCamera.ToVec2f().Magnitude();
+  } else {
+    ballToCamera = -player.GetMovementDirection();
   }
 
   const CScriptDoor* door = TCastToConstPtr< CScriptDoor >(mgr.GetObjectById(mTooCloseActorId));
-  bool nearDoor = false;
-  float stretch = 1.f;
   float targetDistance = distance;
+  float stretch = 1.f;
+  bool nearDoor = false;
   float baseElevation = elevation;
   float springScale = 1.f;
   if (door != nullptr && !door->IsBallDoor()) {
-    stretch = CMath::Limit(CMath::AbsF(mTooCloseActorDist / (3.f * distance)), 1.f);
-    nearDoor = mTooCloseActorDist < 3.f * distance;
+    const float doorRange = 3.f * distance;
+    stretch = CMath::Limit(CMath::AbsF(mTooCloseActorDist / doorRange), 1.f);
+    if (mTooCloseActorDist < doorRange) {
+      nearDoor = true;
+    }
     if (door->IsOpen()) {
       targetDistance =
           stretch * (distance - mConservativeDoorCamDistance) + mConservativeDoorCamDistance;
@@ -681,14 +686,18 @@ bool CBallCamera::ConstrainElevationAndDistance(float& elevation, float& distanc
     if (mObtuseDirection) {
       targetDistance *= 1.f + mSpeedFactor;
     }
-    baseElevation = door->IsOpen() ? 0.75f : 1.5f;
+    baseElevation = 0.75f;
+    if (!door->IsOpen()) {
+      baseElevation = 1.5f;
+    }
     springScale = 4.f;
   }
 
   distance =
       mBallCameraSpring.ApplyDistanceSpring(targetDistance, currentDistance, dt * springScale);
   elevation = (elevation - baseElevation) * stretch + baseElevation;
-  return nearDoor;
+  const bool result = nearDoor;
+  return result;
 }
 
 CVector3f CBallCamera::ConstrainYawAngle(const CPlayer& player, float yawSpeed, float dampenAngle,
