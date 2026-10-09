@@ -83,12 +83,12 @@ void CSurfaceCamera::Think(float dt, CStateManager& mgr) {
           const float radius = radial.Magnitude();
           if (radius > 0.001f) {
             const float offsetX = camera->GetPlayerOffset().GetX();
-            CRelAngle angle = CRelAngle::FromRadians(offsetX / radius);
+            float angle = offsetX / radius;
             if (camera->GetFlags() & CScriptSurfaceCamera::kSF_OffsetIsDegrees) {
-              angle = CRelAngle::FromDegrees(offsetX);
+              angle = CRelAngle::FromDegrees(offsetX).AsRadians();
             }
             const CQuaternion rotation =
-                CQuaternion::AxisAngle(cylinder.GetAxis().GetNormal(), angle);
+                CQuaternion::AxisAngle(cylinder.GetAxis().GetNormal(), CRelAngle::FromRadians(angle));
             position = surface->GetSurfacePoint(axisPoint + rotation.Transform(radial));
           }
         }
@@ -120,11 +120,12 @@ void CSurfaceCamera::Think(float dt, CStateManager& mgr) {
             const CVector3f radial = position - center;
             const float radius = radial.Magnitude();
             if (radius > 0.001f) {
-              CRelAngle theta = CRelAngle::FromRadians(angle / radius);
+              float theta = angle / radius;
               if (camera->GetFlags() & CScriptSurfaceCamera::kSF_OffsetIsDegrees) {
-                theta = CRelAngle::FromDegrees(angle);
+                theta = CRelAngle::FromDegrees(angle).AsRadians();
               }
-              const CQuaternion rotation = CQuaternion::AxisAngle(CUnitVector3f(axis), theta);
+              const CQuaternion rotation =
+                  CQuaternion::AxisAngle(CUnitVector3f(axis), CRelAngle::FromRadians(theta));
               position = surface->GetSurfacePoint(center + rotation.Transform(radial));
             }
           }
@@ -177,8 +178,8 @@ void CSurfaceCamera::Think(float dt, CStateManager& mgr) {
   if (camera->GetFlags() & CScriptSurfaceCamera::kSF_ProjectTargetAlongHintForward) {
     const CGameHint* hint = CameraManager(mgr).GetHintManager()->GetCurrentHint(mgr);
     if (hint) {
-      const CVector3f position = xf.GetTranslation();
-      xf = CTransform4f::LookAt(position, position + hint->GetTransform().GetForward(),
+      const CVector3f forward = hint->GetTransform().GetForward();
+      xf = CTransform4f::LookAt(xf.GetTranslation(), xf.GetTranslation() + forward,
                                 CVector3f::Up());
     }
   }
