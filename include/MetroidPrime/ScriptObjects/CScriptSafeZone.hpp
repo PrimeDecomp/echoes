@@ -82,6 +82,7 @@ public:
 
   // Shell appearance used while teleporting; WorldTeleporter reads the first entry.
   const CDarkWorldInfo& GetDarkWorldInfo() const { return mNormalInfo; }
+  EZoneType GetZoneType() const { return mZoneType; }
 
 private:
   // Guessed names.

@@ -1845,6 +1845,13 @@ config.libs = [
         extra_cflags=["-pool off"],
     ),
     Rel(
+        "MediumIng",
+        [
+            Object(NonMatching, "MetroidPrime/Enemies/CMediumIng.cpp"),
+        ],
+        extra_cflags=["-pool off"],
+    ),
+    Rel(
         "MysteryFlyer",
         [
             Object(NonMatching, "MetroidPrime/Enemies/CMysteryFlyer.cpp"),
