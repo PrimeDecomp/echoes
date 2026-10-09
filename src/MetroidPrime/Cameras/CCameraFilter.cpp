@@ -16,11 +16,11 @@
 static const CColor& skIdentityColorMultiply = CColor::White();
 
 // Debug name tables; the code using them is dead-stripped in the target, but the strings remain.
-static const char* skFilterTypeNames[] = {
+static const char* const skFilterTypeNames[] = {
     "PassThru   ", "Multiply   ", "Invert     ", "Add        ", "Subtract   ",
     "Blend      ", "WideScreen ", "SceneAdd   ", "NoColor    ",
 };
-static const char* skFilterShapeNames[] = {
+static const char* const skFilterShapeNames[] = {
     "FullScreen                      ", "FullScreenHalvesLeftRight       ",
     "FullScreenHalvesTopBottom       ", "FullScreenQuarters              ",
     "CinemaBars                      ", "ScanLinesEven                   ",
@@ -28,7 +28,7 @@ static const char* skFilterShapeNames[] = {
     "DialogBox                       ", "CinematicPlaceholderLabel       ",
     "CookieCutterDepthRandomStatic   ",
 };
-static const char* skBlurTypeNames[] = {"NoBlur  ", "LoBlur  ", "HiBlur  "};
+static const char* const skBlurTypeNames[] = {"NoBlur  ", "LoBlur  ", "HiBlur  "};
 
 // Guessed names for the original dialog-box settings.
 static float sDialogBoxOffsetY = -135.f;
@@ -562,19 +562,23 @@ void CCameraBlurPass::Draw() const {
     return;
   }
   const CViewport& viewport = CGraphics::GetViewport();
-  const int width = viewport.mWidth >> 1;
-  const int height = viewport.mHeight >> 1;
+  const int viewportLeft = viewport.mLeft;
+  const int viewportTop = viewport.mTop;
+  const int viewportWidth = viewport.mWidth;
+  const int viewportHeight = viewport.mHeight;
   void* buffer = CGraphics::GetDolphinSpareBuffer();
   if (!mNoPersistentCopy || !mUsePersistent) {
     GetFbCopy(GX_TF_RGB565);
     mNoPersistentCopy = true;
   }
+  const int width = viewportWidth >> 1;
+  const int height = viewportHeight >> 1;
   CGraphics::LoadDolphinSpareTexture(width, height, GX_TF_RGB565, buffer,
                                      CGraphics::kSpareBufferTexMapID);
 
-  const float left = static_cast< float >(viewport.mLeft);
-  const float top = static_cast< float >(viewport.mTop);
+  const float left = static_cast< float >(viewportLeft);
   const float right = left + static_cast< float >(width);
+  const float top = static_cast< float >(viewportTop);
   const float bottom = top + static_cast< float >(height);
   CGraphics::SetOrtho(left, right, bottom, top, -1.f, 1.f);
   gpRender->SetDepthReadWrite(false, false);
@@ -598,25 +602,37 @@ void CCameraBlurPass::Draw() const {
   CGX::SetTevColorIn(GX_TEVSTAGE0, GX_CC_ZERO, GX_CC_TEXC, GX_CC_KONST, GX_CC_ZERO);
   CGX::SetTevAlphaIn(GX_TEVSTAGE0, GX_CA_ZERO, GX_CA_ZERO, GX_CA_ZERO, GX_CA_KONST);
   CGX::SetTevKAlphaSel(GX_TEVSTAGE0, GX_TEV_KASEL_K0_A);
-  for (int i = 0; i < 8; ++i) {
-    CGX::SetTevOrder(static_cast< GXTevStageID >(i), static_cast< GXTexCoordID >(i),
-                     CGraphics::kSpareBufferTexMapID, GX_COLOR_NULL);
-  }
+  CGX::SetTevOrder(GX_TEVSTAGE0, GX_TEXCOORD0, CGraphics::kSpareBufferTexMapID, GX_COLOR_NULL);
+  CGX::SetTevOrder(GX_TEVSTAGE1, GX_TEXCOORD1, CGraphics::kSpareBufferTexMapID, GX_COLOR_NULL);
+  CGX::SetTevOrder(GX_TEVSTAGE2, GX_TEXCOORD2, CGraphics::kSpareBufferTexMapID, GX_COLOR_NULL);
+  CGX::SetTevOrder(GX_TEVSTAGE3, GX_TEXCOORD3, CGraphics::kSpareBufferTexMapID, GX_COLOR_NULL);
+  CGX::SetTevOrder(GX_TEVSTAGE4, GX_TEXCOORD4, CGraphics::kSpareBufferTexMapID, GX_COLOR_NULL);
+  CGX::SetTevOrder(GX_TEVSTAGE5, GX_TEXCOORD5, CGraphics::kSpareBufferTexMapID, GX_COLOR_NULL);
+  CGX::SetTevOrder(GX_TEVSTAGE6, GX_TEXCOORD6, CGraphics::kSpareBufferTexMapID, GX_COLOR_NULL);
+  CGX::SetTevOrder(GX_TEVSTAGE7, GX_TEXCOORD7, CGraphics::kSpareBufferTexMapID, GX_COLOR_NULL);
 
   const float alpha = mUsePersistent ? 1.f : rstl::min_val(1.f, 0.5f * mCurrentValue);
   const CColor weight(1.f / 7.f, 1.f / 7.f, 1.f / 7.f, alpha);
   CGX::SetTevKColor(GX_KCOLOR0, weight.GetGXColor());
+
+  uint texMtxId = GX_TEXMTX0;
   for (int i = 0; i < 7; ++i) {
     const float angle = M_2PIF * static_cast< float >(i - 1) / 6.f;
     const float dx = i == 0 ? 0.f : (mCurrentValue / static_cast< float >(width)) * cosf(angle);
     const float dy = i == 0 ? 0.f : (mCurrentValue / static_cast< float >(height)) * sinf(angle);
-    const float matrix[2][4] = {{1.f, 0.f, 0.f, dx}, {0.f, 1.f, 0.f, dy}};
-    CGX::LoadTexMtxImm(matrix, GX_TEXMTX0 + i * 3, GX_MTX2x4);
+    float matrix[2][4] = {{1.f, 0.f, 0.f, dx}, {0.f, 1.f, 0.f, dy}};
+    GXLoadTexMtxImm(matrix, texMtxId, GX_MTX2x4);
+    texMtxId += 3;
   }
-  for (int i = 0; i < 8; ++i) {
-    CGX::SetTexCoordGen(static_cast< GXTexCoordID >(i), GX_TG_MTX2x4, GX_TG_TEX0,
-                        static_cast< GXTexMtx >(GX_TEXMTX0 + i * 3), GX_FALSE, GX_PTIDENTITY);
-  }
+  CGX::SetTexCoordGen(GX_TEXCOORD0, GX_TG_MTX2x4, GX_TG_TEX0, GX_TEXMTX0, GX_FALSE, GX_PTIDENTITY);
+  CGX::SetTexCoordGen(GX_TEXCOORD1, GX_TG_MTX2x4, GX_TG_TEX0, GX_TEXMTX1, GX_FALSE, GX_PTIDENTITY);
+  CGX::SetTexCoordGen(GX_TEXCOORD2, GX_TG_MTX2x4, GX_TG_TEX0, GX_TEXMTX2, GX_FALSE, GX_PTIDENTITY);
+  CGX::SetTexCoordGen(GX_TEXCOORD3, GX_TG_MTX2x4, GX_TG_TEX0, GX_TEXMTX3, GX_FALSE, GX_PTIDENTITY);
+  CGX::SetTexCoordGen(GX_TEXCOORD4, GX_TG_MTX2x4, GX_TG_TEX0, GX_TEXMTX4, GX_FALSE, GX_PTIDENTITY);
+  CGX::SetTexCoordGen(GX_TEXCOORD5, GX_TG_MTX2x4, GX_TG_TEX0, GX_TEXMTX5, GX_FALSE, GX_PTIDENTITY);
+  CGX::SetTexCoordGen(GX_TEXCOORD6, GX_TG_MTX2x4, GX_TG_TEX0, GX_TEXMTX6, GX_FALSE, GX_PTIDENTITY);
+  CGX::SetTexCoordGen(GX_TEXCOORD7, GX_TG_MTX2x4, GX_TG_TEX0, GX_TEXMTX7, GX_FALSE, GX_PTIDENTITY);
+
   CGraphics::LoadDolphinSpareTexture(width, height, GX_TF_RGB565, buffer, GX_TEXMAP0);
   CGX::Begin(GX_TRIANGLESTRIP, GX_VTXFMT0, 4);
   GXPosition3f32(left - 1.f, 0.f, bottom + 1.f);
@@ -628,11 +644,15 @@ void CCameraBlurPass::Draw() const {
   GXPosition3f32(right + 1.f, 0.f, top - 1.f);
   GXTexCoord2f32(1.f, 1.f);
   CGX::End();
-  for (int i = 0; i < 8; ++i) {
-    CGX::SetTexCoordGen(static_cast< GXTexCoordID >(i), GX_TG_MTX2x4,
-                        static_cast< GXTexGenSrc >(GX_TG_TEX0 + i), GX_IDENTITY, GX_FALSE,
-                        GX_PTIDENTITY);
-  }
+  CGX::SetTexCoordGen(GX_TEXCOORD0, GX_TG_MTX2x4, GX_TG_TEX0, GX_IDENTITY, GX_FALSE, GX_PTIDENTITY);
+  CGX::SetTexCoordGen(GX_TEXCOORD1, GX_TG_MTX2x4, GX_TG_TEX1, GX_IDENTITY, GX_FALSE, GX_PTIDENTITY);
+  CGX::SetTexCoordGen(GX_TEXCOORD2, GX_TG_MTX2x4, GX_TG_TEX2, GX_IDENTITY, GX_FALSE, GX_PTIDENTITY);
+  CGX::SetTexCoordGen(GX_TEXCOORD3, GX_TG_MTX2x4, GX_TG_TEX3, GX_IDENTITY, GX_FALSE, GX_PTIDENTITY);
+  CGX::SetTexCoordGen(GX_TEXCOORD4, GX_TG_MTX2x4, GX_TG_TEX4, GX_IDENTITY, GX_FALSE, GX_PTIDENTITY);
+  CGX::SetTexCoordGen(GX_TEXCOORD5, GX_TG_MTX2x4, GX_TG_TEX5, GX_IDENTITY, GX_FALSE, GX_PTIDENTITY);
+  CGX::SetTexCoordGen(GX_TEXCOORD6, GX_TG_MTX2x4, GX_TG_TEX6, GX_IDENTITY, GX_FALSE, GX_PTIDENTITY);
+  CGX::SetTexCoordGen(GX_TEXCOORD7, GX_TG_MTX2x4, GX_TG_TEX7, GX_IDENTITY, GX_FALSE, GX_PTIDENTITY);
+
   gpRender->SetBlendMode_AlphaBlended();
   gpRender->SetDepthReadWrite(true, true);
 }
