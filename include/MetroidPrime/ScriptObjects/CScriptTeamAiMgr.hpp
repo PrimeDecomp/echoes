@@ -11,7 +11,10 @@ class CScriptTeamAiMgr : public CEntity {
 public:
   enum EAttackType { kAT_Melee, kAT_Projectile };
   // Action values are supplied by callers; their individual meanings remain unresolved.
-  enum ETeamAction { kTA_Unknown0 = 0 };
+  enum ETeamAction {
+    kTA_Unknown0 = 0,
+    kTA_Hop = 2, // Guessed name
+  };
 
   // Guessed name
   struct CTeamAiData {
@@ -74,6 +77,7 @@ public:
   static TUniqueId ChoosePlayer(const CStateManager& mgr, const CActor& actor);
   void SetMemberTargetId(TUniqueId memberId, TUniqueId targetId);
   CTeamAiRole::ETeamAiRole GetTeamRole(TUniqueId memberId) const;
+  uint GetRoleCount() const { return mRoles.size(); } // Guessed name
   void NotifyWasHit();
   bool GetWasHit() const;
   void StartTeamAction(TUniqueId id, ETeamAction action);
