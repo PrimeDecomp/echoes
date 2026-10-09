@@ -614,19 +614,19 @@ void CBallCamera::UpdateObjectTooCloseId(CStateManager& mgr) {
   mTooCloseActorDist = 1000000.f;
   mTooCloseActorId = kInvalidUniqueId;
 
-  const CPlayer& player = GetPlayer(mgr);
+  const CPlayer& player = Player(mgr);
   const CVector3f ballPosition = player.GetBallPosition();
+  const CVector3f cameraPosition = GetTranslation();
   const rstl::list< CEntity* >& doors = mgr.GetDoorList();
   for (rstl::list< CEntity* >::const_iterator it = doors.begin(); it != doors.end(); ++it) {
-    const CScriptDoor* door = TCastToConstPtr< CScriptDoor >(*it);
-    if (door == nullptr || door->GetCurrentAreaId() != player.GetCurrentAreaId() ||
+    const CScriptDoor* door = static_cast< const CScriptDoor* >(*it);
+    if (door == nullptr || door->GetCurrentAreaId() != Player(mgr).GetCurrentAreaId() ||
         door->IsHorizontal()) {
       continue;
     }
 
-    const CVector3f& doorPosition = door->GetTranslation();
-    const float cameraDist = (doorPosition - GetTranslation()).MagSquared();
-    const float playerDist = (doorPosition - ballPosition).MagSquared();
+    const float cameraDist = CVector3f(door->GetTranslation() - cameraPosition).MagSquared();
+    const float playerDist = CVector3f(door->GetTranslation() - ballPosition).MagSquared();
     const float distance = CMath::Min(cameraDist, playerDist);
     if (distance < 900.f && distance < mTooCloseActorDist) {
       mTooCloseActorId = door->GetUniqueId();
