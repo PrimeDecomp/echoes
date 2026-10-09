@@ -40,6 +40,7 @@ public:
   void SetBodyController(CBodyController* controller) { mBodyController = controller; }
 
   const float& GetMaximumPitch() const { return mMaxPitch; }
+  void SetMaximumPitch(float pitch) { mMaxPitch = pitch; } // Guessed name
 
   bool GetLocoAnimChangeAtEndOfAnimOnly() const { return mChangeLocoAtEndOfAnimOnly; }
 

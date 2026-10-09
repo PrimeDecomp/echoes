@@ -68,6 +68,7 @@ enum EPatternedAI {
   kPAI_Shrieker = 0x4a,                // Guessed name; Shrieker REL constructor.
   kPAI_WallWalker = 0x4d,              // Guessed name; WallWalker REL constructor.
   kPAI_Shredder = 0x4e,                // Guessed name; Shredder REL constructor.
+  kPAI_Blogg = 0x4c,                   // Guessed name; Blogg REL constructor.
   kPAI_Krocuss = 0x4f,                 // Guessed name; Krocuss REL constructor.
 };
 

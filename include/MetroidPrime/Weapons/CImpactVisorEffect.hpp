@@ -52,6 +52,13 @@ public:
   }
 
   // Guessed name
+  // Guessed name
+  static CImpactVisorEffect BlurEffect(const SBlurEffect& blurEffect) {
+    return CImpactVisorEffect(rstl::optional_object< SParticleEffect >(),
+                              rstl::optional_object< SBlurEffect >(blurEffect),
+                              rstl::optional_object< rstl::pair< int, float > >());
+  }
+
   static CImpactVisorEffect None() {
     return CImpactVisorEffect(rstl::optional_object_null(), rstl::optional_object_null(),
                               rstl::optional_object_null());

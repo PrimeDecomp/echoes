@@ -117,6 +117,7 @@ public:
 
   void EnableAnimReaction(EAnimReaction reaction, bool enabled);
   void EnableAllAnimReactions(bool enabled);
+  void EnableSlow(bool enabled) { mEnableSlow = enabled; }                       // Guessed name.
   void EnableShock(bool enabled) { mEnableShock = enabled; }                     // Guessed name.
   void EnableBurn(bool enabled) { mEnableBurn = enabled; }                       // Guessed name.
   void EnableLaggedBurnDeath(bool enabled) { mEnableLaggedBurnDeath = enabled; } // Guessed name.

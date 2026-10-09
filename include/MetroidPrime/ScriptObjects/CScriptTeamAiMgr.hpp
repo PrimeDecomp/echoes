@@ -78,6 +78,7 @@ public:
   void SetMemberTargetId(TUniqueId memberId, TUniqueId targetId);
   CTeamAiRole::ETeamAiRole GetTeamRole(TUniqueId memberId) const;
   uint GetRoleCount() const { return mRoles.size(); } // Guessed name
+  const rstl::vector< CTeamAiRole >& GetRoles() const { return mRoles; } // Guessed name
   void NotifyWasHit();
   bool GetWasHit() const;
   void StartTeamAction(TUniqueId id, ETeamAction action);

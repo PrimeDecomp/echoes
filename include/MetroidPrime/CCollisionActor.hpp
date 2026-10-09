@@ -14,7 +14,7 @@ class CCollidableSphere;
 // Name exported by the Echoes Wii build; the virtual method names are inferred from G2ME01 calls.
 class CNonUniformVulnerability {
 public:
-  virtual ~CNonUniformVulnerability();
+  virtual ~CNonUniformVulnerability() {}
   virtual const CDamageVulnerability*
   GetDamageVulnerability(const CDamageVulnerability*, const CVector3f&, const CVector3f&,
                          const CDamageInfo&) const = 0; // Guessed name
