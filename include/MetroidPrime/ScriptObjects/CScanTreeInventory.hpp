@@ -5,7 +5,7 @@
 #include "MetroidPrime/ScriptObjects/CScanTreeScan.hpp"
 
 class CInputStream;
-class SLdrTransform;
+struct SLdrTransform;
 
 // Class, method and member names are guessed.
 class CScanTreeInventory : public CScanTreeScan {

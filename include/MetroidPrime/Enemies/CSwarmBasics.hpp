@@ -10,7 +10,7 @@
 #include "rstl/auto_ptr.hpp"
 #include "rstl/vector.hpp"
 
-class CAdvancementDeltas;
+struct CAdvancementDeltas;
 class CAnimData;
 class CAnimRes;
 class CRelAngle;
