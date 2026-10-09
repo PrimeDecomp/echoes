@@ -980,7 +980,8 @@ void CPauseScreen::ProcessButtonInput(const CFinalInput& input) {
     rstl::rc_ptr< CScanTreeNode > node = mScanTree.GetNode(selectedId);
     if (node->GetNodeType() == CScanTreeNode::kNT_Category) {
       const rstl::rc_ptr< CScanTreeCategory > category(node);
-      SelectNode(category->GetSelectedChild());
+      const int childId = category->GetSelectedChild();
+      SelectNode(childId);
     } else if ((node->GetNodeType() == CScanTreeNode::kNT_Scan ||
                 node->GetNodeType() == CScanTreeNode::kNT_Inventory) &&
                close_enough(mModelZoomAmount, 0.f)) {
@@ -1001,13 +1002,13 @@ void CPauseScreen::ProcessButtonInput(const CFinalInput& input) {
     } else if (node->GetNodeType() == CScanTreeNode::kNT_Menu ||
                node->GetNodeType() == CScanTreeNode::kNT_Slider) {
       FinishOptionEdit(false);
-    } else if (parent == -1 || mOpenedFromScan) {
-      mTransitionState = kTS_FadeOut;
-      CSfxManager::SfxStart(0x21d0, 0x7f, 0x3f);
-    } else {
+    } else if (parent != -1 && !mOpenedFromScan) {
       mScanTree.SelectNode(parent);
       UpdateHistoryText();
       CSfxManager::SfxStart(0x21cd, 0x7f, 0x3f);
+    } else {
+      mTransitionState = kTS_FadeOut;
+      CSfxManager::SfxStart(0x21d0, 0x7f, 0x3f);
     }
   } else if (input.PStart()) {
     mTransitionState = kTS_FadeOut;
@@ -1017,7 +1018,7 @@ void CPauseScreen::ProcessButtonInput(const CFinalInput& input) {
     gpGameState->SystemOptions()
         .EnvVars()
         .FindEnvironmentVariable("LogbookLegendVisible")
-        ->Set(mLegendVisible);
+        ->Set(mLegendVisible ? 1 : 0);
     if (!close_enough(mModelZoomAmount, 1.f)) {
       if (mLegendVisible) {
         CSfxManager::SfxStart(0x13b7, 0x7f, 0x3f);
