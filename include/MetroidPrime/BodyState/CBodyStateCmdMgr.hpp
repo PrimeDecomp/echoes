@@ -195,6 +195,7 @@ public:
   , mOverrideAnim(animId != -1)
   , mInterruptKnockBack(false) {}
 
+
   CBCGenerateCmd(pas::EGenerateType type, const CVector3f& targetPos, bool targetTransform = false,
                  bool overrideAnim = false)
   : CBodyStateCmd(kBSC_Generate)
@@ -211,6 +212,7 @@ public:
   bool HasExitTargetPos() const { return mTargetTransform; }
   const CVector3f& GetExitTargetPos() const { return mTargetPos; }
   bool CanInterruptKnockBack() const { return mInterruptKnockBack; }
+  void SetInterruptKnockBack(bool interrupt) { mInterruptKnockBack = interrupt; } // Guessed name
 
 private:
   pas::EGenerateType mType;
@@ -576,6 +578,11 @@ public:
   void DeliverCmd(const CBCAdditiveAimCmd& cmd) {
     DeliverCmd(cmd.GetCommandId());
     mAdditiveAim = cmd;
+  }
+
+  void DeliverCmd(const CBCAdditiveLoopReactionCmd& cmd) {
+    DeliverCmd(cmd.GetCommandId());
+    mAdditiveLoopReaction = cmd;
   }
 
   void DeliverCmd(const CBCScriptedCmd& cmd) {

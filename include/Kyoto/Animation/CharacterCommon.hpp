@@ -153,7 +153,14 @@ enum EGenerateType {
 
 enum ESlideType { kSlide_Invalid = -1, kSlide_Zero = 0 };
 
-enum ETauntType { kTT_Invalid = -1, kTT_Zero, kTT_One, kTT_Two };
+enum ETauntType {
+  kTT_Invalid = -1,
+  kTT_Zero,
+  kTT_One,
+  kTT_Two,
+  kTT_Three, // Guessed name
+  kTT_Four   // Guessed name; Rezbit alert taunt.
+};
 
 enum ECoverState { kCS_Invalid = -1, kCS_IntoCover, kCS_Cover, kCS_Lean, kCS_OutOfCover };
 

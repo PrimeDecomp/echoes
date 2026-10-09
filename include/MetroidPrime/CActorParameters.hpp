@@ -93,6 +93,7 @@ public:
     kVOF_Echo = 2,
     kVOF_Scan = 4,
     kVOF_Dark = 8,
+    kVOF_All = 0xF, // Guessed name
   };
   CVisorParameters(uchar mask, bool scanPassthrough)
   : mMask(mask), mScanPassthrough(scanPassthrough) {}
