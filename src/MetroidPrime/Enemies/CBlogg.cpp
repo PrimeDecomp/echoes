@@ -22,6 +22,7 @@
 #include "MetroidPrime/ScriptObjects/CScriptTeamAiMgr.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptTrigger.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptWater.hpp"
+#include "MetroidPrime/ScriptObjects/CScriptWaypoint.hpp"
 #include "MetroidPrime/TCastTo.hpp"
 #include "MetroidPrime/Weapons/CBomb.hpp"
 #include "MetroidPrime/Weapons/CPowerBomb.hpp"
@@ -266,8 +267,8 @@ CBlogg::CBlogg(TUniqueId uid, const rstl::string& name, CEntityInfo& info, const
 , mCollisionTime(0.f)
 , mMaxCollisionTime(maxCollisionTime)
 , mBallGrabTime(0.f)
-, xb28_(0.f)
-, xb2c_(10.f)
+, mLocomotionChangeTimer(0.f)
+, mLocomotionChangeInterval(10.f)
 , mMouthOpenSound(mouthOpenSound)
 , mBaseSpeed(patternedInfo.GetSpeed())
 , mMeleeDelayTimer(0.f)
@@ -1481,6 +1482,91 @@ void CBlogg::Dead(CStateManager& mgr, EStateMsg msg, float dt) {
     }
     break;
   case kStateMsg_Deactivate:
+    break;
+  }
+}
+
+void CBlogg::MeleeAttack(CStateManager& mgr, EStateMsg msg, float dt) {
+  switch (msg) {
+  case kStateMsg_Activate:
+    mState = kBS_MeleeAttack;
+    if (mTeamManagerId == kInvalidUniqueId ||
+        CScriptTeamAiMgr::StartAttack(CScriptTeamAiMgr::kAT_Melee, mgr, mTeamManagerId,
+                                      GetUniqueId())) {
+      mAnimationState.SetState(CAnimationState::kAS_Ready);
+      BodyController()->CommandMgr().DeliverCmd(CBCMeleeAttackCmd(pas::kS_Zero));
+    } else {
+      mAnimationState.SetState(CAnimationState::kAS_Over);
+    }
+    break;
+  case kStateMsg_Update:
+    mAnimationState.CanIssueCommand(*BodyController(), pas::kAS_MeleeAttack);
+    break;
+  case kStateMsg_Deactivate:
+    mAnimationState.SetState(CAnimationState::kAS_NotReady);
+    CScriptTeamAiMgr::EndAttack(CScriptTeamAiMgr::kAT_Melee, mgr, mTeamManagerId, GetUniqueId(),
+                                false);
+    mCanBite = false;
+    mMeleeDelayTimer = 0.f;
+    break;
+  }
+}
+
+void CBlogg::Patrol(CStateManager& mgr, EStateMsg msg, float dt) {
+  switch (msg) {
+  case kStateMsg_Activate: {
+    mState = kBS_Patrol;
+    BodyController()->SetLocomotionType(pas::kLT_Relaxed);
+    CBodyController* controller = BodyController();
+    const float runSpeed = controller->GetBodyStateInfo().GetLocomotionSpeed(pas::kLA_Run);
+    const float walkSpeed = controller->GetBodyStateInfo().GetLocomotionSpeed(pas::kLA_Walk);
+    const float ratio = walkSpeed / runSpeed;
+    BodyController()->CommandMgr().SetSteeringBlendMode(kSBM_FullSpeed);
+    BodyController()->CommandMgr().SetSteeringSpeedRange(ratio, ratio);
+    LeaveTeam(mgr);
+    CPatterned::Patrol(mgr, msg, dt);
+    const TUniqueId waypointId = mWaypointNavigation.GetDestination();
+    if (waypointId != kInvalidUniqueId) {
+      const CScriptWaypoint* waypoint =
+          TCastToConstPtr< CScriptWaypoint >(mgr.GetObjectById(waypointId));
+      if (waypoint != nullptr) {
+        mPathFindNavigation.SetDestination(waypoint->GetTranslation());
+        mPathFindNavigation.PathFind(mgr, msg, dt, *this);
+      }
+    }
+    break;
+  }
+  case kStateMsg_Update: {
+    mLocomotionChangeTimer += dt;
+    if (mLocomotionChangeTimer > mLocomotionChangeInterval) {
+      mLocomotionChangeTimer = 0.f;
+      const float random = mgr.Random()->Float();
+      if (random < 0.3f && BodyController()->GetLocomotionType() != pas::kLT_Internal4 &&
+          BodyController()->GetLocomotionType() != pas::kLT_Internal6) {
+        BodyController()->SetLocomotionType(pas::kLT_Internal4);
+        BodyController()->CommandMgr().DeliverCmd(CBodyStateCmd(kBSC_MaintainVelocity));
+        mLocomotionChangeInterval = 1.f + mgr.Random()->Float();
+      } else if (random < 0.6f && BodyController()->GetLocomotionType() != pas::kLT_Internal4 &&
+                 BodyController()->GetLocomotionType() != pas::kLT_Internal6) {
+        BodyController()->SetLocomotionType(pas::kLT_Internal6);
+        BodyController()->CommandMgr().DeliverCmd(CBodyStateCmd(kBSC_MaintainVelocity));
+        mLocomotionChangeInterval = 1.f + mgr.Random()->Float();
+      } else {
+        BodyController()->SetLocomotionType(pas::kLT_Relaxed);
+        BodyController()->CommandMgr().DeliverCmd(CBodyStateCmd(kBSC_MaintainVelocity));
+        mLocomotionChangeInterval = 5.f * mgr.Random()->Float() + 5.f;
+      }
+    }
+    const CPathFindSearch* search = GetSearchPath();
+    if (search->GetCurrentWaypoint() >= static_cast< int >(search->GetWaypoints().size()) - 1) {
+      CPatterned::Patrol(mgr, msg, dt);
+    } else {
+      mPathFindNavigation.PathFind(mgr, msg, dt, *this);
+    }
+    break;
+  }
+  case kStateMsg_Deactivate:
+    CPatterned::Patrol(mgr, msg, dt);
     break;
   }
 }

@@ -170,6 +170,8 @@ public:
   void Thrash(CStateManager& mgr, EStateMsg msg, float dt);
   void SpitBall(CStateManager& mgr, EStateMsg msg, float dt);
   void Dead(CStateManager& mgr, EStateMsg msg, float dt);
+  void MeleeAttack(CStateManager& mgr, EStateMsg msg, float dt);
+  void Patrol(CStateManager& mgr, EStateMsg msg, float dt);
 
   bool ShouldPatrol(CStateManager& mgr, const CTriggerData& data) const;
   bool AnimOver(CStateManager& mgr, const CTriggerData& data) const;
@@ -296,11 +298,11 @@ private:
   float mUnknown_0x800a2b0d;     // Guessed name
   int xb14_;
   uchar xb18_;
-  float mCollisionTime;    // Guessed name
-  float mMaxCollisionTime; // Guessed name
-  float mBallGrabTime;     // Guessed name
-  float xb28_;
-  float xb2c_;
+  float mCollisionTime;                                           // Guessed name
+  float mMaxCollisionTime;                                        // Guessed name
+  float mBallGrabTime;                                            // Guessed name
+  float mLocomotionChangeTimer;                                   // Guessed name
+  float mLocomotionChangeInterval;                                // Guessed name
   ushort mMouthOpenSound;                                         // Guessed name
   float mBaseSpeed;                                               // Guessed name
   rstl::vector< TUniqueId > mHintIds;                             // Guessed name
