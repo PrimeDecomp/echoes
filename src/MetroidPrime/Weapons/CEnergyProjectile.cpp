@@ -34,9 +34,9 @@ static ushort skImpactVisibilityFrameWindow = 8;
 const CMaterialList CEnergyProjectile::kCheckMaterial(
     MATERIAL_FLAG(kMT_Stone) | MATERIAL_FLAG(kMT_Metal) | MATERIAL_FLAG(kMT_Grass) |
     MATERIAL_FLAG(kMT_Ice) | MATERIAL_FLAG(kMT_Pillar) | MATERIAL_FLAG(kMT_MetalGrating) |
-    MATERIAL_FLAG(kMT_Phazon) | MATERIAL_FLAG(kMT_Dirt) | MATERIAL_FLAG(kMT_Lava) |
-    MATERIAL_FLAG(kMT_LavaStone) | MATERIAL_FLAG(kMT_Snow) | MATERIAL_FLAG(kMT_MudSlow) |
-    MATERIAL_FLAG(kMT_HalfPipe) | MATERIAL_FLAG(kMT_Mud) | MATERIAL_FLAG(kMT_Glass) |
+    MATERIAL_FLAG(kMT_Phazon) | MATERIAL_FLAG(kMT_Dirt) | MATERIAL_FLAG(kMT_Unknown9) |
+    MATERIAL_FLAG(kMT_Unknown10) | MATERIAL_FLAG(kMT_Snow) | MATERIAL_FLAG(kMT_Fabric) |
+    MATERIAL_FLAG(kMT_HalfPipe) | MATERIAL_FLAG(kMT_Plastic) | MATERIAL_FLAG(kMT_Wire) |
     MATERIAL_FLAG(kMT_Shield) | MATERIAL_FLAG(kMT_Sand) | MATERIAL_FLAG(kMT_CameraPassthrough) |
     MATERIAL_FLAG(kMT_Wood) | MATERIAL_FLAG(kMT_Organic));
 #undef MATERIAL_FLAG
