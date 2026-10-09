@@ -102,18 +102,18 @@ void CSurfaceCamera::Think(float dt, CStateManager& mgr) {
           CVector3f center = sphere.GetCenter();
           float angle = 0.f;
           if (!CMath::IsEpsilon(camera->GetPlayerOffset().GetX(), 0.f, 1.0e-5f)) {
-            axis = CVector3f::Up();
             angle = camera->GetPlayerOffset().GetX();
+            axis = CVector3f::Up();
             center.SetZ(position.GetZ());
           }
           if (!CMath::IsEpsilon(camera->GetPlayerOffset().GetY(), 0.f, 1.0e-5f)) {
-            axis = CVector3f::Forward();
             angle = camera->GetPlayerOffset().GetY();
+            axis = CVector3f::Forward();
             center.SetY(position.GetY());
           }
           if (!CMath::IsEpsilon(camera->GetPlayerOffset().GetZ(), 0.f, 1.0e-5f)) {
-            axis = CVector3f::Right();
             angle = -camera->GetPlayerOffset().GetZ();
+            axis = CVector3f::Right();
             center.SetX(position.GetX());
           }
           if (angle != 0.f) {
