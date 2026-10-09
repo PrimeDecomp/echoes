@@ -313,12 +313,12 @@ int basic_string< _CharTp, Traits, Alloc >::find(_CharTp ch, int pos) const {
 template < typename _CharTp, typename Traits, typename Alloc >
 int basic_string< _CharTp, Traits, Alloc >::compare(const _CharTp* rhs, int count) const {
   int rhsCharCount = 0;
-  const _CharTp* rhsStart = rhs;
-  while ((count == -1 || rhsCharCount < count) && *rhs != '\0') {
-    ++rhs;
+  const _CharTp* rhsEnd = rhs;
+  while ((count == -1 || rhsCharCount < count) && *rhsEnd != '\0') {
+    ++rhsEnd;
     ++rhsCharCount;
   }
-  return internal_compare(begin(), end(), rhsStart, rhs);
+  return internal_compare(begin(), end(), rhs, rhsEnd);
 }
 
 template < typename _CharTp, typename Traits, typename Alloc >
