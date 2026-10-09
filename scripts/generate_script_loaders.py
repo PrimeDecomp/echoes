@@ -600,10 +600,16 @@ class Generator:
                 matching_type_name = pwe_type_lookup[matching_type_name]
             elif archetype:
                 matching_type_name = archetype
+            candidates = [matching_type_name]
+            # An enumeration property is hashed with its archetype as the type name,
+            # e.g. PlayerItemPlayerItem (0xD3AF8D72), whichever kind the templates give it.
+            if archetype and archetype not in candidates:
+                candidates.append(archetype)
 
-            if matching_type_name is not None:
-                hashable_name = f"{raw_name}{matching_type_name}"
-                matching_name = is_matching(hashable_name, property_id(node))
+            matching_name = any(
+                is_matching(f"{raw_name}{candidate}", property_id(node))
+                for candidate in candidates
+            )
         else:
             matching_name = None
 

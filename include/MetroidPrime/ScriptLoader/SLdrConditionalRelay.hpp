@@ -11,7 +11,7 @@ struct SLdrConditionalTest {
   ~SLdrConditionalTest();
 
   int boolean;               // 0xde3e40a3
-  SLdrPlayerItem playerItem; // non-matching name, 0xd3af8d72
+  SLdrPlayerItem playerItem; // 0xd3af8d72
   int amountOrCapacity;      // 0x03bdea98
   int condition;             // 0x70729364
   int value;                 // 0x8db9398a

@@ -18,7 +18,7 @@ struct SLdrPickup {
   SLdrEditorProperties editorProperties; // 0x255a4580
   CVector3f collisionSize;               // 0x3a3e03ba
   CVector3f collisionOffset;             // 0x2e686c2a
-  SLdrPlayerItem itemToGive;             // non-matching name, 0xa02ef0c4
+  SLdrPlayerItem itemToGive;             // 0xa02ef0c4
   int capacityIncrease;                  // 0x28c71b54
   int itemPercentageIncrease;            // 0x165ab069
   int amount;                            // 0x94af1445
