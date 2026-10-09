@@ -86,7 +86,7 @@ void CCinematicCamera::Think(float dt, CStateManager& mgr) {
   xf = orientation.BuildTransform4f(xf.GetTranslation());
   xf = CTransform4f::LookAt(xf.GetTranslation(), xf.GetTranslation() + xf.GetForward(), up);
   if ((mFlags & CScriptCamera::kF_LookAtPlayer) != 0) {
-    const CPlayer& player = Player(mgr);
+    const CPlayer& player = GetPlayer(mgr);
     CVector3f target = player.GetEyePosition();
     if (player.GetMorphballTransitionState() == CPlayer::kMS_Morphed) {
       target = player.GetBallPosition();
@@ -147,7 +147,7 @@ CVector3f CCinematicCamera::CalculateMoveOutofIntoEyePosition(bool outOfEye,
                                                               const CStateManager& mgr) const {
   static const char* skLeftEyeLocator = "L_eye";
   static const char* skRightEyeLocator = "R_eye";
-  const CPlayer& player = Player(const_cast< CStateManager& >(mgr));
+  const CPlayer& player = GetPlayer(mgr);
   CVector3f eyePos = player.GetEyePosition();
   const CScriptCamera* camera =
       TCastToConstPtr< CScriptCamera >(mgr.GetObjectById(mScriptCameraId));

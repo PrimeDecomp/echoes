@@ -47,7 +47,7 @@ void CFirstPersonCamera::ProcessInput(const CFinalInput& input, CStateManager& m
 
 void CFirstPersonCamera::UpdateElevation(CStateManager& mgr) {
   mPitch = 0.f;
-  if (CameraManager(mgr).IsInCinematicCamera()) {
+  if (GetCameraManager(mgr).IsInCinematicCamera()) {
     return;
   }
   CPlayer* player =
@@ -330,7 +330,7 @@ void CFirstPersonCamera::UpdateTransform(CStateManager& mgr, float dt) {
       player->GetOrbitState() == CPlayer::kOS_Grapple ||
       player->GetGrappleState() != CPlayer::kGS_None ||
       mgr.GetGameState() == CStateManager::kGS_SoftPaused ||
-      CameraManager(mgr).IsInCinematicCamera() || mCloseInTimer > 0.f) {
+      GetCameraManager(mgr).IsInCinematicCamera() || mCloseInTimer > 0.f) {
     bobXf = CTransform4f::Identity();
     bob->SetCameraBobTransform(bobXf);
   }
@@ -347,7 +347,7 @@ void CFirstPersonCamera::Render(const CStateManager& mgr) const {}
 
 void CFirstPersonCamera::Reset(const CTransform4f& xf, CStateManager& mgr) {
   SetTransform(xf);
-  SetTranslation(Player(mgr).GetEyePosition());
+  SetTranslation(GetPlayer(mgr).GetEyePosition());
   mGunFollowXf = GetTransform();
   mPitchId = kInvalidUniqueId;
   mPitchTransitionTimer = 0.f;
@@ -433,8 +433,8 @@ void CFirstPersonCamera::UnkVtable88(TUniqueId fluidId, CStateManager& mgr) {
 
 void CFirstPersonCamera::UpdateFluidEffects(CStateManager& mgr) {
   const CScriptWater* water = TCastToConstPtr< CScriptWater >(mgr.GetObjectById(mPendingFluidId));
-  if ((Player(mgr).GetMorphballTransitionState() == CPlayer::kMS_Unmorphing ||
-       Player(mgr).GetMorphballTransitionState() == CPlayer::kMS_Morphed) &&
+  if ((GetPlayer(mgr).GetMorphballTransitionState() == CPlayer::kMS_Unmorphing ||
+       GetPlayer(mgr).GetMorphballTransitionState() == CPlayer::kMS_Morphed) &&
       water) {
     // The original checks the visor effect before using the unmorph effect here.
     if (water->GetVisorRunoffEffect()) {
@@ -446,10 +446,10 @@ void CFirstPersonCamera::UpdateFluidEffects(CStateManager& mgr) {
           CVector3f::One(), CVector3f::Zero(), false));
     }
     Player(mgr).ApplySubmergedPitchBend(CSfxManager::SfxStart(
-        water->GetUnmorphVisorRunoffSfx(), 127, Player(mgr).GetSoundPan(CPlayer::kMSP_4),
+        water->GetUnmorphVisorRunoffSfx(), 127, GetPlayer(mgr).GetSoundPan(CPlayer::kMSP_4),
         CSfxManager::kAllAreas, false, false, CSfxManager::kMedPriority));
   }
-  if (Player(mgr).GetMorphballTransitionState() == CPlayer::kMS_Unmorphed && water) {
+  if (GetPlayer(mgr).GetMorphballTransitionState() == CPlayer::kMS_Unmorphed && water) {
     if (water->GetVisorRunoffEffect()) {
       mgr.AddObject(rs_new CHUDBillboardEffect(
           rstl::optional_object< TToken< CGenDescription > >(*water->GetVisorRunoffEffect()),
@@ -459,7 +459,7 @@ void CFirstPersonCamera::UpdateFluidEffects(CStateManager& mgr) {
           CVector3f::One(), CVector3f::Zero(), false));
     }
     Player(mgr).ApplySubmergedPitchBend(CSfxManager::SfxStart(
-        water->GetVisorRunoffSfx(), 127, Player(mgr).GetSoundPan(CPlayer::kMSP_4),
+        water->GetVisorRunoffSfx(), 127, GetPlayer(mgr).GetSoundPan(CPlayer::kMSP_4),
         CSfxManager::kAllAreas, false, false, CSfxManager::kMedPriority));
   }
   mPendingFluidId = kInvalidUniqueId;

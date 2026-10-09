@@ -225,7 +225,7 @@ void CInterpolationCamera::SetInterpolation(const CTransform4f& xf, TUniqueId fr
     mLookPosition = target->GetScanObjectIndicatorPosition(mgr);
     mInitialDistance = CVector3f(target->GetTranslation() - xf.GetTranslation()).Magnitude();
     if (source) {
-      const_cast< CCameraManager& >(GetCameraManager(mgr)).TransferCameraState(*source, *this, mgr);
+      CameraManager(mgr).TransferCameraState(*source, *this, mgr);
       SetTransform(xf);
       SetFov(source->GetFov());
       InterpolateFOV(source->GetFov(), duration, 0.f, to, mgr);
@@ -244,7 +244,7 @@ void CInterpolationCamera::SetInterpolation(const CTransform4f& xf, TUniqueId fr
 
 void CInterpolationCamera::EndInterpolation(EEndReason reason, CStateManager& mgr) {
   SetActive(false);
-  CCameraManager& cameraManager = const_cast< CCameraManager& >(GetCameraManager(mgr));
+  CCameraManager& cameraManager = CameraManager(mgr);
   CGameCamera* target = TCastToPtr< CGameCamera >(mgr.ObjectById(mTargetId));
   if (!target) {
     return;
@@ -255,7 +255,7 @@ void CInterpolationCamera::EndInterpolation(EEndReason reason, CStateManager& mg
     }
     cameraManager.SetCurrentCameraId(mTargetId, mgr);
   } else {
-    switch (Player(mgr).GetMorphballTransitionState()) {
+    switch (GetPlayer(mgr).GetMorphballTransitionState()) {
     case CPlayer::kMS_Unmorphed:
     case CPlayer::kMS_Unmorphing:
       if (reason == kER_Completed) {
@@ -309,7 +309,7 @@ void CInterpolationCamera::Think(float dt, CStateManager& mgr) {
   if (done) {
     EndInterpolation(kER_Completed, mgr);
   } else if (mPositionMode == kPM_Direct ||
-             target->GetUniqueId() == GetCameraManager(mgr).GetBallCamera()->GetUniqueId()) {
+             target->GetUniqueId() == CameraManager(mgr).GetBallCamera()->GetUniqueId()) {
     if (CVector3f(target->GetTranslation() - xf.GetTranslation()).Magnitude() > 3.f) {
       CVector3f direction = xf.GetTranslation() - oldXf.GetTranslation();
       if (direction.CanBeNormalized()) {
@@ -321,7 +321,7 @@ void CInterpolationCamera::Think(float dt, CStateManager& mgr) {
           mgr.RayStaticIntersection(GetTranslation(), direction, 3.f, skCollisionFilter);
       if (result.IsValid()) {
         EndInterpolation(kER_Obstruction, mgr);
-        const_cast< CCameraManager& >(GetCameraManager(mgr)).StartScreenFlash();
+        CameraManager(mgr).StartScreenFlash();
       }
     }
   }

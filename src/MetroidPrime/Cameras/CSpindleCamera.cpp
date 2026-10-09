@@ -78,14 +78,14 @@ CSpindleCamera::CSpindleCamera(TUniqueId uid, const CTransform4f& xf, bool activ
 CSpindleCamera::~CSpindleCamera() {}
 
 void CSpindleCamera::Reset(const CTransform4f& xf, CStateManager& mgr) {
-  const CScriptCameraHint* hint =
-      TCastToConstPtr< CScriptCameraHint >(CameraManager(mgr).HintManager()->GetCurrentHint(mgr));
+  const CScriptCameraHint* hint = TCastToConstPtr< CScriptCameraHint >(
+      GetCameraManager(mgr).HintManager()->GetCurrentHint(mgr));
   if (!GetActive() || hint == nullptr) {
     return;
   }
 
   mInResetThink = true;
-  CameraManager(mgr).BallCamera()->UpdateLookAtPosition(0.01f, mgr, false);
+  GetCameraManager(mgr).BallCamera()->UpdateLookAtPosition(0.01f, mgr, false);
   Think(0.01f, mgr);
   mInResetThink = false;
   mFixedPositionInitialized = false;
@@ -106,7 +106,7 @@ float CSpindleCamera::CalculateTargetSplineDistance(CStateManager& mgr) const {
   const CMotionSpline& playerSpline = script->GetPlayerSpline();
   if (playerSpline.GetControlPointCount() == 0) {
     return targetSpline.FindClosestLengthOnSpline(mTargetSplineDistance,
-                                                  Player(mgr).GetBallPosition());
+                                                  GetPlayer(mgr).GetBallPosition());
   }
 
   const float playerLength = playerSpline.GetLength();
@@ -144,12 +144,12 @@ void CSpindleCamera::Think(float dt, CStateManager& mgr) {
   const CTransform4f oldXf = GetTransform();
   if (script->GetPlayerSpline().GetControlPointCount() != 0) {
     mPlayerSplineDistance = script->GetPlayerSpline().FindClosestLengthOnSpline(
-        mPlayerSplineDistance, Player(mgr).GetBallPosition());
+        mPlayerSplineDistance, GetPlayer(mgr).GetBallPosition());
   }
   mTargetSplineDistance = CalculateTargetSplineDistance(mgr);
 
-  const CScriptCameraHint* hint =
-      TCastToConstPtr< CScriptCameraHint >(CameraManager(mgr).HintManager()->GetCurrentHint(mgr));
+  const CScriptCameraHint* hint = TCastToConstPtr< CScriptCameraHint >(
+      GetCameraManager(mgr).HintManager()->GetCurrentHint(mgr));
   if (hint == nullptr) {
     return;
   }
@@ -159,7 +159,7 @@ void CSpindleCamera::Think(float dt, CStateManager& mgr) {
   const CLine hintLine(hintPos, CUnitVector3f(scriptXf.GetUp()));
 
   CVector3f hintToCamDir = GetTranslation() - hintLine.GetClosestPoint(GetTranslation());
-  const CVector3f ballPos = Player(mgr).GetBallPosition();
+  const CVector3f ballPos = GetPlayer(mgr).GetBallPosition();
   CVector3f hintToBallDir = ballPos - hintLine.GetClosestPoint(ballPos);
 
   float hintBallToCamAzimuth;
@@ -225,9 +225,7 @@ void CSpindleCamera::Think(float dt, CStateManager& mgr) {
   if ((params.GetFlags() & 0x2000) != 0 &&
       hintToBallDist > GetInterpolant(params.GetDeactivateRadius())) {
     if (hint->GetDelegatedCameraId() == GetUniqueId()) {
-      const_cast< CCameraManager& >(GetCameraManager(mgr))
-          .HintManager()
-          ->ForceRemoveHint(hint->GetUniqueId(), mgr, kInvalidUniqueId);
+      CameraManager(mgr).HintManager()->ForceRemoveHint(hint->GetUniqueId(), mgr, kInvalidUniqueId);
     }
     return;
   }
@@ -423,8 +421,7 @@ void CSpindleCamera::Render(const CStateManager& mgr) const {}
 CVector3f CSpindleCamera::GetScanObjectIndicatorPosition(const CStateManager& mgr) const {
   const CScriptSpindleCamera* script =
       TCastToConstPtr< CScriptSpindleCamera >(mgr.GetObjectById(mSpindleCameraId));
-  CStateManager& stateMgr = const_cast< CStateManager& >(mgr);
-  CVector3f lookPos = CameraManager(stateMgr).GetBallCamera()->GetScanObjectIndicatorPosition(mgr);
+  CVector3f lookPos = GetCameraManager(mgr).GetBallCamera()->GetScanObjectIndicatorPosition(mgr);
   if (script != nullptr) {
     const CSpindleCameraParameters& params = script->GetParameters();
     if ((params.GetFlags() & 0x10000) != 0 && mFixedPositionInitialized) {
@@ -434,7 +431,7 @@ CVector3f CSpindleCamera::GetScanObjectIndicatorPosition(const CStateManager& mg
     const CTransform4f scriptXf = script->GetTransform();
     const CVector3f hintPos = scriptXf.GetTranslation();
     const CLine hintLine(hintPos, CUnitVector3f(scriptXf.GetUp()));
-    const CVector3f ballPos = Player(stateMgr).GetBallPosition();
+    const CVector3f ballPos = GetPlayer(mgr).GetBallPosition();
     hintLine.GetClosestPoint(ballPos);
 
     if ((params.GetFlags() & 0x8000) != 0) {

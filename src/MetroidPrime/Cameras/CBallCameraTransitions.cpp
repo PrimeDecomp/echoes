@@ -25,13 +25,13 @@ CMaterialFilter skTransitionFilter =
 bool CBallCamera::CheckFailsafeFromMorphBallState(CStateManager& mgr) {
   const float length = mFromBallTransition->mSpline.GetLength();
   CMaterialList hitMaterial;
-  const CCameraManager& cameraManager = GetCameraManager(mgr);
+  const CCameraManager& cameraManager = CameraManager(mgr);
   return cameraManager.CheckSplineCollision(mFromBallTransition->mSpline, 0, skTransitionFilter,
                                             mgr, hitMaterial, length / 24.f, 0.f);
 }
 
 bool CBallCamera::TransitionFromMorphBallState(CStateManager& mgr) {
-  const CTransform4f playerXf = Player(mgr).GetTransform();
+  const CTransform4f playerXf = GetPlayer(mgr).GetTransform();
   const CTransform4f cameraXf =
       mgr.CameraManager(GetControllerNumber())->CurrentCamera(mgr, false)->GetTransform();
   const CVector3f lookPos = mgr.CameraManager(GetControllerNumber())
@@ -40,7 +40,7 @@ bool CBallCamera::TransitionFromMorphBallState(CStateManager& mgr) {
   mFromBallTransition->mLookPos = lookPos;
   mFromBallTransition->mPlayerXf = playerXf;
 
-  const CVector3f eyePos = Player(mgr).GetEyePosition();
+  const CVector3f eyePos = GetPlayer(mgr).GetEyePosition();
   const CVector3f cameraPos = cameraXf.GetTranslation();
 
   const float lookDistance = (lookPos - cameraPos).Magnitude();
@@ -67,13 +67,13 @@ bool CBallCamera::TransitionFromMorphBallState(CStateManager& mgr) {
 
 bool CBallCamera::UpdateTransitionFromBallCamera(CStateManager& mgr) {
   const CScriptCameraHint* hint = TCastToConstPtr< CScriptCameraHint >(
-      CameraManager(mgr).GetHintManager()->GetCurrentHint(mgr));
+      GetCameraManager(mgr).GetHintManager()->GetCurrentHint(mgr));
   if (hint != nullptr && (hint->GetInfo().GetFlags() & 0x04000000) != 0) {
     return true;
   }
 
   const CVector3f oldPosition = GetTranslation();
-  CPlayer& player = Player(mgr);
+  const CPlayer& player = GetPlayer(mgr);
   const float factor = player.GetMorphBallTransitionFactor();
   const CVector3f eyePos = player.GetEyePosition();
   const CVector3f translationDelta =
@@ -98,7 +98,7 @@ bool CBallCamera::UpdateTransitionFromBallCamera(CStateManager& mgr) {
   CVector3f horizontalDelta = eyePos - position;
   horizontalDelta.SetZ(0.f);
   const float horizontalDistance = horizontalDelta.Magnitude();
-  CCameraManager& cameraManager = const_cast< CCameraManager& >(GetCameraManager(mgr));
+  CCameraManager& cameraManager = CameraManager(mgr);
   if (horizontalDistance > 0.0011920929f) {
     const CVector3f lookDelta = mFromBallTransition->mLookPos - eyePos;
     const float lookFactor = CMath::Clamp(0.f, 1.f - 2.f * factor, 1.f);
@@ -121,7 +121,7 @@ bool CBallCamera::UpdateTransitionFromBallCamera(CStateManager& mgr) {
     const CRayCastResult hit =
         mgr.RayStaticIntersection(GetTranslation(), direction, 0.5f, skTransitionFilter);
     if (hit.IsValid()) {
-      const_cast< CCameraManager& >(GetCameraManager(mgr)).StartScreenFlash();
+      CameraManager(mgr).StartScreenFlash();
       return true;
     }
   }
@@ -131,27 +131,27 @@ bool CBallCamera::UpdateTransitionFromBallCamera(CStateManager& mgr) {
 bool CBallCamera::CheckFailsafeToMorphBallState(CStateManager& mgr) {
   const float length = mToBallTransition->mSpline.GetLength();
   CMaterialList hitMaterial;
-  const CCameraManager& cameraManager = GetCameraManager(mgr);
+  const CCameraManager& cameraManager = CameraManager(mgr);
   return cameraManager.CheckSplineCollision(mToBallTransition->mSpline, 0, skTransitionFilter, mgr,
                                             hitMaterial, length / 24.f, 0.f);
 }
 
 bool CBallCamera::TransitionToMorphBallState(CStateManager& mgr) {
-  const CTransform4f playerXf = Player(mgr).GetTransform();
-  const CTransform4f firstPersonXf = CameraManager(mgr).FirstPersonCamera()->GetTransform();
+  const CTransform4f playerXf = GetPlayer(mgr).GetTransform();
+  const CTransform4f firstPersonXf = GetCameraManager(mgr).FirstPersonCamera()->GetTransform();
   TeleportCamera(firstPersonXf, mgr);
   TeleportLookAtStuff(mgr);
 
   const CVector3f lookPos =
-      CameraManager(mgr).FirstPersonCamera()->GetScanObjectIndicatorPosition(mgr);
+      GetCameraManager(mgr).FirstPersonCamera()->GetScanObjectIndicatorPosition(mgr);
   mToBallTransition->mLookPos = lookPos;
   mToBallTransition->mPlayerXf = playerXf;
-  CVector3f eyePos = Player(mgr).GetEyePosition();
+  CVector3f eyePos = GetPlayer(mgr).GetEyePosition();
   float distance = mTargetMinDistance;
   float elevation = mElevation;
   ConstrainElevationAndDistance(elevation, distance, 0.f, mgr);
   distance = mTargetMinDistance;
-  const CVector3f forward = Player(mgr).GetTransform().GetForward();
+  const CVector3f forward = GetPlayer(mgr).GetTransform().GetForward();
 
   const CVector3f ballPos = FindDesiredPosition(distance, elevation, forward, mgr, false);
   const float backDistance = -distance;
@@ -175,13 +175,13 @@ bool CBallCamera::TransitionToMorphBallState(CStateManager& mgr) {
 
 bool CBallCamera::UpdateTransitionToBallCamera(float dt, CStateManager& mgr) {
   const CScriptCameraHint* hint = TCastToConstPtr< CScriptCameraHint >(
-      CameraManager(mgr).GetHintManager()->GetCurrentHint(mgr));
+      GetCameraManager(mgr).GetHintManager()->GetCurrentHint(mgr));
   if (hint != nullptr && (hint->GetInfo().GetFlags() & 0x08000000) != 0) {
     return true;
   }
 
   const CVector3f oldPosition = GetTranslation();
-  CPlayer& player = Player(mgr);
+  const CPlayer& player = GetPlayer(mgr);
   const float factor = player.GetMorphBallTransitionFactor();
   const CVector3f eyePos = player.GetEyePosition();
   const CVector3f translationDelta =
@@ -200,7 +200,7 @@ bool CBallCamera::UpdateTransitionToBallCamera(float dt, CStateManager& mgr) {
   const CVector3f splinePosition = mToBallTransition->mSpline.GetPositionByTime(
       factor * mToBallTransition->mSpline.GetDuration());
   const CTransform4f oldTransform = GetTransform();
-  CPlayer& transitionPlayer = Player(mgr);
+  const CPlayer& transitionPlayer = GetPlayer(mgr);
   const CVector3f splineDelta = splinePosition - eyePos;
   const float splineDistance = splineDelta.Magnitude();
   const float currentDistance = CVector3f(GetTranslation() - eyePos).Magnitude();
@@ -261,7 +261,7 @@ bool CBallCamera::UpdateTransitionToBallCamera(float dt, CStateManager& mgr) {
 
 bool CBallCamera::UpdateTransitionToBallCamera(CStateManager& mgr) {
   mLookAtBall = false;
-  CPlayer& player = Player(mgr);
+  const CPlayer& player = GetPlayer(mgr);
   CVector3f lookDirection = player.GetTransform().GetForward();
   lookDirection = mLookPos - GetTranslation();
   const CVector3f position = GetTranslation();

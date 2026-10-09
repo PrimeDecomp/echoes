@@ -31,10 +31,10 @@ class CCameraManager {
 public:
   CCameraManager(TUniqueId curCamera, int playerIndex);
 
-  CHintManager* HintManager() { return mCameraHintManager.get(); }
+  CHintManager* HintManager() const { return mCameraHintManager.get(); }
   const CHintManager* GetHintManager() const { return mCameraHintManager.get(); }
   CCameraShakerManager* CameraShakerManager() { return mCameraShakeManager.get(); }
-  CFirstPersonCamera* FirstPersonCamera() { return mFpCamera; }
+  CFirstPersonCamera* FirstPersonCamera() const { return mFpCamera; }
   const CFirstPersonCamera* GetFirstPersonCamera() const { return mFpCamera; }
   const CBallCamera* GetBallCamera() const { return mBallCamera; }
   const CInterpolationCamera* GetInterpolationCamera() const { return mInterpCamera; }
@@ -44,7 +44,7 @@ public:
   CSurfaceCamera* SurfaceCamera() { return mSurfaceCamera; }
   CFixedCamera* FixedCamera() { return mFixedCamera; }
   const CPathCamera* GetPathCamera() const { return mPathCamera; }
-  CBallCamera* BallCamera() { return mBallCamera; }
+  CBallCamera* BallCamera() const { return mBallCamera; }
   const CCinematicCamera* GetCinematicCamera() const { return mCinematicCamera; }
 
   float GetFirstPersonFOV() const;

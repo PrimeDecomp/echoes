@@ -480,7 +480,7 @@ void CScriptTrigger::InhabitantRejected(CActor&, CStateManager&) {}
 bool CScriptTrigger::ShouldSendScriptMsgs(CActor& actor, CStateManager& mgr) const {
   if (const CGameCamera* camera = TCastToPtr< CGameCamera >(actor)) {
     const TUniqueId cameraId = camera->GetUniqueId();
-    if (camera->CameraManager(mgr).GetCurrentCameraId(true) != cameraId) {
+    if (camera->GetCameraManager(mgr).GetCurrentCameraId(true) != cameraId) {
       return false;
     }
   }
