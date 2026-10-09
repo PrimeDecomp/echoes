@@ -4066,8 +4066,16 @@ Kyoto/Audio/CCustomAudioAux.cpp:
 	.sdata2     start:0x8041ED98 end:0x8041EDA8
 
 MetroidPrime/Cameras/CCameraSurface.cpp:
-	.text       start:0x80339D24 end:0x8033A28C
-	.data       start:0x803BBAC8 end:0x803BBB10
+	.text       start:0x80339D24 end:0x80339D7C
+	.data       start:0x803BBAC8 end:0x803BBAE0
+
+MetroidPrime/Cameras/CSphereCameraSurface.cpp:
+	.text       start:0x80339D7C end:0x80339EF4
+	.data       start:0x803BBAE0 end:0x803BBAF8
+
+MetroidPrime/Cameras/CPlaneCameraSurface.cpp:
+	.text       start:0x80339EF4 end:0x8033A28C
+	.data       start:0x803BBAF8 end:0x803BBB10
 	.sdata2     start:0x8041EDA8 end:0x8041EDB8
 
 Kyoto/Graphics/PortalPlane.cpp:
