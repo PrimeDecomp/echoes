@@ -1858,7 +1858,7 @@ void CPauseScreen::DrawModelView(const CTransform4f& xf, float alpha) const {
                        .EvaluateAt(mModelFade),
                    1.f);
   if (!close_enough(mModelFade, 1.f)) {
-    CCubeRenderer::That()->SetRequestRGBA6(true);
+    gpRender->SetRequestRGBA6(true);
     GXSetColorUpdate(GX_FALSE);
     CCubeModel::SetRenderModelBlack(true);
     gpRender->SetDepthReadWrite(false, false);
@@ -1940,7 +1940,7 @@ void CPauseScreen::DrawModelView(const CTransform4f& xf, float alpha) const {
         const float phase = mModelFade * speeds[i];
         const float position = (phase - CMath::FloorF(phase)) * (top - bottom);
         const CVector2f low(left - 1.f, top - position);
-        const CVector2f high(right + 1.f, top - -(scales[i] * sweep->GetHeight() - position));
+        const CVector2f high(right + 1.f, top - (position - scales[i] * sweep->GetHeight()));
         CGX::Begin(GX_TRIANGLESTRIP, GX_VTXFMT0, 4);
         GXPosition3f32(low.GetX(), 0.f, low.GetY());
         GXTexCoord2f32(0.f, 0.f);
