@@ -53,32 +53,32 @@ public:
   struct SReflectInfo {
     SReflectInfo();
     void Reset();
-    float x0_;
-    CVector3f x4_;
-    CVector3f x10_;
-    bool x1c_0_ : 1;
-    bool x1c_1_ : 1;
-    bool x1c_2_ : 1;
-    bool x1c_3_ : 1;
-    bool x1c_4_ : 1;
+    float mApexOffset;          // Guessed name
+    CVector3f mJumpPosition;    // Guessed name
+    CVector3f mLandingPosition; // Guessed name
+    bool mLaunched : 1;         // Guessed name
+    bool mStartedSubmerged : 1; // Guessed name
+    bool mTargetValid : 1;      // Guessed name
+    bool mLanded : 1;           // Guessed name
+    bool mWaterCrossed : 1;     // Guessed name
     bool x1c_5_ : 1;
     CDamageVulnerability mVulnerability;
-    float x50_;
+    float mJumpEndTime; // Guessed name
   };
 
   // Guessed name; bite attack descriptor.
   struct SBiteAttack {
     SBiteAttack(const CDamageInfo& damage, float minRange, float maxRange, float minPause,
                 float maxPause, float damageRadius);
-    bool x0_;
+    bool mSubmerged; // Guessed name
     CDamageInfo mDamage;
     float mMinRange;
     float mMaxRange;
     float mMinPause;
     float mMaxPause;
-    CTransform4f x30_;
+    CTransform4f mJawXf; // Guessed name
     float mDamageRadius;
-    float x64_;
+    float mLastBiteTime; // Guessed name
   };
 
   // Guessed name; shared attack-descriptor header.
@@ -98,12 +98,12 @@ public:
                 float maxRange, float minPause, float maxPause, float maxAngle);
     bool x2c_;
     CDamageInfo mBeamDamage;
-    float x4c_;
-    CVector3f x50_;
+    float mLastBeamTime;       // Guessed name
+    CVector3f mTargetPosition; // Guessed name
     float mMaxAngle;
     SLdrAudioPlaybackParms mSound;
-    CSfxHandle x78_;
-    CTransform4f x7c_;
+    CSfxHandle mSoundHandle; // Guessed name
+    CTransform4f mHornXf;    // Guessed name
   };
 
   // Guessed name; burst attack descriptor.
@@ -112,30 +112,30 @@ public:
                  float minPause, float maxPause, float damageRadius);
     bool x2c_;
     CAssetId mProjectile;
-    float x34_;
+    float mNextBurstTime; // Guessed name
     float mDamageRadius;
-    float x3c_;
+    float mLastBurstTime; // Guessed name
   };
 
   // Guessed name; charge attack descriptor.
   struct SChargeAttack {
     SChargeAttack(float minTimeBetweenCharges, float unknown, float minRange, float maxRange);
-    CVector3f x0_;
-    CVector3f xc_;
-    float x18_;
-    float x1c_;
-    float x20_;
-    float x24_;
-    float x28_;
-    float x2c_;
-    float x30_;
+    CVector3f mStartPosition;     // Guessed name
+    CVector3f mTargetPosition;    // Guessed name
+    float mMinRange;              // Guessed name
+    float mMaxRange;              // Guessed name
+    float mStartHealth;           // Guessed name
+    float mLastChargeTime;        // Guessed name
+    float mSavedSpeed;            // Guessed name
+    float mMinTimeBetweenCharges; // Guessed name
+    float mAltPause;              // Guessed name
   };
 
   // Guessed name; grapple effect descriptor.
   struct SGrappleEffect {
     explicit SGrappleEffect(CAssetId id);
-    int x0_;
-    rstl::optional_object< TToken< CGenDescription > > x4_;
+    int mEffectId;                                              // Guessed name
+    rstl::optional_object< TToken< CGenDescription > > mEffect; // Guessed name
   };
 
   // Guessed name; particle generator holder.
@@ -150,16 +150,16 @@ public:
     SEffectA(CAssetId surfaceRings, CAssetId electric, CAssetId beam, CAssetId hitFx,
              CAssetId eyeGlow);
     uint x0_;
-    SOwnedParticle x4_;
+    SOwnedParticle mSurfaceRing; // Guessed name
     uint xc_;
     CToken x10_;
-    TUniqueId x18_;
+    TUniqueId mBeamProjectileId; // Guessed name
     CToken x1c_;
-    uint x24_;
-    rstl::optional_object< TLockedToken< CGenDescription > > x28_;
-    TUniqueId x38_;
-    SOwnedParticle x3c_;
-    float x44_;
+    uint mExplosionAssetId;                                              // Guessed name
+    rstl::optional_object< TLockedToken< CGenDescription > > mExplosion; // Guessed name
+    TUniqueId mExplosionId;                                              // Guessed name
+    SOwnedParticle mEyeGlow;                                             // Guessed name
+    float mEyeGlowAlpha;                                                 // Guessed name
   };
 
   // Guessed name; electric effect descriptor.
@@ -168,40 +168,40 @@ public:
     uchar x0_0_ : 1;
     uchar x0_1_ : 1;
     uchar x0_2_ : 1;
-    int x4_;
-    float x8_;
-    int xc_;
+    int mStruggleCount; // Guessed name
+    float mStartHealth; // Guessed name
+    int mStruggleLimit; // Guessed name
     float x10_;
-    float x14_;
-    float x18_;
-    float x1c_;
+    float mClosestDistance; // Guessed name
+    float mStuckTime;       // Guessed name
+    float mLastGrappleTime; // Guessed name
     float x20_;
     float x24_;
-    int x28_;
-    uint x2c_;
-    TUniqueId x30_;
-    rstl::optional_object< TToken< CGenDescription > > x34_;
+    int mGrappleSide;                                                // Guessed name
+    uint mVisorEffectAssetId;                                        // Guessed name
+    TUniqueId mVisorEffectId;                                        // Guessed name
+    rstl::optional_object< TToken< CGenDescription > > mVisorEffect; // Guessed name
   };
 
   // Guessed name; grapple beam descriptor.
   struct SEffectC {
     SEffectC(CAssetId swoosh, CAssetId beamPart, const CDamageInfo& damage,
              const SLdrAudioPlaybackParms& sound);
-    CVector3f x0_;
-    float xc_;
-    uint x10_;
+    CVector3f mTargetPosition; // Guessed name
+    float mBeamLength;         // Guessed name
+    uint mSwooshAssetId;       // Guessed name
     rstl::optional_object< TLockedToken< CGenDescription > > x14_;
-    SOwnedParticle x24_;
-    uint x2c_;
-    SOwnedParticle x30_;
-    CVector3f x38_;
+    SOwnedParticle mSwoosh;        // Guessed name
+    uint mBeamPartAssetId;         // Guessed name
+    SOwnedParticle mBeamParticles; // Guessed name
+    CVector3f mLastHornPosition;   // Guessed name
     float x44_;
-    int x48_;
-    CVector3f x4c_;
-    CDamageInfo x58_;
-    float x74_;
-    SLdrAudioPlaybackParms x78_;
-    CSfxHandle x90_;
+    int mTraceState;               // Guessed name
+    CVector3f mHitPosition;        // Guessed name
+    CDamageInfo mDamage;           // Guessed name
+    float mDamageTimer;            // Guessed name
+    SLdrAudioPlaybackParms mSound; // Guessed name
+    CSfxHandle mSoundHandle;       // Guessed name
   };
 
   // Guessed name; damage plus effect record.
@@ -214,18 +214,18 @@ public:
   // Guessed name; three-vector record.
   struct SVectorTriple {
     SVectorTriple();
-    CVector3f x0_;
-    CVector3f xc_;
-    CVector3f x18_;
+    CVector3f mEye;  // Guessed name
+    CVector3f mHorn; // Guessed name
+    CVector3f mHead; // Guessed name
   };
 
   // Guessed name; particle effect with offsets.
   struct SEffectD {
     explicit SEffectD(CAssetId effect);
-    SOwnedParticle x0_;
-    CVector3f x8_;
-    CVector3f x14_;
-    float x20_;
+    SOwnedParticle mWaterSplash; // Guessed name
+    CVector3f mLastPosition;     // Guessed name
+    CVector3f mAnchorPosition;   // Guessed name
+    float mSplashTimer;          // Guessed name
   };
 
   CGrenchler(TUniqueId uid, const rstl::string& name, CEntityInfo& info, const CTransform4f& xf,
@@ -428,7 +428,7 @@ public:
   float GetWaterSurfaceHeight(const CStateManager& mgr) const;           // Guessed name
   CVector3f GetPlayerTargetPosition(CStateManager& mgr) const;           // Guessed name
   int GetLastAttackState() const {
-    return mCollisionActors.empty() ? xa74_ : mCollisionActors.back();
+    return mAttackHistory.empty() ? mLastActionFallback : mAttackHistory.back();
   } // Guessed name
   // Guessed name; the value of each state function that records itself via SetAttackState.
   enum EAction {
@@ -598,25 +598,25 @@ public:
 
 private:
   CPathFindSearch mPathFindSearch;                                                  // 0x7c0
-  float x8ac_;                                                                      // Guessed name
-  CVector3f x8b0_;                                                                  // Guessed name
-  float x8bc_;                                                                      // Guessed name
+  float mElapsedTime;                                                               // Guessed name
+  CVector3f mPathDestination;                                                       // Guessed name
+  float mPathDestinationTime;                                                       // Guessed name
   CBoneTracking mBoneTracking;                                                      // Guessed name
-  float x8fc_;                                                                      // Guessed name
-  float x900_;                                                                      // Guessed name
-  float x904_;                                                                      // Guessed name
-  int x908_;                                                                        // Guessed name
-  bool mX90c_0_ : 1;                                                                // Guessed name
-  bool mX90c_1_ : 1;                                                                // Guessed name
+  float mLastKnockBackTime;                                                         // Guessed name
+  float mLastHitTime;                                                               // Guessed name
+  float mLastLeashTeleportTime;                                                     // Guessed name
+  int mMarkedRegionIndex;                                                           // Guessed name
+  bool mTrackPlayer : 1;                                                            // Guessed name
+  bool mAlerted : 1;                                                                // Guessed name
   bool mIsGrappleGuardian : 1;                                                      // Guessed name
   bool mHasHealthBar : 1;                                                           // Guessed name
-  bool mX90c_4_ : 1;                                                                // Guessed name
-  bool mX90c_5_ : 1;                                                                // Guessed name
-  bool mX90c_6_ : 1;                                                                // Guessed name
+  bool mReturnToPatrol : 1;                                                         // Guessed name
+  bool mScanned : 1;                                                                // Guessed name
+  bool mUsingJumpPoint : 1;                                                         // Guessed name
   CSurfaceAlignmentHelper mSurfaceAlignment;                                        // Guessed name
   rstl::single_ptr< TLockedToken< CScannableObjectInfo > > mAlternateScanInfo;      // Guessed name
   CDamageVulnerability mDamageVulnerability;                                        // Guessed name
-  rstl::ncrc_ptr< CNonUniformVulnerability > x99c_;                                 // Guessed name
+  rstl::ncrc_ptr< CNonUniformVulnerability > mNonUniformVulnerability;              // Guessed name
   rstl::optional_object< CAABox > mGuardianBounds;                                  // Guessed name
   rstl::optional_object< CToken > mFsm;                                             // Guessed name
   CAssetId mTaillessModel;                                                          // Guessed name
@@ -625,82 +625,82 @@ private:
   CAssetId mTaillessModelDark;                                                      // Guessed name
   CAssetId mTaillessSkinRulesDark;                                                  // Guessed name
   rstl::optional_object< TLockedToken< CSkinnedModel > > mTaillessSkinnedModelDark; // Guessed name
-  bool x9fc_;                                                                       // Guessed name
-  float xa00_;                                                                      // Guessed name
-  mutable TUniqueId xa04_;                                                          // Guessed name
-  mutable bool xa06_;                                                               // Guessed name
+  bool mSubmerged;                                                                  // Guessed name
+  float mEmergeTime;                                                                // Guessed name
+  mutable TUniqueId mWaterId;                                                       // Guessed name
+  mutable bool mPlayerSubmerged;                                                    // Guessed name
   SReflectInfo mReflectInfo;                                                        // Guessed name
   rstl::single_ptr< CCollisionActorManager > mCollisionManager;                     // Guessed name
-  rstl::reserved_vector< EAction, 3 > mCollisionActors;                             // Guessed name
+  rstl::reserved_vector< EAction, 3 > mAttackHistory;                               // Guessed name
   int xa70_;                                                                        // Guessed name
-  EAction xa74_;                                                                    // Guessed name
-  EAction xa78_;                                                                    // Guessed name
-  float xa7c_;                                                                      // Guessed name
-  float xa80_;                                                                      // Guessed name
-  float xa84_;                                                                      // Guessed name
-  float xa88_;                                                                      // Guessed name
-  float xa8c_;                                                                      // Guessed name
-  float xa90_;                                                                      // Guessed name
-  float xa94_;                                                                      // Guessed name
+  EAction mLastActionFallback;                                                      // Guessed name
+  EAction mCurrentAction;                                                           // Guessed name
+  float mPathBlockedTime;                                                           // Guessed name
+  float mStuckCheckTimer;                                                           // Guessed name
+  float mPursueTime;                                                                // Guessed name
+  float mNoPathTime;                                                                // Guessed name
+  float mBoredThreshold;                                                            // Guessed name
+  float mSteeringTimer;                                                             // Guessed name
+  float mDefaultTurnSpeed;                                                          // Guessed name
   SBiteAttack mBiteAttack;                                                          // Guessed name
   SBeamAttack mBeamAttack;                                                          // Guessed name
   SBurstAttack mBurstAttack;                                                        // Guessed name
   rstl::optional_object< CModelData > mTaillessModelData;                           // Guessed name
-  CTransform4f xc3c_;                                                               // Guessed name
-  int xc6c_;                                                                        // Guessed name
+  CTransform4f mSkeletonRootXf;                                                     // Guessed name
+  int mTailDestroyed;                                                               // Guessed name
   float xc70_;                                                                      // Guessed name
   float mTailHealth;                                                                // Guessed name
-  float xc78_;                                                                      // Guessed name
+  float mTailDestroyedTime;                                                         // Guessed name
   ushort mTailHitSound;                                                             // Guessed name
   ushort mTailDestroyedSound;                                                       // Guessed name
-  uchar xc80_;                                                                      // Guessed name
+  uchar mFadeActive;                                                                // Guessed name
   SChargeAttack mChargeAttack;                                                      // Guessed name
-  float xcb8_;                                                                      // Guessed name
-  uchar xcbc_;                                                                      // Guessed name
-  float xcc0_;                                                                      // Guessed name
-  float xcc4_;                                                                      // Guessed name
-  int xcc8_;                                                                        // Guessed name
-  TUniqueId xccc_;                                                                  // Guessed name
-  CVector3f xcd0_;                                                                  // Guessed name
-  float xcdc_;                                                                      // Guessed name
-  float xce0_;                                                                      // Guessed name
+  float mSinkTime;                                                                  // Guessed name
+  uchar mSurfaced;                                                                  // Guessed name
+  float mDeathFadeTimer;                                                            // Guessed name
+  float mSurfaceHeight;                                                             // Guessed name
+  int mSpinSeed;                                                                    // Guessed name
+  TUniqueId mTeamAiMgrId;                                                           // Guessed name
+  CVector3f mManeuverTarget;                                                        // Guessed name
+  float mManeuverStartTime;                                                         // Guessed name
+  float mPauseEndTime;                                                              // Guessed name
   uchar xce4_;                                                                      // Guessed name
-  float xce8_;                                                                      // Guessed name
-  float xcec_;                                                                      // Guessed name
-  float xcf0_;                                                                      // Guessed name
-  uchar xcf4_;                                                                      // Guessed name
+  float mTurnStartTime;                                                             // Guessed name
+  float mSavedTurnSpeed;                                                            // Guessed name
+  float mLastTurnAnimTime;                                                          // Guessed name
+  uchar mTurnAnimActive;                                                            // Guessed name
   SGrappleEffect mGrappleEffect;                                                    // Guessed name
   SEffectA mEffectA;                                                                // Guessed name
   SEffectB mEffectB;                                                                // Guessed name
   SEffectC mEffectC;                                                                // Guessed name
-  float xe24_;                                                                      // Guessed name
-  float xe28_;                                                                      // Guessed name
-  CVector3f xe2c_;                                                                  // Guessed name
+  float mBiteAttachTimer;                                                           // Guessed name
+  float mGuardianFacingBlend;                                                       // Guessed name
+  CVector3f mEyePosition;                                                           // Guessed name
   CAnimationParameters mTail;                                                       // Guessed name
   uint mTailWhenUnderwater;                                                         // Guessed name
   CAnimationParameters mTailDark;                                                   // Guessed name
   uint mTailWhenUnderwaterDark;                                                     // Guessed name
-  float xe58_;                                                                      // Guessed name
-  float xe5c_;                                                                      // Guessed name
-  float xe60_;                                                                      // Guessed name
-  float xe64_;                                                                      // Guessed name
-  float xe68_;                                                                      // Guessed name
-  int xe6c_;                                                                        // Guessed name
-  CTransform4f xe70_;                                                               // Guessed name
-  uchar mXea0_0_ : 1;                                                               // Guessed name
-  uchar mXea0_1_ : 1;                                                               // Guessed name
-  uchar mXea0_2_ : 1;                                                               // Guessed name
-  float xea4_;                                                                      // Guessed name
-  bool mXea8_0_ : 1;                                                                // Guessed name
-  bool mXea8_1_ : 1;                                                                // Guessed name
-  int xeac_;                                                                        // Guessed name
+  float mDamageFlashTimer;                                                          // Guessed name
+  float mGrappleCrystalDamage;                                                      // Guessed name
+  float mCrystalDamage;                                                             // Guessed name
+  float mGrappleCrystalThreshold;                                                   // Guessed name
+  float mCrystalDamageThreshold;                                                    // Guessed name
+  int mCrystalState;                                                                // Guessed name
+  CTransform4f mAttachXf;                                                           // Guessed name
+  uchar mPlayerGrabbed : 1;                                                         // Guessed name
+  uchar mCaptureActive : 1;                                                         // Guessed name
+  uchar mPlayerInMouth : 1;                                                         // Guessed name
+  float mSlideStartTime;                                                            // Guessed name
+  bool mSlideOver : 1;                                                              // Guessed name
+  bool mSlideStopReady : 1;                                                         // Guessed name
+  int mBiteCount;                                                                   // Guessed name
   SLdrAudioPlaybackParms mAudioPlaybackParms;                                       // Guessed name
-  CSfxHandle xec8_;                                                                 // Guessed name
+  CSfxHandle mElectricSfx;                                                          // Guessed name
   SDamageEffect mDamageEffect;                                                      // Guessed name
   SVectorTriple mVectors;                                                           // Guessed name
-  pas::ETauntType xf18_;                                                            // Guessed name
-  float xf1c_;                                                                      // Guessed name
-  TUniqueId xf20_;                                                                  // Guessed name
+  pas::ETauntType mTauntType;                                                       // Guessed name
+  float mTeammateScanTimer;                                                         // Guessed name
+  TUniqueId mTouchingTeammateId;                                                    // Guessed name
   SEffectD mEffectD;                                                                // Guessed name
 };
 CHECK_SIZEOF(CGrenchler, 0xf48)
