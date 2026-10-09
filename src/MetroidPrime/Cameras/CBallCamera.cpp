@@ -1485,8 +1485,8 @@ void CBallCamera::UpdateUsingColliders(float dt, CStateManager& mgr) {
     const CVector3f up = CVector3f::Up();
     if (upwardDistance > 0.f) {
       mgr.BuildNearList(blockers, finalPos, up, upwardDistance, skLineOfSightFilter, nullptr);
-      const CRayCastResult hit =
-          mgr.RayWorldIntersection(hitId, finalPos, up, upwardDistance, skLineOfSightFilter, blockers);
+      const CRayCastResult hit = mgr.RayWorldIntersection(hitId, finalPos, up, upwardDistance,
+                                                          skLineOfSightFilter, blockers);
       if (hit.IsValid()) {
         targetZ = rstl::min_val(hit.GetPoint().GetZ() - 0.6f, targetZ);
       }
