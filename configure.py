@@ -1831,6 +1831,13 @@ config.libs = [
         extra_cflags=["-pool off"],
     ),
     Rel(
+        "OctapedeSegment",
+        [
+            Object(NonMatching, "MetroidPrime/Enemies/COctapedeSegment.cpp"),
+        ],
+        extra_cflags=["-pool off"],
+    ),
+    Rel(
         "Lumite",
         [
             Object(NonMatching, "MetroidPrime/Enemies/CLumite.cpp"),

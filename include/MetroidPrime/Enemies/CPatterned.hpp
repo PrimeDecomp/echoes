@@ -70,6 +70,7 @@ enum EPatternedAI {
   kPAI_Shredder = 0x4e,                // Guessed name; Shredder REL constructor.
   kPAI_Blogg = 0x4c,                   // Guessed name; Blogg REL constructor.
   kPAI_Krocuss = 0x4f,                 // Guessed name; Krocuss REL constructor.
+  kPAI_OctapedeSegment = 0x50, // Guessed name; OctapedeSegment REL constructor.
 };
 
 template <>
