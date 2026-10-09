@@ -2,8 +2,9 @@
 #define _CSPACEPIRATE
 
 #include "MetroidPrime/Enemies/CPatterned.hpp"
+#include "REL/REL_Setup.h"
 
-class CSpacePirate : public CPatterned {
+class REL_EXPORT CSpacePirate : public CPatterned {
 public:
   // CEntity
   CEntity* TypesMatch(int typeId) const override;
