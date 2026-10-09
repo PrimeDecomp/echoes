@@ -1740,7 +1740,7 @@ void CPauseScreen::DrawMenuNode(const CTransform4f& view, const CVector3f& origi
   rstl::rc_ptr< CScanTreeNode > node = mScanTree.GetNode(nodeId);
   const float nodeScale = gpTweakGui->GetLogBookSelectedNodeScale();
   const float textScale = gpTweakGui->GetLogBookSelectedTextScale();
-  gpTweakGui->GetLogBookMenuOptionColor();
+  const CColor optionColor = gpTweakGui->GetLogBookMenuOptionColor().WithAlphaModulatedBy(alpha);
   const CVector3f position = node->GetDisplayPosition() - origin;
   if (node->AreResourcesLoaded()) {
     gpRender->SetBlendMode_AdditiveAlpha();
@@ -1771,21 +1771,26 @@ void CPauseScreen::DrawMenuNode(const CTransform4f& view, const CVector3f& origi
       static const CVector3f flip(-1.f, 1.f, 1.f);
       const float arrowScale = gpTweakGui->GetLogBookMenuOptionArrowScale();
       const rstl::pair< CVector2i, CVector2i >& bounds = mNodeText->GetBounds();
-      const CVector3f arrowOffset(
-          optionScale * -(bounds.second.GetX() - bounds.first.GetX()) * 0.5f - 0.1f, 0.f,
-          optionScale * -(bounds.second.GetY() - bounds.first.GetY()) * 0.5f +
-              optionScale * (offset.GetZ() - bounds.first.GetY()));
+      const float width = bounds.second.GetX() - bounds.first.GetX();
+      const float height = bounds.second.GetY() - bounds.first.GetY();
+      const CVector3f arrowOffset(optionScale * -width * 0.5f - 0.1f, 0.f,
+                                  optionScale * -height * 0.5f +
+                                      optionScale * (offset.GetZ() - bounds.first.GetY()));
       const bool rightEnabled = menu->GetCurrentOptionIndex() < menu->GetOptionCount() - 1;
       const bool leftEnabled = menu->GetCurrentOptionIndex() > 0;
       const CTransform4f left = view.GetRotation() * CTransform4f::Translate(arrowOffset) *
                                 CTransform4f::Scale(arrowScale);
-      CGraphics::SetModelMatrix(CTransform4f::Translate(position) * left);
-      arrow->Draw(CModelFlags(CModelFlags::kT_One, leftEnabled ? enabled : disabled));
+      const CTransform4f leftXf = CTransform4f::Translate(position) * left;
+      CGraphics::SetModelMatrix(leftXf);
+      const CColor leftColor = leftEnabled ? enabled : disabled;
+      arrow->Draw(CModelFlags(CModelFlags::kT_One, leftColor));
       const CTransform4f right = view.GetRotation() * CTransform4f::Scale(flip) *
                                  CTransform4f::Translate(arrowOffset) *
                                  CTransform4f::Scale(arrowScale);
-      CGraphics::SetModelMatrix(CTransform4f::Translate(position) * right);
-      arrow->Draw(CModelFlags(CModelFlags::kT_One, rightEnabled ? enabled : disabled));
+      const CTransform4f rightXf = CTransform4f::Translate(position) * right;
+      CGraphics::SetModelMatrix(rightXf);
+      const CColor rightColor = rightEnabled ? enabled : disabled;
+      arrow->Draw(CModelFlags(CModelFlags::kT_One, rightColor));
     }
   }
 }
