@@ -73,6 +73,15 @@ void CScriptSteam::Think(float dt, CStateManager& mgr) {
   }
 }
 
+SLdrSteam::SLdrSteam() : editorProperties(), trigger(), steam(kInvalidAssetId) {
+  editorProperties.transform.scale = CVector3f(1.0f, 1.0f, 1.0f);
+  strength = 0.34999999f;
+  fadeInRate = 1.0f;
+  fadeOutRate = 2.0f;
+  radius = 0.0f;
+  unknown_0xa366c949 = false;
+}
+
 CEntity* LoadSteam(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
   SLdrSteam sldrThis;
 #include "MetroidPrime/ScriptLoader/SLdrSteam.inc"

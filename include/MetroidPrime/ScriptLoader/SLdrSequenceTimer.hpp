@@ -21,6 +21,7 @@ struct SLdrSequenceTimer {
 };
 
 inline SLdrSequenceTimer::SLdrSequenceTimer() : editorProperties(), sequenceConnections() {
+  editorProperties.unknown_0x5d298a43 = 0x00000003u;
   startTime = 0.0f;
   maxTime = 0.0f;
   loopStartTime = 0.0f;

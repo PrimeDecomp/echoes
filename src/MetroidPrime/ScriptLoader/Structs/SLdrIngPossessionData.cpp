@@ -6,13 +6,13 @@ SLdrIngPossessionData::SLdrIngPossessionData()
 , ingPossessedSkinRules(kInvalidAssetId)
 , darkScanInfo(kInvalidAssetId)
 , ingPossessedHealth()
+, unknown_0x2befc1bf(-1)
 , ingVulnerability() {
   isAnEncounter = false;
   unknown_0xb68c0aa3 = true;
   ingPossessedHealth.health = 150.0f;
   ingPossessedHealth.hI_KnockBackResistance = 2.0f;
   ingPossessedDamageMultiplier = 2.0f;
-  unknown_0x2befc1bf = -1;
 }
 
 SLdrIngPossessionData::~SLdrIngPossessionData() {}

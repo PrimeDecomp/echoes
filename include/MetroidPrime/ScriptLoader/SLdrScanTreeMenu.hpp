@@ -32,14 +32,14 @@ inline SLdrScanTreeMenu::SLdrScanTreeMenu()
 , stringName()
 , menuStringTable(kInvalidAssetId)
 , stringTableOption1()
-, menuValue1()
 , stringTableOption2()
-, menuValue2()
 , stringTableOption3()
-, menuValue3()
-, stringTableOption4()
-, menuValue4() {
+, stringTableOption4() {
   gameOption = 0;
+  menuValue1 = 0;
+  menuValue2 = 1;
+  menuValue3 = 2;
+  menuValue4 = 3;
 }
 
 inline SLdrScanTreeMenu::~SLdrScanTreeMenu() {}

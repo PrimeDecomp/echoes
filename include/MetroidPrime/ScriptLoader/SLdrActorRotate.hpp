@@ -41,6 +41,7 @@ struct SLdrActorRotate {
 
 inline SLdrActorRotate::SLdrActorRotate()
 : editorProperties(), rotationControls(), scaleControls() {
+  editorProperties.unknown_0x5d298a43 = 0x00000003u;
   flagsActorRotate = 0x00000014u;
   duration = 10.0f;
 }

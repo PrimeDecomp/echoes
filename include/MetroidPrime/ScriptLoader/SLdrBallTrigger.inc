@@ -33,10 +33,12 @@ for (int i = 0; i < propertyCount; ++i) {
     sldrThis.noBallMovement = input.ReadBool();
     break;
   }
+#if VERSION != VERSION_G2ME01
   case 0x2766636a: {
     sldrThis.boundsSizeMultiplier = input.ReadFloat();
     break;
   }
+#endif
   default:
     input.ReadBytes(nullptr, propertySize);
     break;

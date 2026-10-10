@@ -138,6 +138,7 @@ inline SLdrCameraHint::SLdrCameraHint()
 , positionInterpolationOn()
 , rotationInterpolation()
 , positionInterpolationOff() {
+  editorProperties.unknown_0x5d298a43 = 0x00000003u;
   priority = 50;
   timer = 0.0f;
   flagsCameraHint = 0x0000011eu;

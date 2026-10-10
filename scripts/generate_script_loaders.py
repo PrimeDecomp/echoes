@@ -61,9 +61,45 @@ TWEAKS_USHORT_COUNT_STRUCTS = {
     "TweakPlayerGun_Beam_Combo",
 }
 TWEAKS_USHORT_SIZE_STRUCTS = {"TweakPlayer_Collision"}
+# Script object loaders whose target reads the count the same way as the Tweaks above.
+USHORT_COUNT_STRUCTS = {"CameraWaypoint", "SpiderBallWaypoint"}
 # Script object loaders whose target keeps the property count in a u16 (LoadRipper,
 # Ripper.rel .text 0x178; with an int count the loop allocates registers differently).
-U16_COUNT_STRUCTS = {"Ripper"}
+U16_COUNT_STRUCTS = {
+    "ActorRotate",
+    "AreaDamage",
+    "CameraHint",
+    "ColorModulate",
+    "ControlHint",
+    "ControllerAction",
+    "Debris",
+    "DebrisExtended",
+    "DistanceFog",
+    "Dock",
+    "FogVolume",
+    "PickupGenerator",
+    "PlayerStateChange",
+    "PointOfInterest",
+    "Ripper",
+    "ScanTreeCategory",
+    "ScanTreeInventory",
+    "ScanTreeMenu",
+    "ScanTreeScan",
+    "ScanTreeSlider",
+    "ScannableObjectInfo",
+    "ScriptLayerController",
+    "SequenceTimer",
+    "Silhouette",
+    "SoundModifier",
+    "SpecialFunction",
+    "SpindleCamera",
+    "Steam",
+    "Subtitle",
+    "Trigger",
+    "VisorFlare",
+    "Water",
+    "WorldTeleporter",
+}
 
 PROFILE_DIRECTORY = Path(__file__).resolve().parent.parent / "config" / "loader_profiles"
 
@@ -81,6 +117,8 @@ G2ME01_ABSENT_PROPERTIES: dict[str, frozenset[int]] = {
     # G2ME01 LoadSubtitle 8020DB08 and TextPane ctor 8020038C have one text record.
     "SLdrSubtitle": frozenset({0xC8E441FA, 0x53A7F7A7, 0xEB1B90C2}),
     "SLdrTextPane": frozenset({0xC8E441FA}),
+    # G2ME01 SLdrBallTrigger ctor (CScriptBallTrigger) stores no bounds size multiplier.
+    "SLdrBallTrigger": frozenset({0x2766636A}),
 }
 
 KEYWORDS: set[str] = {
@@ -265,6 +303,41 @@ NATIVE_INSTANCE_DEFAULTS: dict[str, tuple[tuple[int, ...], ...]] = {
         (0x7E397FED, 0xB028DB0E, 0xA33E5B0E),
         (0x7E397FED, 0x05AD250E, 0xCA19E8C6),
     ),
+    "SLdrSequenceTimer": ((0x255A4580, 0x5D298A43),),
+    "SLdrHUDHint": ((0x255A4580, 0x5D298A43),),
+    "SLdrRepulsor": ((0x255A4580, 0x5D298A43),),
+    "SLdrActorRotate": ((0x255A4580, 0x5D298A43),),
+    "SLdrCameraHint": ((0x255A4580, 0x5D298A43),),
+    "SLdrColorModulate": ((0x255A4580, 0x5D298A43),),
+    "SLdrRoomAcoustics": ((0x255A4580, 0x5D298A43),),
+    "SLdrPortalTransition": ((0x255A4580, 0x5D298A43),),
+    "SLdrEffect": ((0x255A4580, 0x5D298A43), (0xB028DB0E, 0xA33E5B0E)),
+    # Door and Debris constructors re-store the editor flags, ambient color and visor.
+    "SLdrDoor": (
+        (0x255A4580, 0x5D298A43),
+        (0x7E397FED, 0xB028DB0E, 0xA33E5B0E),
+        (0x7E397FED, 0x05AD250E, 0xCA19E8C6),
+    ),
+    "SLdrDebris": (
+        (0x255A4580, 0x5D298A43),
+        (0x7E397FED, 0xB028DB0E, 0xA33E5B0E),
+        (0x7E397FED, 0x05AD250E, 0xCA19E8C6),
+    ),
+    "SLdrDebrisExtended": (
+        (0x255A4580, 0x5D298A43),
+        (0x7E397FED, 0xB028DB0E, 0xA33E5B0E),
+        (0x7E397FED, 0x05AD250E, 0xCA19E8C6),
+    ),
+    # SLdrVisorFlare, G2ME01 CScriptVisorFlare: each flare re-stores its color.
+    "SLdrVisorFlare": tuple(
+        (flare, 0x37C7D09D)
+        for flare in (0x3C257223, 0x05A84EE6, 0x12D35AA5, 0x76B2376C, 0x61C9232F)
+    ),
+    # SLdrWater::SLdrWater, G2ME01 CScriptWater: editor scale and flags.
+    "SLdrWater": ((0x255A4580, 0x5846524D, 0x2), (0x255A4580, 0x5D298A43)),
+    # LoadTrigger and LoadDock re-store the editor transform scale.
+    "SLdrTrigger": ((0x255A4580, 0x5846524D, 0x2),),
+    "SLdrDock": ((0x255A4580, 0x5846524D, 0x2),),
     # LoadRipper, Ripper.rel .text 0x178: knockback resistance, ambient color and visor.
     "SLdrRipper": (
         (0xB3774750, 0xCF90D15E, 0x3A2D17E4),
@@ -273,8 +346,43 @@ NATIVE_INSTANCE_DEFAULTS: dict[str, tuple[tuple[int, ...], ...]] = {
     ),
 }
 
+# Header-only objects whose native constructor is an out-of-line function in the
+# object's source (SLdrSteam::SLdrSteam, G2ME01 CScriptSteam): the header only
+# declares it and the hand-written source defines it before LoadX.
+OUTLINE_CONSTRUCTORS = frozenset({"SLdrSteam"})
+
+# Records whose native constructor does not store a template default: property ID ->
+# None (a record member still runs its own constructor, without instance re-stores)
+# (SLdrMasterLayer, inlined into LoadScriptLayerController: no layer store).
+NATIVE_CONSTRUCTOR_OVERRIDES: dict[str, dict[int, None]] = {
+    "SLdrMasterLayer": {0x1: None},
+    # SLdrCommandData::SLdrCommandData (inlined in SLdrControlHint, G2ME01
+    # CScriptControlHint) does not re-store the command choice.
+    "SLdrCommandData": {0x359C7AAF: None},
+}
+
+# Inline records whose reader is an out-of-line function in the object's source
+# (LoadTypedefMasterLayer, G2ME01 CScriptLayerController): the header declares it.
+OUTLINE_READERS = frozenset({"SLdrMasterLayer"})
+
 # An enumeration without a template default is still assigned zero in the body.
 ZERO_DEFAULT_KINDS = frozenset({"Choice"})
+
+# Object constructors that build scalar template defaults in the initializer list instead
+# of assigning them in the body. Record -> property IDs.
+NATIVE_INITIALIZER_DEFAULTS: dict[str, frozenset[int]] = {
+    # SLdrAmbientAI, G2ME01 0x801795D8: animation_React and animation_Damaged.
+    "SLdrAmbientAI": frozenset({0xBFE017DE, 0xED5F16AC}),
+    # SLdrMasterLayer, inlined into LoadScriptLayerController: areaID(-1).
+    "SLdrMasterLayer": frozenset({0x0}),
+}
+
+# Object constructors that do not re-store a nested record's template overrides.
+# Record -> property IDs.
+NATIVE_SKIPPED_OVERRIDES: dict[str, frozenset[int]] = {
+    # SLdrAmbientAI, G2ME01 0x801795D8: the vulnerability effects keep their record defaults.
+    "SLdrAmbientAI": frozenset({0x7B71AE90}),
+}
 pwe_type_lookup = {
     "Bool": "bool",
     "Short": "short",
@@ -1097,10 +1205,16 @@ class Generator:
             )
         parameter = "data" if struct.is_object else "sldrThis"
         initializers: list[tuple[str | None, str]] = []
+        initializer_defaults = NATIVE_INITIALIZER_DEFAULTS.get(name, frozenset())
+        overrides = NATIVE_CONSTRUCTOR_OVERRIDES.get(name, {})
         for prop in struct.fields:
             kind = prop.node.attrib["Type"]
             value = ""
-            if not prop.dependency:
+            if property_id(prop.node) in overrides:
+                continue
+            elif property_id(prop.node) in initializer_defaults:
+                value = (prop.node.findtext("DefaultValue") or "").strip()
+            elif not prop.dependency:
                 if kind == "Color":
                     value = "CColor::Green()"
                 elif kind == "Vector":
@@ -1146,15 +1260,22 @@ class Generator:
                     ],
                 )
                 for prop in struct.fields
+                if property_id(prop.node) not in overrides
+                and property_id(prop.node)
+                not in initializer_defaults | NATIVE_SKIPPED_OVERRIDES.get(name, frozenset())
             ]
         )
-        source += [
-            "}",
-            "",
-            prefix + name + "::~" + name + "() {}",
-        ]
+        source += ["}", ""]
+        if prefix and name in OUTLINE_CONSTRUCTORS:
+            source = []  # Defined by hand in the object source.
+        source += [prefix + name + "::~" + name + "() {}"]
         if prefix and struct.is_object:
             return source  # The property loop is the includable fragment.
+        if prefix and name in OUTLINE_READERS:
+            return source + [
+                "",
+                f"void {self.loader_name(name)}({name}& {parameter}, CInputStream& input);",
+            ]
         source += [
             "",
             f"{prefix}void "
@@ -1189,7 +1310,7 @@ class Generator:
         self, struct: Struct, parameter: str, indent: str = "  "
     ) -> list[str]:
         name = struct.name.removeprefix("SLdr")
-        if name in TWEAKS_USHORT_COUNT_STRUCTS:
+        if name in TWEAKS_USHORT_COUNT_STRUCTS or name in USHORT_COUNT_STRUCTS:
             count = "  const ushort propertyCount = input.ReadInt16();"
         elif name in U16_COUNT_STRUCTS:
             count = "  const u16 propertyCount = input.ReadUint16();"
