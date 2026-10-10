@@ -501,23 +501,24 @@ CBasicSwarmData LdrToBasicSwarmData(const SLdrBasicSwarmProperties& data) {
   result.mMinVolume = static_cast< uchar >(data.minVolume);
   result.mMaxVolume = static_cast< uchar >(data.maxVolume);
   result.mFreezeDuration = data.freezeDuration;
-  result.mLifeTime = data.lifeTime;
   result.mIsVulnerableToSafeZone = data.isVulnerableToSafeZone;
   result.xdc_1 = data.unknown_0x7eb5d9e8;
   result.mIsOrbitable = data.isOrbitable;
   result.mIndividuallyTargetable = data.individuallyTargetable;
+  result.mLifeTime = data.lifeTime;
   return result;
 }
 
 CPowerBombGuardianStageData
 LdrToPowerBombGuardianStageData(const SLdrPowerBombGuardianStageProperties& data) {
-  return CPowerBombGuardianStageData(
-      data.minTimeBetweenAttacks, data.maxTimeBetweenAttacks, data.minTimeBetweenShots,
-      data.maxTimeBetweenShots, static_cast< uchar >(data.minShotsInABurst),
-      static_cast< uchar >(data.maxShotsInABurst), data.powerBombProjectileGravityMultiplier,
-      data.targetPointRandomVariance, data.doubleShotChance,
-      static_cast< uchar >(data.minAttacksPerDoubleShot),
-      static_cast< uchar >(data.maxAttacksPerDoubleShot));
+  const float gravityMultiplier = data.powerBombProjectileGravityMultiplier;
+  return CPowerBombGuardianStageData(data.minTimeBetweenAttacks, data.maxTimeBetweenAttacks,
+                                     data.minTimeBetweenShots, data.maxTimeBetweenShots,
+                                     static_cast< uchar >(data.minShotsInABurst),
+                                     static_cast< uchar >(data.maxShotsInABurst), gravityMultiplier,
+                                     data.targetPointRandomVariance, data.doubleShotChance,
+                                     static_cast< uchar >(data.minAttacksPerDoubleShot),
+                                     static_cast< uchar >(data.maxAttacksPerDoubleShot));
 }
 
 CEntityInfo& LdrToEntityInfo(CEntityInfo& info, const SLdrEditorProperties& data) {
@@ -537,21 +538,29 @@ CBeamInfo TLdrToBeamInfo(const SLdrPlasmaBeamInfo& data, int beamAttributes) {
 
 ERglFogMode FogSelectionToFogMode(int selection) {
   // Guessed selector names; these values come from the serialized fog choice.
-  enum EFogSelection { kFS_Linear = 1, kFS_Exp, kFS_Exp2, kFS_RevExp, kFS_RevExp2 };
+  enum EFogSelection { kFS_None, kFS_Linear, kFS_Exp, kFS_Exp2, kFS_RevExp, kFS_RevExp2 };
+  ERglFogMode mode = kRFM_None;
   switch (selection) {
+  case kFS_None:
+    mode = kRFM_None;
+    break;
   case kFS_Linear:
-    return kRFM_PerspLin;
+    mode = kRFM_PerspLin;
+    break;
   case kFS_Exp:
-    return kRFM_PerspExp;
+    mode = kRFM_PerspExp;
+    break;
   case kFS_Exp2:
-    return kRFM_PerspExp2;
+    mode = kRFM_PerspExp2;
+    break;
   case kFS_RevExp:
-    return kRFM_PerspRevExp;
+    mode = kRFM_PerspRevExp;
+    break;
   case kFS_RevExp2:
-    return kRFM_PerspRevExp2;
-  default:
-    return kRFM_None;
+    mode = kRFM_PerspRevExp2;
+    break;
   }
+  return mode;
 }
 
 FScriptLoader GetScriptLoaderForType(FourCC type) {

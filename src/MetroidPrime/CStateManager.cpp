@@ -225,25 +225,6 @@ bool area_sorter::operator()(const CGameArea* a, const CGameArea* b) const {
 }
 } // namespace
 
-CLight::CLight(const CLight& other)
-: mPos(other.mPos)
-, mDir(other.mDir)
-, mColor(other.mColor)
-, mType(other.mType)
-, mSpotCutoff(other.mSpotCutoff)
-, mDistC(other.mDistC)
-, mDistL(other.mDistL)
-, mDistQ(other.mDistQ)
-, mAngleC(other.mAngleC)
-, mAngleL(other.mAngleL)
-, mAngleQ(other.mAngleQ)
-, mPriority(other.mPriority)
-, mLightId(other.mLightId)
-, mCachedRadius(other.mCachedRadius)
-, mCachedIntensity(other.mCachedIntensity)
-, mIntensityDirty(other.mIntensityDirty)
-, mRadiusDirty(other.mRadiusDirty) {}
-
 bool CStateManager::IsActorVisible(const CActor& actor) const {
   if (actor.UsesPortalVisibility()) {
     const CPortalArea* portals =
@@ -2693,7 +2674,7 @@ void CStateManager::RemoveObject(TUniqueId id) {
 
 void CStateManager::SendDamageScriptMsgs(CActor& damagee, TUniqueId source,
                                          const CDamageInfo& damage) {
-  damagee.SendScriptMsgs(kSS_Damage, *this, kSM_None);
+  damagee.SendScriptMsgs(kSS_Damage, *this);
   EScriptObjectState state = kSS_InvalidState;
   switch (damage.GetWeaponMode1()) {
   case kWT_Power:
@@ -2763,7 +2744,7 @@ void CStateManager::SendDamageScriptMsgs(CActor& damagee, TUniqueId source,
     break;
   }
   if (state != kSS_InvalidState) {
-    damagee.SendScriptMsgs(state, *this, kSM_None);
+    damagee.SendScriptMsgs(state, *this);
   }
 }
 
@@ -3175,10 +3156,10 @@ void CStateManager::ApplyRadiusDamage(const CActor& source, const CVector3f& pos
       ApplyLocalDamage(position, delta, damagee, localDamage, source.GetUniqueId(), owner, info, 1);
     }
     SendDamageScriptMsgs(damagee, source.GetUniqueId(), info);
-    SendScriptMsg(&damagee, source.GetUniqueId(), kSM_Damage, kInvalidUniqueId);
+    SendScriptMsg(&damagee, source.GetUniqueId(), kSM_Damage);
   } else {
-    damagee.SendScriptMsgs(kSS_ResistedDamage, *this, kInvalidUniqueId, kSM_None);
-    SendScriptMsg(&damagee, source.GetUniqueId(), kSM_ResistedDamage, kInvalidUniqueId);
+    damagee.SendScriptMsgs(kSS_ResistedDamage, *this);
+    SendScriptMsg(&damagee, source.GetUniqueId(), kSM_ResistedDamage);
   }
 
   const CVector3f knockbackDelta =

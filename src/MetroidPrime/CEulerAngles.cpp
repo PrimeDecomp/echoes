@@ -24,19 +24,18 @@ CEulerAngles CEulerAngles::FromQuaternion(const CQuaternion& quat) {
   float sy = scale * quat.GetVector().GetY();
   float sz = scale * quat.GetVector().GetZ();
 
-  float zz = sz * quat.GetVector().GetZ();
-  float xx = sx * quat.GetVector().GetX();
-  float wz = sz * quat.GetScalar();
-  float yy = sy * quat.GetVector().GetY();
-  float xy = sy * quat.GetVector().GetX();
-  float wy = sy * quat.GetScalar();
-  float xz = sz * quat.GetVector().GetX();
-  float yz = sz * quat.GetVector().GetY();
   float wx = sx * quat.GetScalar();
+  float wy = sy * quat.GetScalar();
+  float wz = sz * quat.GetScalar();
+  float xx = sx * quat.GetVector().GetX();
+  float xy = sy * quat.GetVector().GetX();
+  float xz = sz * quat.GetVector().GetX();
+  float yy = sy * quat.GetVector().GetY();
+  float yz = sz * quat.GetVector().GetY();
+  float zz = sz * quat.GetVector().GetZ();
 
-  const CMatrix3f mtx(1.f - (yy + zz), xy - wz, xz + wy, xy + wz, 1.f - (xx + zz), yz - wx, xz - wy,
-                      yz + wx, 1.f - (xx + yy));
-  return FromMatrix(mtx);
+  return FromMatrix(CMatrix3f(1.f - (yy + zz), xy - wz, xz + wy, xy + wz, 1.f - (xx + zz), yz - wx,
+                              xz - wy, yz + wx, 1.f - (xx + yy)));
 }
 
 CEulerAngles CEulerAngles::FromMatrix(const CMatrix3f& mtx) {

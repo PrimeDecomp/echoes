@@ -366,7 +366,7 @@ typedef basic_string< char, case_insensitive_char_traits< char > > istring;
 
 inline bool operator<(const string& lhs, const string& rhs) { return lhs.compare(rhs) < 0; }
 
-inline bool operator==(const string& lhs, const char* rhs) { return lhs.compare(rhs) == 0; }
+bool operator==(const string& lhs, const char* rhs);
 
 bool operator==(const char* lhs, const string& rhs);
 bool operator!=(const string& lhs, const char* rhs);

@@ -3145,7 +3145,7 @@ destroy_impl<Q24rstl106pointer_iterator<7SRiders,Q24rstl43vector<7SRiders,Q24rst
 IsRider__15CScriptPlatformCF9TUniqueId = .text:0x800A119C; // type:function size:0xB4
 UpdateSlaveTransforms__15CScriptPlatformFR13CStateManager = .text:0x800A1250; // type:function size:0xE0 align:4
 AddSlave__15CScriptPlatformF9TUniqueIdR13CStateManagerRCQ24rstl18optional_object<f> = .text:0x800A1330; // type:function size:0x1AC align:4
-push_back__Q24rstl43vector<7SRiders,Q24rstl17rmemory_allocator>FRC7SRiders = .text:0x800A14DC; // type:function size:0x64 scope:weak
+push_back_unsafe__Q24rstl43vector<7SRiders,Q24rstl17rmemory_allocator>FRC7SRiders = .text:0x800A14DC; // type:function size:0x64 scope:weak
 AddRider__15CScriptPlatformF9TUniqueIdR13CStateManagerRCQ24rstl18optional_object<f> = .text:0x800A1540; // type:function size:0x58
 SplashThink__15CScriptPlatformCFRC6CAABoxRC11CFluidPlanefR13CStateManager = .text:0x800A1598; // type:function size:0x4 align:4
 GetPrimitiveTransform__15CScriptPlatformCFv = .text:0x800A159C; // type:function size:0x88 align:4

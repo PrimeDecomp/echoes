@@ -157,7 +157,7 @@ void CBlackHole::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
       mgr.DeleteObjectRequest(mLightId);
       mLightId = kInvalidUniqueId;
     }
-    // TODO: clear the unresolved player-effect flag through a supported player accessor.
+    mgr.Player(0)->SetHoldScreenFilterAlpha(false);
     break;
   default:
     break;

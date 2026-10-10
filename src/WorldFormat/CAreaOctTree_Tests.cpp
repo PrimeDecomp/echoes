@@ -25,36 +25,35 @@ static bool _close_enough(float a, float b, float epsilon) { return CMath::AbsF(
 static bool BoxLineTest(const CAABox& box, const CLine& line, float& lowT, float& highT) {
   const CVector3f& min = box.GetMinPoint();
   const CVector3f& max = box.GetMaxPoint();
-  const CVector3f& origin = line.GetRefPoint();
-  const CUnitVector3f& direction = line.GetNormal();
+  CVector3f origin = line.GetRefPoint();
+  CUnitVector3f direction = line.GetNormal();
   lowT = -FLT_MAX;
   highT = FLT_MAX;
 
-  for (int i = 0; i < 3; ++i) {
+  for (int i = 0; i < 3; i++) {
     if (_close_enough(direction[i], 0.f, 0.0001f)) {
       if (origin[i] < min[i] || origin[i] > max[i]) {
         return false;
       }
+    } else if (direction[i] < 0.f) {
+      const float reciprocal = 1.f / direction[i];
+      const float nearDistance = max[i] - origin[i];
+      const float farDistance = min[i] - origin[i];
+      if (nearDistance < lowT * direction[i]) {
+        lowT = nearDistance * reciprocal;
+      }
+      if (farDistance > highT * direction[i]) {
+        highT = farDistance * reciprocal;
+      }
     } else {
       const float reciprocal = 1.f / direction[i];
-      if (direction[i] < 0.f) {
-        const float nearDistance = max[i] - origin[i];
-        const float farDistance = min[i] - origin[i];
-        if (nearDistance < lowT * direction[i]) {
-          lowT = nearDistance * reciprocal;
-        }
-        if (farDistance > highT * direction[i]) {
-          highT = farDistance * reciprocal;
-        }
-      } else {
-        const float nearDistance = min[i] - origin[i];
-        const float farDistance = max[i] - origin[i];
-        if (nearDistance > lowT * direction[i]) {
-          lowT = nearDistance * reciprocal;
-        }
-        if (farDistance < highT * direction[i]) {
-          highT = farDistance * reciprocal;
-        }
+      const float nearDistance = min[i] - origin[i];
+      const float farDistance = max[i] - origin[i];
+      if (nearDistance > lowT * direction[i]) {
+        lowT = nearDistance * reciprocal;
+      }
+      if (farDistance < highT * direction[i]) {
+        highT = farDistance * reciprocal;
       }
     }
   }

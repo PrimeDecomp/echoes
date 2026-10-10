@@ -1520,7 +1520,7 @@ void CSamusHud::UpdateThreatAssessment(float dt, const CStateManager& mgr) {
       }
     }
   }
-  if (player.WasDamaged() && player.GetDamageWeaponType() == kWT_Dark) {
+  if (player.WasDamaged() && static_cast< int >(player.GetDamageWeaponType()) == kWT_Dark) {
     threatDistance = 0.f;
   }
   const float exposure = player.GetDarkWorldDamageExposureFraction();
@@ -1825,7 +1825,7 @@ void CSamusHud::UpdateHudDamage(float dt, const CStateManager& mgr, uint) {
     mDamageFilterRemaining = FLT_EPSILON;
   }
   if (player.WasDamaged() && mgr.GetGameState() == CStateManager::kGS_Running &&
-      (player.GetDamageWeaponType() != kWT_AreaDark ||
+      (static_cast< int >(player.GetDamageWeaponType()) != kWT_AreaDark ||
        mgr.GetPlayerState(mPlayerIndex)->GetCurrentSuitRaw() == CPlayerState::kPS_Varia)) {
     mDamageTime += dt;
   } else {
@@ -2640,7 +2640,7 @@ void CSamusHud::ShowDamage(CVector3f position, float damage, float previousDamag
       mDamageFilterDuration = duration;
       mDamageFilterRemaining = mDamageFilterDuration;
       if (!mDamageSound && mgr.GetPendingDockArea() == kInvalidAreaId &&
-          player.GetDamageWeaponType() != kWT_AreaDark) {
+          static_cast< int >(player.GetDamageWeaponType()) != kWT_AreaDark) {
         mDamageSound =
             CSfxManager::AddEmitter(mgr.ReturnFirstIfSingleElseSecond(SFXsam_r_damage_lp_00_looped,
                                                                       SFXsa2_r_damage_lp_00_looped),
