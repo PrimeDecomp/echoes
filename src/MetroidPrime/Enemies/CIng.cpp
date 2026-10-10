@@ -213,25 +213,25 @@ static CPatterned::StateMachine::SCodeFunction skCodeFuncs[] = {
      static_cast< CPatterned::StateMachine::CodeFunc >(&CIng::ExpelGrappledBall)},
 };
 
-static EMaterialTypes skMaterial9DC = kMT_Ceiling;               // Guessed name
-static EMaterialTypes skMaterial9E0 = kMT_Wall;                  // Guessed name
-static EMaterialTypes skMaterial9E4 = kMT_Floor;                 // Guessed name
-static EMaterialTypes skMaterial9E8 = kMT_Solid;                 // Guessed name
-static EMaterialTypes skMaterial9EC = kMT_Immovable;             // Guessed name
-static EMaterialTypes skMaterial9F0 = kMT_Occluder;              // Guessed name
-static EMaterialTypes skAreaClearMaterial1 = kMT_Player;         // Guessed name
-static EMaterialTypes skAreaClearMaterial2 = kMT_Character;      // Guessed name
-static EMaterialTypes skMaterial9FC = kMT_Solid;                 // Guessed name
-static EMaterialTypes skMaterialA00 = kMT_Character;             // Guessed name
-static EMaterialTypes skMaterialA04 = kMT_Player;                // Guessed name
-static EMaterialTypes skMaterialA08 = kMT_CollisionActor;        // Guessed name
-static EMaterialTypes skMaterialA0C = kMT_ProjectilePassthrough; // Guessed name
-static EMaterialTypes skMaterialA10 = kMT_Solid;                 // Guessed name
-static EMaterialTypes skMaterialA14 = kMT_Solid;                 // Guessed name
-static EMaterialTypes skMaterialA18 = kMT_CollisionActor;        // Guessed name
-static EMaterialTypes skMaterialA1C = kMT_AIPassthrough;         // Guessed name
-static EMaterialTypes skMaterialA20 = kMT_Player;                // Guessed name
-static const char* const skEyesName = "eyes";                    // Guessed name
+static EMaterialTypes skSplatMaterial1 = kMT_Ceiling;                  // Guessed name
+static EMaterialTypes skSplatMaterial2 = kMT_Wall;                     // Guessed name
+static EMaterialTypes skSplatMaterial3 = kMT_Floor;                    // Guessed name
+static EMaterialTypes skSplatMaterial4 = kMT_Solid;                    // Guessed name
+static EMaterialTypes skSplatMaterial5 = kMT_Immovable;                // Guessed name
+static EMaterialTypes skSplatMaterial6 = kMT_Occluder;                 // Guessed name
+static EMaterialTypes skAreaClearMaterial1 = kMT_Player;               // Guessed name
+static EMaterialTypes skAreaClearMaterial2 = kMT_Character;            // Guessed name
+static EMaterialTypes skPortalRayInclude = kMT_Solid;                  // Guessed name
+static EMaterialTypes skPortalRayExclude1 = kMT_Character;             // Guessed name
+static EMaterialTypes skPortalRayExclude2 = kMT_Player;                // Guessed name
+static EMaterialTypes skPortalRayExclude3 = kMT_CollisionActor;        // Guessed name
+static EMaterialTypes skPortalRayExclude4 = kMT_ProjectilePassthrough; // Guessed name
+static EMaterialTypes skSwipeDamageMaterial = kMT_Solid;               // Guessed name
+static EMaterialTypes skColliderInclude = kMT_Solid;                   // Guessed name
+static EMaterialTypes skColliderExclude1 = kMT_CollisionActor;         // Guessed name
+static EMaterialTypes skColliderExclude2 = kMT_AIPassthrough;          // Guessed name
+static EMaterialTypes skColliderExclude3 = kMT_Player;                 // Guessed name
+static const char* const skEyesName = "eyes";                          // Guessed name
 
 CIngExitHostEffect::CIngExitHostEffect(TUniqueId uid, const CEntityInfo& info,
                                        const CTransform4f& xf, const CVector3f& exitPosition,
@@ -467,45 +467,45 @@ CIng::CIng(TUniqueId uid, const rstl::string& name, const CEntityInfo& info, con
 , mPointNavigation()
 , mTouchBounds(CAABox::MakeNullBox())
 , mHostId(kInvalidUniqueId)
-, mUniqueIdCde(kInvalidUniqueId)
-, mEffectCe0(data.swarm.swarmEffect != kInvalidAssetId
-                 ? rstl::optional_object< TLockedToken< CGenDescription > >(
-                       TLockedToken< CGenDescription >(
-                           gpSimplePool->GetObj(SObjectTag('PART', data.swarm.swarmEffect))))
-                 : rstl::optional_object< TLockedToken< CGenDescription > >())
-, mEffectCf0(data.swarm.unknown_0x081e9e6c != kInvalidAssetId
-                 ? rstl::optional_object< TLockedToken< CGenDescription > >(
-                       TLockedToken< CGenDescription >(
-                           gpSimplePool->GetObj(SObjectTag('PART', data.swarm.unknown_0x081e9e6c))))
-                 : rstl::optional_object< TLockedToken< CGenDescription > >())
-, mSfxD00()
-, mSfxD04()
-, mEffectD08(data.ingSpot.GetNormalHitEffect() != kInvalidAssetId
-                 ? rstl::optional_object< TLockedToken< CGenDescription > >(
-                       TLockedToken< CGenDescription >(gpSimplePool->GetObj(
-                           SObjectTag('PART', data.ingSpot.GetNormalHitEffect()))))
-                 : rstl::optional_object< TLockedToken< CGenDescription > >())
-, mEffectD18(data.ingSpot.GetHeavyHitEffect() != kInvalidAssetId
-                 ? rstl::optional_object< TLockedToken< CGenDescription > >(
-                       TLockedToken< CGenDescription >(gpSimplePool->GetObj(
-                           SObjectTag('PART', data.ingSpot.GetHeavyHitEffect()))))
-                 : rstl::optional_object< TLockedToken< CGenDescription > >())
-, mEffectD28(data.ingSpot.GetDeathEffect() != kInvalidAssetId
-                 ? rstl::optional_object< TLockedToken< CGenDescription > >(
-                       TLockedToken< CGenDescription >(
-                           gpSimplePool->GetObj(SObjectTag('PART', data.ingSpot.GetDeathEffect()))))
-                 : rstl::optional_object< TLockedToken< CGenDescription > >())
-, mEffectD38(data.miniPortal.effect != kInvalidAssetId
-                 ? rstl::optional_object< TLockedToken< CGenDescription > >(
-                       TLockedToken< CGenDescription >(
-                           gpSimplePool->GetObj(SObjectTag('PART', data.miniPortal.effect))))
-                 : rstl::optional_object< TLockedToken< CGenDescription > >())
-, mEffectD48(data.bodyProjectile.splatEffect != kInvalidAssetId
-                 ? rstl::optional_object< TLockedToken< CGenDescription > >(
-                       TLockedToken< CGenDescription >(gpSimplePool->GetObj(
-                           SObjectTag('PART', data.bodyProjectile.splatEffect))))
-                 : rstl::optional_object< TLockedToken< CGenDescription > >())
-, mSfxD58()
+, mPossessionEffectId(kInvalidUniqueId)
+, mPossessionHudEffect(data.swarm.possessionHudEffect != kInvalidAssetId
+                           ? rstl::optional_object< TLockedToken< CGenDescription > >(
+                                 TLockedToken< CGenDescription >(gpSimplePool->GetObj(
+                                     SObjectTag('PART', data.swarm.possessionHudEffect))))
+                           : rstl::optional_object< TLockedToken< CGenDescription > >())
+, mExitHostSmokeEffect(data.swarm.exitHostSmokeEffect != kInvalidAssetId
+                           ? rstl::optional_object< TLockedToken< CGenDescription > >(
+                                 TLockedToken< CGenDescription >(gpSimplePool->GetObj(
+                                     SObjectTag('PART', data.swarm.exitHostSmokeEffect))))
+                           : rstl::optional_object< TLockedToken< CGenDescription > >())
+, mSfxHostInside()
+, mSfxGrapple()
+, mIngSpotNormalHitEffect(data.ingSpot.GetNormalHitEffect() != kInvalidAssetId
+                              ? rstl::optional_object< TLockedToken< CGenDescription > >(
+                                    TLockedToken< CGenDescription >(gpSimplePool->GetObj(
+                                        SObjectTag('PART', data.ingSpot.GetNormalHitEffect()))))
+                              : rstl::optional_object< TLockedToken< CGenDescription > >())
+, mIngSpotHeavyHitEffect(data.ingSpot.GetHeavyHitEffect() != kInvalidAssetId
+                             ? rstl::optional_object< TLockedToken< CGenDescription > >(
+                                   TLockedToken< CGenDescription >(gpSimplePool->GetObj(
+                                       SObjectTag('PART', data.ingSpot.GetHeavyHitEffect()))))
+                             : rstl::optional_object< TLockedToken< CGenDescription > >())
+, mIngSpotDeathEffect(data.ingSpot.GetDeathEffect() != kInvalidAssetId
+                          ? rstl::optional_object< TLockedToken< CGenDescription > >(
+                                TLockedToken< CGenDescription >(gpSimplePool->GetObj(
+                                    SObjectTag('PART', data.ingSpot.GetDeathEffect()))))
+                          : rstl::optional_object< TLockedToken< CGenDescription > >())
+, mMiniPortalEffect(data.miniPortal.effect != kInvalidAssetId
+                        ? rstl::optional_object< TLockedToken< CGenDescription > >(
+                              TLockedToken< CGenDescription >(
+                                  gpSimplePool->GetObj(SObjectTag('PART', data.miniPortal.effect))))
+                        : rstl::optional_object< TLockedToken< CGenDescription > >())
+, mSplatEffect(data.bodyProjectile.splatEffect != kInvalidAssetId
+                   ? rstl::optional_object< TLockedToken< CGenDescription > >(
+                         TLockedToken< CGenDescription >(gpSimplePool->GetObj(
+                             SObjectTag('PART', data.bodyProjectile.splatEffect))))
+                   : rstl::optional_object< TLockedToken< CGenDescription > >())
+, mSfxBodyProjectile()
 , mBlobEffectId(kInvalidUniqueId)
 , mSfxIngSpotIdle()
 , mSfxIngSpotMove()
@@ -513,10 +513,10 @@ CIng::CIng(TUniqueId uid, const rstl::string& name, const CEntityInfo& info, con
 , mTeamManagerId(kInvalidUniqueId)
 , mTargetId(kInvalidUniqueId)
 , mLastTargetId(kInvalidUniqueId)
-, mUniqueIdD70(kInvalidUniqueId)
+, mPatrolWaypointId(kInvalidUniqueId)
 , mCoverHintId(kInvalidUniqueId)
-, mUniqueIdD74(kInvalidUniqueId)
-, mUniqueIdD76(kInvalidUniqueId)
+, mLastCoverHintId(kInvalidUniqueId)
+, mExitHostEffectId(kInvalidUniqueId)
 , mSafeZoneId(kInvalidUniqueId)
 , mCollarSegment(CSegId::Invalid())
 , mHeadSegment(CSegId::Invalid())
@@ -529,45 +529,45 @@ CIng::CIng(TUniqueId uid, const rstl::string& name, const CEntityInfo& info, con
 , mLeftForearmSegment(CSegId::Invalid())
 , mLeftWristSegment(CSegId::Invalid())
 , mLineOfSight(GetUniqueId(), CSegId::Invalid(), 0.1f, 0.05f)
-, mVectorDc8(CVector3f::Zero())
-, mVectorDd4(CVector3f::Zero())
-, mVectorDe0(CVector3f::Zero())
+, mDestination(CVector3f::Zero())
+, mSplatNormal(CVector3f::Zero())
+, mMoveHeading(CVector3f::Zero())
 , mSwipeIndex(-1)
 , mPortalPlane(GetTranslation(), CUnitVector3f(0.f, 0.f, 1.f, CUnitVector3f::kN_Yes))
 , mMiniPortalCount(0)
-, mIntE28(-1)
-, mIntE2c(0)
+, mMiniPortalIndex(-1)
+, mSafeZoneCount(0)
 , mHeardShotTimer(1.5f)
 , mUnderFireTimer(0.75f)
-, mFloatE38(1.f)
+, mTimeSinceArmSwipe(1.f)
 , mFormChangeTimer(0.f)
-, mFloatE40(0.f)
+, mLocomotionTime(0.f)
 , mFrustrationTimer(0.f)
-, mFloatE48(0.f)
-, mFloatE4c(0.f)
+, mGrappleCooldown(0.f)
+, mGrappleHold(0.f)
 , mLightIntensity(1.f)
-, mFloatE54(0.f)
-, mFloatE58(0.f)
+, mDeathDelayTimer(0.f)
+, mProjectileFlightTime(0.f)
 , mShouldEvaporate(false)
 , mShouldTaunt(false)
-, mFlagE5c2(false)
+, mCanBodyProjectile(false)
 , mAggressive(false)
 , mFoundMovementPos(true)
-, mFlagE5c5(false)
-, mFlagE5c6(false)
-, mFlagE5c7(false)
-, mFlagE5d0(true)
-, mFlagE5d1(false)
-, mFlagE5d2(data.flag0)
-, mFlagE5d3(false)
-, mFlagE5d4(false)
+, mPathObstructed(false)
+, mSwipeDamagePending(false)
+, mTakeOffReceived(false)
+, mDrawModel(true)
+, mUsePortalPlane(false)
+, mBlobEffectActive(data.startsAsIngSpot)
+, mWallProjectileVisible(false)
+, mFollowingWaypoint(false)
 , mAlert(false)
-, mFlagE5d6(false)
-, mFlagE5d7(false)
+, mMovingOnSurface(false)
+, mGrappling(false)
 , mUseProjectileFSMEntry(false)
 , mProjectileSplat(false)
-, mFlagE5e2(false)
-, mFlagE5e3(false) {
+, mIngSpotHurt(false)
+, mInHurtfulSafeZone(false) {
   KnockBackController().EnableKnockBackPhysics(false);
   const CAnimData* animData = GetAnimationData();
   mHeadSegment = animData->GetLocatorSegId(rstl::string_l("head"));
@@ -607,8 +607,8 @@ void CIng::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
     StopSounds();
     mCollisionActorManager->Destroy(mgr);
     mgr.DeleteObjectRequest(mLightId);
-    if (mUniqueIdD76 != kInvalidUniqueId) {
-      mgr.DeleteObjectRequest(mUniqueIdD76);
+    if (mExitHostEffectId != kInvalidUniqueId) {
+      mgr.DeleteObjectRequest(mExitHostEffectId);
     }
     ReleaseCoverHint(mgr);
     LeaveTeam(mgr);
@@ -654,8 +654,8 @@ void CIng::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
     mHitByPlayerProjectile = true;
     break;
   case kSM_ResistedDamage:
-    if (mForm == kF_IngSpot && mFlagE5d7) {
-      mFloatE4c -= 0.5f;
+    if (mForm == kF_IngSpot && mGrappling) {
+      mGrappleHold -= 0.5f;
       SpawnDamageEffect(mgr);
     }
     mHitByPlayerProjectile = true;
@@ -664,15 +664,15 @@ void CIng::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
     TouchDamage(mgr, senderId);
     break;
   case kSM_XENZ:
-    ++mIntE2c;
+    ++mSafeZoneCount;
     if (mForm == kF_IngSpot) {
-      mFlagE5e2 = true;
+      mIngSpotHurt = true;
     }
-    mFlagE5e3 = mgr.GetSafeZoneManager()->IsObjectInHurtfulSafeZone(*this, mgr);
+    mInHurtfulSafeZone = mgr.GetSafeZoneManager()->IsObjectInHurtfulSafeZone(*this, mgr);
     break;
   case kSM_XEXZ:
-    --mIntE2c;
-    mFlagE5e3 = mgr.GetSafeZoneManager()->IsObjectInHurtfulSafeZone(*this, mgr);
+    --mSafeZoneCount;
+    mInHurtfulSafeZone = mgr.GetSafeZoneManager()->IsObjectInHurtfulSafeZone(*this, mgr);
     break;
   default:
     break;
@@ -682,12 +682,12 @@ void CIng::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
 void CIng::PreThink(float dt, CStateManager& mgr) {
   if (GetActive() && mForm == kF_IngSpot && !GetMaterialList().HasMaterial(kMT_GroundCollider)) {
     const CPlane plane = mSurfaceAlignment.GetSurface().GetPlane();
-    if (CVector3f::Dot(mVectorDe0, plane.GetNormal()) < 0.95f) {
+    if (CVector3f::Dot(mMoveHeading, plane.GetNormal()) < 0.95f) {
       const float distance = plane.GetHeight(GetTranslation());
       const CVector3f onSurface = GetTranslation() - (distance - 0.1f) * plane.GetNormal();
       SetTranslation(CVector3f::Lerp(GetTranslation(), onSurface, 0.6f * dt));
     }
-    mVectorDe0 = CVector3f::Zero();
+    mMoveHeading = CVector3f::Zero();
   }
   CPatterned::PreThink(dt, mgr);
 }
@@ -697,14 +697,14 @@ void CIng::Think(float dt, CStateManager& mgr) {
     return;
   }
   switch (mForm) {
-  case kF_Unknown0:
-  case kF_Unknown1:
+  case kF_PossessingHost:
+  case kF_ExitingHost:
     CActor::Think(dt, mgr);
     mStateMachine->Update(mgr, *this, dt);
     SetDrawShadow(false);
     return;
   case kF_IngSpot:
-  case kF_Unknown5:
+  case kF_Evaporating:
     CActor::Think(dt, mgr);
     UpdateStateMachine(dt, mgr);
     SetDrawShadow(false);
@@ -724,8 +724,8 @@ void CIng::Think(float dt, CStateManager& mgr) {
   UpdateTouchBounds();
   UpdateLight(dt, mgr);
   UpdateEchoSafeZone(mgr);
-  if (mgr.GetObjectById(mUniqueIdD76) == nullptr) {
-    mUniqueIdD76 = kInvalidUniqueId;
+  if (mgr.GetObjectById(mExitHostEffectId) == nullptr) {
+    mExitHostEffectId = kInvalidUniqueId;
   }
 }
 
@@ -734,22 +734,22 @@ void CIng::DoUserAnimEvent(CStateManager& mgr, const CInt32POINode& node, EUserE
   bool handled = false;
   switch (type) {
   case kUE_TakeOff:
-    mFlagE5c7 = true;
+    mTakeOffReceived = true;
     handled = true;
     break;
   case kUE_BeginAction:
     if (mAlive) {
       mForm = kF_BodyProjectile;
-      mFloatE58 = 0.f;
+      mProjectileFlightTime = 0.f;
     }
     handled = true;
     break;
   case kUE_Activate:
-    mFlagE5d2 = true;
+    mBlobEffectActive = true;
     handled = true;
     break;
   case kUE_Deactivate:
-    mFlagE5d2 = false;
+    mBlobEffectActive = false;
     handled = true;
     break;
   case kUE_EffectOn: {
@@ -765,15 +765,16 @@ void CIng::DoUserAnimEvent(CStateManager& mgr, const CInt32POINode& node, EUserE
     break;
   }
   case kUE_Projectile:
-    if (mEffectD38 && mIntE28 >= 0 && mIntE28 < mMiniPortalCount) {
-      const CVector3f& position = mMiniPortalPositions[mIntE28++];
+    if (mMiniPortalEffect && mMiniPortalIndex >= 0 && mMiniPortalIndex < mMiniPortalCount) {
+      const CVector3f& position = mMiniPortalPositions[mMiniPortalIndex++];
       CTransform4f xf = GetTransform();
       xf.SetTranslation(position);
       CDamageInfo damage(mData.miniPortal.damage);
       damage.SetDamage(dt * damage.GetDamage());
       damage.SetNoImmunity(true);
-      const CIngMiniPortalInfo portalInfo(mTargetId, 1.f, 2.f, *mEffectD38, mData.miniPortal.sound,
-                                          150.f, 1.f, damage, mData.miniPortal.beamInfo);
+      const CIngMiniPortalInfo portalInfo(mTargetId, 1.f, 2.f, *mMiniPortalEffect,
+                                          mData.miniPortal.sound, 150.f, 1.f, damage,
+                                          mData.miniPortal.beamInfo);
       CIngMiniPortalAttack* portal = rs_new CIngMiniPortalAttack(
           mgr.AllocateUniqueId(), rstl::string_l("Ing Mini Portal Attack"),
           CEntityInfo(GetCurrentAreaId(), CEntity::NullConnectionList, true), xf, GetUniqueId(),
@@ -791,20 +792,20 @@ void CIng::DoUserAnimEvent(CStateManager& mgr, const CInt32POINode& node, EUserE
 }
 
 void CIng::Render(const CStateManager& mgr) const {
-  if (mFlagE5d1) {
+  if (mUsePortalPlane) {
     GetModelData()->SetupWorldSpacePortalPlane(GetTransform(), mPortalPlane);
   }
   switch (mForm) {
   case kF_Corporeal:
   case kF_BodyProjectile:
-  case kF_Unknown6:
-  case kF_Unknown7:
-  case kF_Unknown8:
-  case kF_Unknown9:
-    if (mForm == kF_Unknown9 && !mFlagE5d3) {
+  case kF_BecomingCorporeal:
+  case kF_BecomingIngSpot:
+  case kF_BecomingBodyProjectile:
+  case kF_BecomingWallProjectile:
+    if (mForm == kF_BecomingWallProjectile && !mWallProjectileVisible) {
       break;
     }
-    if (mFlagE5d0) {
+    if (mDrawModel) {
       CPatterned::Render(mgr);
     } else if (mDrawParticles) {
       uint mask = 0;
@@ -815,8 +816,8 @@ void CIng::Render(const CStateManager& mgr) const {
     }
     break;
   case kF_IngSpot:
-  case kF_Unknown5:
-    if (mFloatE40 < 2.5f && mDrawParticles) {
+  case kF_Evaporating:
+    if (mLocomotionTime < 2.5f && mDrawParticles) {
       uint mask = 0;
       uint target = 0;
       mgr.GetCharacterRenderMaskAndTarget(mask, target);
@@ -833,22 +834,22 @@ void CIng::PreRender(CStateManager& mgr) {
   switch (mForm) {
   case kF_Corporeal:
   case kF_BodyProjectile:
-  case kF_Unknown6:
-  case kF_Unknown7:
-  case kF_Unknown8:
-  case kF_Unknown9:
+  case kF_BecomingCorporeal:
+  case kF_BecomingIngSpot:
+  case kF_BecomingBodyProjectile:
+  case kF_BecomingWallProjectile:
     CPatterned::PreRender(mgr);
     break;
   case kF_IngSpot:
-  case kF_Unknown5:
-    if (mFloatE40 < 2.5f) {
+  case kF_Evaporating:
+    if (mLocomotionTime < 2.5f) {
       CPatterned::PreRender(mgr);
     }
     break;
   default:
     break;
   }
-  if (mFlagE5d1) {
+  if (mUsePortalPlane) {
     SetModelFlags(
         CModelFlags(GetModelFlags(), GetModelFlags().GetOtherFlags() | CModelFlags::kF_Unknown80));
   }
@@ -860,15 +861,15 @@ void CIng::AddToRenderer(const CStateManager& mgr) const {
   switch (mForm) {
   case kF_Corporeal:
   case kF_BodyProjectile:
-  case kF_Unknown6:
-  case kF_Unknown7:
-  case kF_Unknown8:
-  case kF_Unknown9:
+  case kF_BecomingCorporeal:
+  case kF_BecomingIngSpot:
+  case kF_BecomingBodyProjectile:
+  case kF_BecomingWallProjectile:
     CPatterned::AddToRenderer(mgr);
     break;
   case kF_IngSpot:
-  case kF_Unknown5:
-    if (mFloatE40 < 2.5f) {
+  case kF_Evaporating:
+    if (mLocomotionTime < 2.5f) {
       CPatterned::AddToRenderer(mgr);
     }
     break;
@@ -882,7 +883,7 @@ const CDamageVulnerability* CIng::GetDamageVulnerability() const {
   case kF_BodyProjectile:
     return CPatterned::GetDamageVulnerability();
   case kF_IngSpot:
-    if (mFlagE5d7) {
+    if (mGrappling) {
       return &mData.grapple.vulnerability;
     }
     return &mData.ingSpot.GetVulnerability();
@@ -895,9 +896,9 @@ CVector3f CIng::GetAimPosition(const CStateManager& mgr, float dt) const {
   CVector3f position = CVector3f::Zero();
   switch (mForm) {
   case kF_Corporeal:
-  case kF_Unknown6:
-  case kF_Unknown7:
-  case kF_Unknown8: {
+  case kF_BecomingCorporeal:
+  case kF_BecomingIngSpot:
+  case kF_BecomingBodyProjectile: {
     if (dt > 0.f) {
       const CMotionState motion = PredictMotion(dt);
       position = motion.GetTranslation();
@@ -906,7 +907,7 @@ CVector3f CIng::GetAimPosition(const CStateManager& mgr, float dt) const {
       const CTransform4f xf =
           GetTransform() * GetAnimationData()->GetLocatorTransform(mCollarSegment, nullptr);
       position += GetModelData()->GetScale() * xf.GetTranslation();
-      if ((mForm == kF_Unknown6 || mForm == kF_Unknown7) &&
+      if ((mForm == kF_BecomingCorporeal || mForm == kF_BecomingIngSpot) &&
           position.GetZ() < GetTranslation().GetZ()) {
         position = CPatterned::GetAimPosition(mgr, dt);
       }
@@ -915,12 +916,12 @@ CVector3f CIng::GetAimPosition(const CStateManager& mgr, float dt) const {
     }
     break;
   }
-  case kF_Unknown0:
-  case kF_Unknown1:
+  case kF_PossessingHost:
+  case kF_ExitingHost:
   case kF_IngSpot:
   case kF_BodyProjectile:
-  case kF_Unknown5:
-  case kF_Unknown9:
+  case kF_Evaporating:
+  case kF_BecomingWallProjectile:
   default:
     position = CPatterned::GetAimPosition(mgr, dt);
     break;
@@ -929,7 +930,7 @@ CVector3f CIng::GetAimPosition(const CStateManager& mgr, float dt) const {
 }
 
 void CIng::Touch(CActor& actor, CStateManager& mgr) {
-  if (!mFlagE5d7 && mForm == kF_IngSpot && actor.GetUniqueId() == mTargetId &&
+  if (!mGrappling && mForm == kF_IngSpot && actor.GetUniqueId() == mTargetId &&
       mCurDamageRemTime <= 0.f) {
     mgr.ApplyDamage(
         GetUniqueId(), mTargetId, GetUniqueId(), GetContactDamage(),
@@ -944,11 +945,11 @@ rstl::optional_object< CAABox > CIng::GetTouchBounds() const {
   rstl::optional_object< CAABox > bounds;
   switch (mForm) {
   case kF_IngSpot:
-  case kF_Unknown5:
+  case kF_Evaporating:
     bounds = mTouchBounds;
     break;
-  case kF_Unknown0:
-  case kF_Unknown1:
+  case kF_PossessingHost:
+  case kF_ExitingHost:
     bounds = rstl::optional_object< CAABox >();
     break;
   default:
@@ -975,9 +976,9 @@ void CIng::KnockBack(CStateManager& mgr, const CKnockBackInfo& info) {
 
 void CIng::TakeDamage(const CVector3f& direction, float magnitude) {
   switch (mForm) {
-  case kF_Unknown0:
-  case kF_Unknown1:
-  case kF_Unknown5:
+  case kF_PossessingHost:
+  case kF_ExitingHost:
+  case kF_Evaporating:
     break;
   default:
     mDamageCooldownTimer = skDamageHitTime;
@@ -1010,13 +1011,13 @@ void CIng::UpdateHitDamageTime(float dt) {
 
 void CIng::CollidedWith(const TUniqueId& id, const CCollisionInfoList& list, CStateManager& mgr) {
   CPatterned::CollidedWith(id, list, mgr);
-  if (mForm == kF_BodyProjectile && mFloatE58 >= 0.5f) {
-    static const CMaterialList testList(skMaterial9DC, skMaterial9E0, skMaterial9E4, skMaterial9E8,
-                                        skMaterial9EC, skMaterial9F0);
+  if (mForm == kF_BodyProjectile && mProjectileFlightTime >= 0.5f) {
+    static const CMaterialList testList(skSplatMaterial1, skSplatMaterial2, skSplatMaterial3,
+                                        skSplatMaterial4, skSplatMaterial5, skSplatMaterial6);
     for (int i = 0; i < list.GetCount(); ++i) {
       const CCollisionInfo& info = list[i];
       if (info.GetMaterialLeft().SharesMaterials(testList)) {
-        mVectorDd4 = info.GetNormalLeft();
+        mSplatNormal = info.GetNormalLeft();
         mProjectileSplat = true;
         break;
       }
@@ -1037,10 +1038,10 @@ void CIng::Death(CStateManager& mgr, const CVector3f& direction, EScriptObjectSt
     mAlive = false;
     switch (mForm) {
     case kF_Corporeal:
-    case kF_Unknown6:
-    case kF_Unknown7:
-    case kF_Unknown8:
-    case kF_Unknown9:
+    case kF_BecomingCorporeal:
+    case kF_BecomingIngSpot:
+    case kF_BecomingBodyProjectile:
+    case kF_BecomingWallProjectile:
       IssueDeathBodyCommand(mgr, direction);
       break;
     default:
@@ -1059,7 +1060,7 @@ bool CIng::Listen(CStateManager& mgr, const CVector3f& position, EListenNoiseTyp
     case kLNT_PathObstruction: {
       const CVector3f diff = position - GetTranslation();
       if (diff.MagSquared() < 1600.f) {
-        mFlagE5c5 = heard = true;
+        mPathObstructed = heard = true;
       }
       break;
     }
@@ -1157,7 +1158,7 @@ bool CIng::CoverLeash(CStateManager& mgr, const CTriggerData& data) const {
   const CScriptAIHint* hint = GetCoverHint(mgr);
   if (hint != nullptr) {
     const CVector3f diff = GetTranslation() - hint->GetTranslation();
-    return diff.MagSquared() > mData.unknown_0x5d0d2c40 * mData.unknown_0x5d0d2c40;
+    return diff.MagSquared() > mData.coverLeashDistance * mData.coverLeashDistance;
   }
   return true;
 }
@@ -1196,7 +1197,7 @@ bool CIng::IsFrustrated(CStateManager& mgr, const CTriggerData& data) const {
 
 bool CIng::IsAggressive(CStateManager& mgr, const CTriggerData& data) const {
   bool aggressive = false;
-  if (mAggressive || mIntE2c > 0) {
+  if (mAggressive || mSafeZoneCount > 0) {
     aggressive = true;
   }
   return aggressive;
@@ -1215,11 +1216,11 @@ bool CIng::IsLuredBySafeZone(CStateManager& mgr, const CTriggerData& data) const
       lured = true;
       break;
     case kF_BodyProjectile:
-    case kF_Unknown5:
-    case kF_Unknown6:
-    case kF_Unknown7:
-    case kF_Unknown8:
-    case kF_Unknown9:
+    case kF_Evaporating:
+    case kF_BecomingCorporeal:
+    case kF_BecomingIngSpot:
+    case kF_BecomingBodyProjectile:
+    case kF_BecomingWallProjectile:
     default:
       lured = false;
       break;
@@ -1259,17 +1260,17 @@ bool CIng::EmergePtInSafeZone(CStateManager& mgr, const CTriggerData& data) cons
 bool CIng::CanChangeForm(CStateManager& mgr, const CTriggerData& data) const {
   switch (mForm) {
   case kF_Corporeal:
-    return !mData.flag5 && mFormChangeTimer > mData.unknown_0xc620183a;
+    return !mData.disableFormChange && mFormChangeTimer > mData.formChangeInterval;
   case kF_IngSpot:
-    return !mData.flag5;
-  case kF_Unknown5:
-  case kF_Unknown6:
-  case kF_Unknown7:
-  case kF_Unknown8:
-  case kF_Unknown9:
+    return !mData.disableFormChange;
+  case kF_Evaporating:
+  case kF_BecomingCorporeal:
+  case kF_BecomingIngSpot:
+  case kF_BecomingBodyProjectile:
+  case kF_BecomingWallProjectile:
     return false;
-  case kF_Unknown0:
-  case kF_Unknown1:
+  case kF_PossessingHost:
+  case kF_ExitingHost:
   case kF_BodyProjectile:
   default:
     return true;
@@ -1281,15 +1282,15 @@ bool CIng::ShouldEvaporate(CStateManager& mgr, const CTriggerData& data) const {
     switch (mForm) {
     case kF_Corporeal:
     case kF_IngSpot:
-    case kF_Unknown5:
+    case kF_Evaporating:
       return true;
-    case kF_Unknown0:
-    case kF_Unknown1:
+    case kF_PossessingHost:
+    case kF_ExitingHost:
     case kF_BodyProjectile:
-    case kF_Unknown6:
-    case kF_Unknown7:
-    case kF_Unknown8:
-    case kF_Unknown9:
+    case kF_BecomingCorporeal:
+    case kF_BecomingIngSpot:
+    case kF_BecomingBodyProjectile:
+    case kF_BecomingWallProjectile:
     default:
       return false;
     }
@@ -1298,7 +1299,7 @@ bool CIng::ShouldEvaporate(CStateManager& mgr, const CTriggerData& data) const {
 }
 
 bool CIng::ShouldFleeSafeZone(CStateManager& mgr, const CTriggerData& data) const {
-  return mIntE2c > 0;
+  return mSafeZoneCount > 0;
 }
 
 bool CIng::ShouldBecomeCorporeal(CStateManager& mgr, const CTriggerData& data) const {
@@ -1310,7 +1311,7 @@ bool CIng::ShouldBecomeIngSpot(CStateManager& mgr, const CTriggerData& data) con
 }
 
 bool CIng::ShouldArmSwipe(CStateManager& mgr, const CTriggerData& data) const {
-  if (mForm == kF_Corporeal && !mData.flag1 && mFloatE38 > 1.f) {
+  if (mForm == kF_Corporeal && !mData.disableArmSwipe && mTimeSinceArmSwipe > 1.f) {
     if (mTeamManagerId == kInvalidUniqueId ||
         CScriptTeamAiMgr::CanStartAttack(CScriptTeamAiMgr::kAT_Melee, mgr, mTeamManagerId,
                                          GetUniqueId())) {
@@ -1332,7 +1333,7 @@ bool CIng::ShouldArmSwipe(CStateManager& mgr, const CTriggerData& data) const {
 bool CIng::ShouldTaunt(CStateManager& mgr, const CTriggerData& data) const { return mShouldTaunt; }
 
 bool CIng::ShouldBodyProjectile(CStateManager& mgr, const CTriggerData& data) const {
-  if (!mData.flag2 && !mData.flag5 && mFlagE5c2) {
+  if (!mData.disableBodyProjectile && !mData.disableFormChange && mCanBodyProjectile) {
     if (mTeamManagerId == kInvalidUniqueId ||
         CScriptTeamAiMgr::CanStartAttack(CScriptTeamAiMgr::kAT_Projectile, mgr, mTeamManagerId,
                                          GetUniqueId())) {
@@ -1354,7 +1355,7 @@ bool CIng::ShouldBodyProjectile(CStateManager& mgr, const CTriggerData& data) co
 }
 
 bool CIng::ShouldOpenMiniPortal(CStateManager& mgr, const CTriggerData& data) const {
-  if (!mData.flag3 && mFormChangeTimer >= mData.unknown_0xc620183a) {
+  if (!mData.disableMiniPortal && mFormChangeTimer >= mData.formChangeInterval) {
     if (mTeamManagerId == kInvalidUniqueId ||
         CScriptTeamAiMgr::CanStartAttack(CScriptTeamAiMgr::kAT_Projectile, mgr, mTeamManagerId,
                                          GetUniqueId())) {
@@ -1404,7 +1405,7 @@ bool CIng::FoundMovementPos(CStateManager& mgr, const CTriggerData& data) const 
 
 bool CIng::PathShagged(CStateManager& mgr, const CTriggerData& data) const {
   bool pathShagged = false;
-  if (mFlagE5c5 || CPatterned::PathShagged(mgr, data)) {
+  if (mPathObstructed || CPatterned::PathShagged(mgr, data)) {
     pathShagged = true;
   }
   return pathShagged;
@@ -1435,7 +1436,7 @@ bool CIng::HasAttackPattern(CStateManager& mgr, const CTriggerData& data) const 
 }
 
 bool CIng::AttackPatternOver(CStateManager& mgr, const CTriggerData& data) const {
-  return mFlagE5d4 && mWaypointNavigation.GetDestination() == kInvalidUniqueId;
+  return mFollowingWaypoint && mWaypointNavigation.GetDestination() == kInvalidUniqueId;
 }
 
 bool CIng::TargetIsBall(CStateManager& mgr, const CTriggerData& data) const {
@@ -1449,7 +1450,7 @@ bool CIng::TargetIsBall(CStateManager& mgr, const CTriggerData& data) const {
 }
 
 bool CIng::InBallPursuitRange(CStateManager& mgr, const CTriggerData& data) const {
-  if (!mData.flag4 && mFloatE48 <= 0.f) {
+  if (!mData.disableGrapple && mGrappleCooldown <= 0.f) {
     const CActor* target = static_cast< const CActor* >(mgr.GetObjectById(mTargetId));
     if (target != nullptr) {
       const CVector3f diff = target->GetTranslation() - GetTranslation();
@@ -1469,7 +1470,7 @@ bool CIng::HasPathToTarget(CStateManager& mgr, const CTriggerData& data) const {
 }
 
 bool CIng::InGrappleRange(CStateManager& mgr, const CTriggerData& data) const {
-  if (!mData.flag4) {
+  if (!mData.disableGrapple) {
     const CPlayer* player = TCastToConstPtr< CPlayer >(mgr.GetObjectById(mTargetId));
     if (player != nullptr && (player->GetSpawnedMorphballState() == CPlayer::kMS_Unmorphed
                                   ? player->GetMorphballTransitionState()
@@ -1483,7 +1484,7 @@ bool CIng::InGrappleRange(CStateManager& mgr, const CTriggerData& data) const {
 }
 
 bool CIng::CanGrappleTarget(CStateManager& mgr, const CTriggerData& data) const {
-  if (!mData.flag4) {
+  if (!mData.disableGrapple) {
     const CPlayer* player = TCastToConstPtr< CPlayer >(mgr.GetObjectById(mTargetId));
     if (player != nullptr) {
       return player->GetAttachedActorId() == kInvalidUniqueId;
@@ -1500,20 +1501,20 @@ void CIng::ExitHost(CStateManager& mgr, EStateMsg msg, float dt) {
   switch (msg) {
   case kStateMsg_Activate: {
     AddMaterial(kMT_Target, mgr);
-    mForm = kF_Unknown1;
-    if (mUniqueIdCde != kInvalidUniqueId) {
-      mgr.DeleteObjectRequest(mUniqueIdCde);
+    mForm = kF_ExitingHost;
+    if (mPossessionEffectId != kInvalidUniqueId) {
+      mgr.DeleteObjectRequest(mPossessionEffectId);
     }
-    if (mUniqueIdD76 != kInvalidUniqueId) {
-      mgr.DeleteObjectRequest(mUniqueIdD76);
+    if (mExitHostEffectId != kInvalidUniqueId) {
+      mgr.DeleteObjectRequest(mExitHostEffectId);
     }
-    mUniqueIdD76 = mgr.AllocateUniqueId();
+    mExitHostEffectId = mgr.AllocateUniqueId();
     CIngExitHostEffect* effect = rs_new CIngExitHostEffect(
-        mUniqueIdD76, CEntityInfo(GetCurrentAreaId(), CEntity::NullConnectionList, true),
-        GetTransform(), mVectorDc8, GetModelData()->GetScale(), mData.swarm.unknown_0xd576f379,
-        mData.swarm.unknown_0x3da219c7, mData.swarm.unknown_0x23271976,
-        mData.swarm.unknown_0xcb39eccb, mTargetId, mData.swarm.unknown_0x587ca175,
-        mData.swarm.unknown_0x0bd7d5a9, mData.swarm.swarmMoveSound);
+        mExitHostEffectId, CEntityInfo(GetCurrentAreaId(), CEntity::NullConnectionList, true),
+        GetTransform(), mDestination, GetModelData()->GetScale(), mData.swarm.exitHostSwarmEffect,
+        mData.swarm.exitHostTrailEffect, mData.swarm.exitHostTrailLength, mData.swarm.exitHostSpeed,
+        mTargetId, mData.swarm.exitHostHomingTime, mData.swarm.exitHostHomingStrength,
+        mData.swarm.swarmMoveSound);
     if (effect != nullptr) {
       mgr.AddObject(*effect);
       mAnimationState.SetState(CAnimationState::kAS_Ready);
@@ -1529,7 +1530,7 @@ void CIng::ExitHost(CStateManager& mgr, EStateMsg msg, float dt) {
   }
   case kStateMsg_Update: {
     const CIngExitHostEffect* effect =
-        static_cast< const CIngExitHostEffect* >(mgr.GetObjectById(mUniqueIdD76));
+        static_cast< const CIngExitHostEffect* >(mgr.GetObjectById(mExitHostEffectId));
     if (effect != nullptr && !effect->HasArrived()) {
       SetTranslation(effect->GetTranslation());
     } else {
@@ -1538,10 +1539,10 @@ void CIng::ExitHost(CStateManager& mgr, EStateMsg msg, float dt) {
     break;
   }
   case kStateMsg_Deactivate:
-    SetTranslation(mVectorDc8);
-    mSurfaceAlignment.AlignNearPosition(*this, mgr, mVectorDc8, 1.f);
+    SetTranslation(mDestination);
+    mSurfaceAlignment.AlignNearPosition(*this, mgr, mDestination, 1.f);
     AddMaterial(kMT_Character, kMT_Solid, kMT_Orbit, mgr);
-    mFloatE48 = mData.grapple.postWaitTime;
+    mGrappleCooldown = mData.grapple.postWaitTime;
     SpawnExitHostSmoke(mgr);
     mForm = kF_IngSpot;
     break;
@@ -1556,10 +1557,10 @@ void CIng::BecomeCorporeal(CStateManager& mgr, EStateMsg msg, float dt) {
     mUseProjectileFSMEntry = false;
     if (mForm == kF_IngSpot) {
       mAnimationState.SetState(CAnimationState::kAS_Ready);
-      mFlagE5d1 = true;
+      mUsePortalPlane = true;
       CUnitVector3f normal(0.f, 0.f, 1.f, CUnitVector3f::kN_Yes);
       mPortalPlane = CPlane(GetTranslation(), normal);
-      mForm = kF_Unknown6;
+      mForm = kF_BecomingCorporeal;
     } else {
       mAnimationState.SetState(CAnimationState::kAS_Over);
     }
@@ -1567,7 +1568,7 @@ void CIng::BecomeCorporeal(CStateManager& mgr, EStateMsg msg, float dt) {
     mSurfaceAlignment.SetMode(CSurfaceAlignmentHelper::kM_WorldUp);
     mLineOfSight.SetSegment(mHeadSegment);
     FaceSafeZoneOrTarget(mgr);
-    mFlagE5d6 = false;
+    mMovingOnSurface = false;
     Stop();
     break;
   case kStateMsg_Update:
@@ -1580,8 +1581,8 @@ void CIng::BecomeCorporeal(CStateManager& mgr, EStateMsg msg, float dt) {
     break;
   case kStateMsg_Deactivate: {
     mAnimationState.SetState(CAnimationState::kAS_NotReady);
-    mFlagE5d1 = false;
-    mFlagE5d2 = false;
+    mUsePortalPlane = false;
+    mBlobEffectActive = false;
     mVerticalMovement = false;
     AddMaterial(kMT_GroundCollider, mgr);
     mBodyController->SetLocomotionType(pas::kLT_Relaxed);
@@ -1603,16 +1604,16 @@ void CIng::BecomeIngSpot(CStateManager& mgr, EStateMsg msg, float dt) {
   case kStateMsg_Activate:
     if (mForm == kF_Corporeal) {
       mAnimationState.SetState(CAnimationState::kAS_Ready);
-      mFlagE5d1 = true;
+      mUsePortalPlane = true;
       CUnitVector3f normal(0.f, 0.f, 1.f, CUnitVector3f::kN_Yes);
       mPortalPlane = CPlane(GetTranslation(), normal);
-      mForm = kF_Unknown7;
+      mForm = kF_BecomingIngSpot;
     } else {
       mAnimationState.SetState(CAnimationState::kAS_Over);
     }
     mSurfaceAlignment.SetMode(CSurfaceAlignmentHelper::kM_NearbySurface);
-    mFloatE40 = 0.f;
-    mFlagE5e2 = false;
+    mLocomotionTime = 0.f;
+    mIngSpotHurt = false;
     break;
   case kStateMsg_Update:
     if (mAnimationState.CanIssueCommand(*mBodyController, pas::kAS_Generate)) {
@@ -1630,8 +1631,8 @@ void CIng::BecomeIngSpot(CStateManager& mgr, EStateMsg msg, float dt) {
     mVerticalMovement = true;
     RemoveMaterial(kMT_GroundCollider, mgr);
     mCollisionActorManager->SetActive(mgr, false);
-    mFlagE5d1 = false;
-    mFlagE5d2 = true;
+    mUsePortalPlane = false;
+    mBlobEffectActive = true;
     CAnimData* animData = AnimationData();
     animData->SetEffectState(rstl::string_l(skEyesName), false, mgr);
     break;
@@ -1645,8 +1646,8 @@ void CIng::BecomeBodyProjectile(CStateManager& mgr, EStateMsg msg, float dt) {
   switch (msg) {
   case kStateMsg_Activate:
     mAnimationState.SetState(CAnimationState::kAS_Ready);
-    mForm = kF_Unknown8;
-    mFlagE5c7 = false;
+    mForm = kF_BecomingBodyProjectile;
+    mTakeOffReceived = false;
     mNextForm = kF_Invalid;
     break;
   case kStateMsg_Update:
@@ -1657,13 +1658,13 @@ void CIng::BecomeBodyProjectile(CStateManager& mgr, EStateMsg msg, float dt) {
       mBodyController->CommandMgr().DeliverCmd(cmd);
     } else if (mBodyController->GetCurrentStateId() == pas::kAS_LoopAttack) {
       mBodyController->SetLocomotionType(pas::kLT_Crouch);
-      if (mFlagE5c7 || mForm == kF_BodyProjectile) {
+      if (mTakeOffReceived || mForm == kF_BodyProjectile) {
         mCollisionActorManager->SetActive(mgr, false);
         mAnimationState.SetState(CAnimationState::kAS_Over);
-      } else if (GetTargetAimPosition(mgr, mVectorDc8, 0.f)) {
+      } else if (GetTargetAimPosition(mgr, mDestination, 0.f)) {
         const CVector3f position = GetTranslation();
-        mVectorDc8.SetZ(position.GetZ());
-        mBodyController->CommandMgr().SetTargetVector(mVectorDc8 - position);
+        mDestination.SetZ(position.GetZ());
+        mBodyController->CommandMgr().SetTargetVector(mDestination - position);
       }
     }
     break;
@@ -1686,9 +1687,9 @@ void CIng::BecomeWallProjectile(CStateManager& mgr, EStateMsg msg, float dt) {
   switch (msg) {
   case kStateMsg_Activate: {
     mAnimationState.SetState(CAnimationState::kAS_Ready);
-    mForm = kF_Unknown9;
-    mFlagE5d3 = false;
-    mFlagE5c7 = false;
+    mForm = kF_BecomingWallProjectile;
+    mWallProjectileVisible = false;
+    mTakeOffReceived = false;
     mNextForm = kF_Invalid;
     const CUnitVector3f normal(mSurfaceAlignment.GetSurface().GetNormal(), CUnitVector3f::kN_No);
     const CVector3f right = CVector3f::Cross(normal, CVector3f::Up());
@@ -1698,11 +1699,11 @@ void CIng::BecomeWallProjectile(CStateManager& mgr, EStateMsg msg, float dt) {
           CTransform4f::FromColumns(right.AsNormalized(), normal, CVector3f::Up(), origin));
     }
     mSurfaceAlignment.SetMode(CSurfaceAlignmentHelper::kM_None);
-    mFlagE5d1 = true;
+    mUsePortalPlane = true;
     const float height = GetBoundingBox().GetHeight();
     mPortalPlane = CPlane(GetTranslation() - height * normal, normal);
     mBodyController->EnableAnimation(true);
-    mFlagE5d6 = false;
+    mMovingOnSurface = false;
     break;
   }
   case kStateMsg_Update:
@@ -1710,14 +1711,14 @@ void CIng::BecomeWallProjectile(CStateManager& mgr, EStateMsg msg, float dt) {
       mBodyController->CommandMgr().DeliverCmd(CBCLoopAttackCmd(pas::kLAT_One));
     } else if (mBodyController->GetCurrentStateId() == pas::kAS_LoopAttack) {
       mBodyController->SetLocomotionType(pas::kLT_Crouch);
-      mFlagE5d3 = true;
-      if (mFlagE5c7 || mForm == kF_BodyProjectile) {
+      mWallProjectileVisible = true;
+      if (mTakeOffReceived || mForm == kF_BodyProjectile) {
         mAnimationState.SetState(CAnimationState::kAS_Over);
-      } else if (GetTargetAimPosition(mgr, mVectorDc8, 0.f)) {
+      } else if (GetTargetAimPosition(mgr, mDestination, 0.f)) {
         const CVector3f position = GetTranslation();
-        mVectorDc8.SetZ(position.GetZ());
+        mDestination.SetZ(position.GetZ());
         const CVector3f normal = mSurfaceAlignment.GetSurface().GetNormal();
-        CVector3f toTarget = mVectorDc8 - position;
+        CVector3f toTarget = mDestination - position;
         if (CVector3f::GetAngleDiff(toTarget, normal) > M_PIF / 4.f) {
           toTarget = CVector3f::Slerp(normal, toTarget.AsNormalized(),
                                       CRelAngle::FromRadians(M_PIF / 4.f));
@@ -1727,8 +1728,8 @@ void CIng::BecomeWallProjectile(CStateManager& mgr, EStateMsg msg, float dt) {
     }
     break;
   case kStateMsg_Deactivate:
-    mFlagE5d1 = false;
-    mFlagE5d2 = false;
+    mUsePortalPlane = false;
+    mBlobEffectActive = false;
     mBodyController->SetLocomotionType(pas::kLT_Crouch);
     mAnimationState.SetState(CAnimationState::kAS_NotReady);
     CAnimData* animData = AnimationData();
@@ -1768,7 +1769,7 @@ void CIng::SafeZoneReaction(CStateManager& mgr, EStateMsg msg, float dt) {
                             GetCurrentAreaId().Value(), true, false, CSfxManager::kMedPriority);
     break;
   case kStateMsg_Update:
-    if (mFlagE5e3 || mShouldEvaporate) {
+    if (mInHurtfulSafeZone || mShouldEvaporate) {
       if (mAnimationState.CanIssueCommand(*mBodyController, pas::kAS_KnockBack)) {
         mBodyController->CommandMgr().DeliverCmd(
             CBCKnockBackCmd(GetTransform().GetForward(), pas::kS_One));
@@ -1813,7 +1814,7 @@ void CIng::Lurk(CStateManager& mgr, EStateMsg msg, float dt) {
     const float tauntChance = mData.tauntChance;
     mShouldTaunt = mgr.Random()->Range(0.f, 100.f) <= tauntChance;
     bool aggressive = false;
-    if (!mData.flag1) {
+    if (!mData.disableArmSwipe) {
       const float aggressiveness = mData.aggressiveness;
       if (mgr.Random()->Range(0.f, 100.f) <= aggressiveness) {
         aggressive = true;
@@ -1821,9 +1822,9 @@ void CIng::Lurk(CStateManager& mgr, EStateMsg msg, float dt) {
     }
     mAggressive = aggressive;
     bool canBodyProjectile = false;
-    if (!mData.flag2) {
+    if (!mData.disableBodyProjectile) {
       bool allowed = true;
-      if (!mData.flag3) {
+      if (!mData.disableMiniPortal) {
         const float odds = mData.bodyProjectile.odds;
         if (!(mgr.Random()->Range(0.f, 100.f) <= odds)) {
           allowed = false;
@@ -1833,7 +1834,7 @@ void CIng::Lurk(CStateManager& mgr, EStateMsg msg, float dt) {
         canBodyProjectile = true;
       }
     }
-    mFlagE5c2 = canBodyProjectile;
+    mCanBodyProjectile = canBodyProjectile;
     break;
   }
   case kStateMsg_Update:
@@ -1861,16 +1862,16 @@ void CIng::PathFind(CStateManager& mgr, EStateMsg msg, float dt) {
     if (mSafeZoneId != kInvalidUniqueId) {
       GetSearchPath()->SetFlags(1);
     }
-    if (!mData.flag6 && mFoundMovementPos) {
+    if (!mData.disablePathMovement && mFoundMovementPos) {
       mPathFindNavigation.PathFind(mgr, msg, dt, *this);
       moved = true;
     }
-    mFlagE5c5 = false;
+    mPathObstructed = false;
     break;
   }
   case kStateMsg_Update:
-    if (!mData.flag6 && mFoundMovementPos) {
-      if (mAggressive || !HasLineOfSight(mgr, CTriggerData(0.f)) || mIntE2c > 0 ||
+    if (!mData.disablePathMovement && mFoundMovementPos) {
+      if (mAggressive || !HasLineOfSight(mgr, CTriggerData(0.f)) || mSafeZoneCount > 0 ||
           mSafeZoneId != kInvalidUniqueId) {
         mPathFindNavigation.PathFind(mgr, msg, dt, *this);
         ApplySeparation(mgr);
@@ -1891,17 +1892,17 @@ void CIng::PathFind(CStateManager& mgr, EStateMsg msg, float dt) {
 
 void CIng::IngSpotPathFind(CStateManager& mgr, EStateMsg msg, float dt) {
   if (msg == kStateMsg_Activate) {
-    mFlagE5c5 = false;
-    mFlagE5d6 = true;
+    mPathObstructed = false;
+    mMovingOnSurface = true;
   }
-  if (!mData.flag6 && mFoundMovementPos) {
+  if (!mData.disablePathMovement && mFoundMovementPos) {
     mPathFindNavigation.PathFind(mgr, msg, dt, *this);
     ApplySeparation(mgr);
     const CVector3f direction = mBodyController->CommandMgr().GetMoveVector();
     mBodyController->CommandMgr().ClearLocomotionCmds();
     if (direction.IsMagnitudeSafe() && dt > 0.f) {
       const CVector3f heading = direction.AsNormalized();
-      float speed = mFlagE5e2 ? mData.ingSpot.GetUnknown1c() : mData.ingSpot.GetMaxSpeed();
+      float speed = mIngSpotHurt ? mData.ingSpot.GetHurtSpeed() : mData.ingSpot.GetMaxSpeed();
       if (TargetIsBall(mgr, CTriggerData(0.f))) {
         speed = mData.ingSpot.GetBallPursuitSpeed();
       }
@@ -1913,15 +1914,16 @@ void CIng::IngSpotPathFind(CStateManager& mgr, EStateMsg msg, float dt) {
 
 void CIng::IngSpotPointPathFind(CStateManager& mgr, EStateMsg msg, float dt) {
   if (msg == kStateMsg_Activate) {
-    mFlagE5c5 = false;
-    mFlagE5d6 = true;
+    mPathObstructed = false;
+    mMovingOnSurface = true;
   }
-  if (!mData.flag6 && mFoundMovementPos) {
+  if (!mData.disablePathMovement && mFoundMovementPos) {
     mPointNavigation.PathFind(mgr, msg, dt, *this);
     const CVector3f direction = mBodyController->CommandMgr().GetMoveVector();
     mBodyController->CommandMgr().ClearLocomotionCmds();
     const float angle = CVector3f::GetAngleDiff(CVector3f::Up(), GetTransform().GetUp());
-    const float slowSpeed = mFlagE5e2 ? mData.ingSpot.GetUnknown1c() : mData.ingSpot.GetMaxSpeed();
+    const float slowSpeed =
+        mIngSpotHurt ? mData.ingSpot.GetHurtSpeed() : mData.ingSpot.GetMaxSpeed();
     const float fastSpeed = mData.ingSpot.GetMaxWallSpeed();
     MoveAlongSurface(direction, angle / M_PIF * (fastSpeed - slowSpeed) + slowSpeed, dt);
   }
@@ -1956,11 +1958,11 @@ void CIng::FollowAttackPattern(CStateManager& mgr, EStateMsg msg, float dt) {
   }
   switch (msg) {
   case kStateMsg_Activate: {
-    const TUniqueId id = mUniqueIdD70 != kInvalidUniqueId
-                             ? mUniqueIdD70
+    const TUniqueId id = mPatrolWaypointId != kInvalidUniqueId
+                             ? mPatrolWaypointId
                              : GetConnectedObject(mgr, kSS_Attack, kSM_Follow);
     mWaypointNavigation.SetDestination(id);
-    mFlagE5d4 = true;
+    mFollowingWaypoint = true;
     break;
   }
   case kStateMsg_Update: {
@@ -1977,8 +1979,8 @@ void CIng::FollowAttackPattern(CStateManager& mgr, EStateMsg msg, float dt) {
     break;
   }
   case kStateMsg_Deactivate:
-    mFlagE5d4 = false;
-    mUniqueIdD70 = mWaypointNavigation.GetDestination();
+    mFollowingWaypoint = false;
+    mPatrolWaypointId = mWaypointNavigation.GetDestination();
     break;
   default:
     break;
@@ -1994,20 +1996,21 @@ void CIng::BodyProjectileFlight(CStateManager& mgr, EStateMsg msg, float dt) {
     mUseProjectileFSMEntry = true;
     skLaunchPosition = GetLctrTransform(mHeadSegment).GetTranslation();
     skLaunchDirection = CVector3f::Forward();
-    if (GetTargetAimPosition(mgr, mVectorDc8, 0.5f)) {
-      const CVector3f toTarget =
-          (mVectorDc8 - skLaunchPosition) + GetModelData()->GetScale() * CVector3f(0.f, 0.f, -1.f);
+    if (GetTargetAimPosition(mgr, mDestination, 0.5f)) {
+      const CVector3f toTarget = (mDestination - skLaunchPosition) +
+                                 GetModelData()->GetScale() * CVector3f(0.f, 0.f, -1.f);
       if (toTarget.GetZ() < 0.f && toTarget.IsMagnitudeSafe()) {
         skLaunchDirection = GetTransform().TransposeRotate(toTarget.AsNormalized());
       }
     }
-    mSfxD58 =
+    mSfxBodyProjectile =
         CSfxManager::AddEmitter(mData.bodyProjectile.sound, GetTranslation(), 127,
                                 GetCurrentAreaId().Value(), true, true, CSfxManager::kMedPriority);
     break;
   }
   case kStateMsg_Update: {
-    CSfxManager::UpdateEmitter(mSfxD58, GetTranslation(), GetTransform().GetForward(), 127);
+    CSfxManager::UpdateEmitter(mSfxBodyProjectile, GetTranslation(), GetTransform().GetForward(),
+                               127);
     if (mForm == kF_BodyProjectile) {
       if (dt > 0.f) {
         const float dropTime = mData.bodyProjectile.dropTime;
@@ -2031,8 +2034,8 @@ void CIng::BodyProjectileFlight(CStateManager& mgr, EStateMsg msg, float dt) {
   }
   case kStateMsg_Deactivate:
     mBodyController->CommandMgr().DeliverCmd(CBodyStateCmd(kBSC_ExitState));
-    CSfxManager::RemoveEmitter(mSfxD58);
-    mSfxD58.Clear();
+    CSfxManager::RemoveEmitter(mSfxBodyProjectile);
+    mSfxBodyProjectile.Clear();
     break;
   default:
     break;
@@ -2042,17 +2045,17 @@ void CIng::BodyProjectileFlight(CStateManager& mgr, EStateMsg msg, float dt) {
 void CIng::SuckEnergy(CStateManager& mgr, EStateMsg msg, float dt) {
   switch (msg) {
   case kStateMsg_Activate: {
-    mForm = kF_Unknown0;
+    mForm = kF_PossessingHost;
     AnimationData()->GetParticleDB().DestroyAllActiveParticles();
     AnimationData()->GetParticleDB().ClearAllNonPersistentEffects(&mgr);
     mBodyController->CommandMgr().DeliverCmd(CBodyStateCmd(kBSC_AbortScripted));
     RemoveMaterial(kMT_Character, kMT_GroundCollider, kMT_Solid, kMT_Target, kMT_Orbit, mgr);
     mHostId = mTargetId;
-    if (mEffectCe0.valid()) {
-      mUniqueIdCde = mgr.AllocateUniqueId();
+    if (mPossessionHudEffect.valid()) {
+      mPossessionEffectId = mgr.AllocateUniqueId();
       CHUDBillboardEffect* effect = rs_new CHUDBillboardEffect(
-          rstl::optional_object< TToken< CGenDescription > >(*mEffectCe0),
-          rstl::optional_object< TToken< CElectricDescription > >(), mUniqueIdCde, true,
+          rstl::optional_object< TToken< CGenDescription > >(*mPossessionHudEffect),
+          rstl::optional_object< TToken< CElectricDescription > >(), mPossessionEffectId, true,
           rstl::string_l("Ing Possessed Mold"), CHUDBillboardEffect::GetNearClipDistance(mgr, 0),
           CHUDBillboardEffect::GetScaleForPOV(mgr), 0, CColor::White(), CVector3f::One(),
           CVector3f::Zero(), true);
@@ -2077,7 +2080,7 @@ void CIng::SuckEnergy(CStateManager& mgr, EStateMsg msg, float dt) {
             CHUDMemoParms(5.f, true, false, false, 1 << player->GetPlayerIndex(), true));
       }
     }
-    mSfxD00 =
+    mSfxHostInside =
         CSfxManager::SfxStart(mData.swarm.insideHostSound, CAudioSys::kMaxVolume, 64,
                               GetCurrentAreaId().Value(), true, false, CSfxManager::kMedPriority);
     break;
@@ -2092,7 +2095,7 @@ void CIng::SuckEnergy(CStateManager& mgr, EStateMsg msg, float dt) {
         SetTransform(player->GetTransform());
         SetTranslation(player->GetAimPosition(mgr, 0.f));
         const CDamageInfo damage(CWeaponMode(kWT_AI, false, false, false),
-                                 dt * mData.bodyProjectile.unknown_0xa0d63374, 0.f, 0.f, true);
+                                 dt * mData.bodyProjectile.suckDamagePerSecond, 0.f, 0.f, true);
         mgr.ApplyDamage(
             GetUniqueId(), mHostId, GetUniqueId(), damage,
             CMaterialFilter::MakeIncludeExclude(CMaterialList(skDamageMaterial), CMaterialList()),
@@ -2112,8 +2115,8 @@ void CIng::SuckEnergy(CStateManager& mgr, EStateMsg msg, float dt) {
         player->DetachActorFromPlayer();
       }
     }
-    CSfxManager::RemoveEmitter(mSfxD00);
-    mSfxD00.Clear();
+    CSfxManager::RemoveEmitter(mSfxHostInside);
+    mSfxHostInside.Clear();
     mHostId = kInvalidUniqueId;
     break;
   }
@@ -2131,9 +2134,9 @@ void CIng::SeekWallPoint(CStateManager& mgr, EStateMsg msg, float dt) {
       const CVector3f toHint = hint->GetTranslation() - GetTranslation();
       if (toHint.Magnitude() > dt * mData.ingSpot.GetMaxWallSpeed() && toHint.IsMagnitudeSafe()) {
         MoveAlongSurface(toHint.AsNormalized(), mData.ingSpot.GetMaxWallSpeed(), dt);
-        mFlagE5d6 = true;
+        mMovingOnSurface = true;
       } else {
-        mFlagE5d6 = false;
+        mMovingOnSurface = false;
       }
     }
     break;
@@ -2160,9 +2163,9 @@ void CIng::SelectTarget(CStateManager& mgr, EStateMsg msg, float dt) {
 void CIng::FaceTarget(CStateManager& mgr, EStateMsg msg, float dt) {
   switch (msg) {
   case kStateMsg_Activate:
-    if (GetTargetAimPosition(mgr, mVectorDc8, 0.f)) {
-      mVectorDc8.SetZ(GetTranslation().GetZ());
-      const CVector3f toTarget = mVectorDc8 - GetTranslation();
+    if (GetTargetAimPosition(mgr, mDestination, 0.f)) {
+      mDestination.SetZ(GetTranslation().GetZ());
+      const CVector3f toTarget = mDestination - GetTranslation();
       if (CVector3f::GetAngleDiff(GetTransform().GetForward(), toTarget) > 20.f * (M_PIF / 180.f)) {
         mAnimationState.SetState(CAnimationState::kAS_Ready);
       } else {
@@ -2171,13 +2174,13 @@ void CIng::FaceTarget(CStateManager& mgr, EStateMsg msg, float dt) {
     } else {
       mAnimationState.SetState(CAnimationState::kAS_Over);
     }
-    mFlagE5d6 = false;
+    mMovingOnSurface = false;
     break;
   case kStateMsg_Update:
     switch (mForm) {
     case kF_Corporeal:
       if (mAnimationState.CanIssueCommand(*mBodyController, pas::kAS_Turn)) {
-        const CVector3f toTarget = mVectorDc8 - GetTranslation();
+        const CVector3f toTarget = mDestination - GetTranslation();
         if (toTarget.IsMagnitudeSafe()) {
           mBodyController->CommandMgr().DeliverCmd(
               CBCLocomotionCmd(CVector3f::Zero(), toTarget.AsNormalized(), 1.f));
@@ -2187,11 +2190,11 @@ void CIng::FaceTarget(CStateManager& mgr, EStateMsg msg, float dt) {
       }
       break;
     case kF_IngSpot:
-    case kF_Unknown6:
-    case kF_Unknown7:
-    case kF_Unknown8:
-    case kF_Unknown9: {
-      const CVector3f toTarget = mVectorDc8 - GetTranslation();
+    case kF_BecomingCorporeal:
+    case kF_BecomingIngSpot:
+    case kF_BecomingBodyProjectile:
+    case kF_BecomingWallProjectile: {
+      const CVector3f toTarget = mDestination - GetTranslation();
       if (toTarget.IsMagnitudeSafe()) {
         if (CVector3f::GetAngleDiff(GetTransform().GetForward(), toTarget) >
             20.f * (M_PIF / 180.f)) {
@@ -2221,7 +2224,7 @@ void CIng::FindCoverPoint(CStateManager& mgr, EStateMsg msg, float dt) {
   switch (msg) {
   case kStateMsg_Activate: {
     ReleaseCoverHint(mgr);
-    if (!GetTargetAimPosition(mgr, mVectorDc8, 0.f)) {
+    if (!GetTargetAimPosition(mgr, mDestination, 0.f)) {
       return;
     }
     static rstl::reserved_vector< rstl::pair< TUniqueId, float >, 4 > candidates;
@@ -2244,14 +2247,15 @@ void CIng::FindCoverPoint(CStateManager& mgr, EStateMsg msg, float dt) {
         continue;
       }
       if (hint->GetInUse(GetUniqueId()) || hint->GetCurrentAreaId() != GetCurrentAreaId() ||
-          hint->GetUniqueId() == mUniqueIdD74 ||
+          hint->GetUniqueId() == mLastCoverHintId ||
           safeZones->PointIsInSafeZone(mgr, hint->GetTranslation())) {
         continue;
       }
-      if (hint->GetHintType() == CScriptAIHint::kHT_WallCover && (mData.flag2 || inLightSafeZone)) {
+      if (hint->GetHintType() == CScriptAIHint::kHT_WallCover &&
+          (mData.disableBodyProjectile || inLightSafeZone)) {
         continue;
       }
-      const CVector3f delta = mVectorDc8 - hint->GetTranslation();
+      const CVector3f delta = mDestination - hint->GetTranslation();
       float distSq = delta.MagSquared();
       const float height = CVector3f::Dot(CVector3f::Up(), delta);
       if (hint->GetHintType() != CScriptAIHint::kHT_WallCover || height > 0.f) {
@@ -2291,11 +2295,11 @@ void CIng::FindCoverPoint(CStateManager& mgr, EStateMsg msg, float dt) {
 void CIng::ArmSwipe(CStateManager& mgr, EStateMsg msg, float dt) {
   switch (msg) {
   case kStateMsg_Activate:
-    if (GetTargetAimPosition(mgr, mVectorDc8, 0.f)) {
+    if (GetTargetAimPosition(mgr, mDestination, 0.f)) {
       if (mTeamManagerId == kInvalidUniqueId ||
           CScriptTeamAiMgr::StartAttack(CScriptTeamAiMgr::kAT_Melee, mgr, mTeamManagerId,
                                         GetUniqueId())) {
-        mFormChangeTimer += mData.unknown_0xc620183a;
+        mFormChangeTimer += mData.formChangeInterval;
         mAnimationState.SetState(CAnimationState::kAS_Ready);
       } else {
         mAnimationState.SetState(CAnimationState::kAS_Over);
@@ -2309,7 +2313,7 @@ void CIng::ArmSwipe(CStateManager& mgr, EStateMsg msg, float dt) {
       static const pas::ESeverity skSwipeSeverity[] = {pas::kS_One, pas::kS_Two};
       mSwipeIndex = RollDoubleSwipe(mgr);
       mBodyController->CommandMgr().DeliverCmd(CBCMeleeAttackCmd(skSwipeSeverity[mSwipeIndex]));
-      mFlagE5c6 = true;
+      mSwipeDamagePending = true;
     } else if (mBodyController->GetCurrentStateId() == pas::kAS_MeleeAttack) {
       const CVector3f right = GetTransform().GetRight();
       ApplySwipeDamage(mgr, mRightShoulderSegment, mRightElbowSegment, mRightForearmSegment,
@@ -2322,8 +2326,8 @@ void CIng::ArmSwipe(CStateManager& mgr, EStateMsg msg, float dt) {
     break;
   case kStateMsg_Deactivate:
     mSwipeIndex = -1;
-    mFlagE5c6 = false;
-    mFloatE38 = 0.f;
+    mSwipeDamagePending = false;
+    mTimeSinceArmSwipe = 0.f;
     mAnimationState.SetState(CAnimationState::kAS_NotReady);
     CScriptTeamAiMgr::EndAttack(CScriptTeamAiMgr::kAT_Melee, mgr, mTeamManagerId, GetUniqueId(),
                                 false);
@@ -2361,24 +2365,24 @@ void CIng::GrappleBall(CStateManager& mgr, EStateMsg msg, float dt) {
   switch (msg) {
   case kStateMsg_Activate: {
     mAnimationState.SetState(CAnimationState::kAS_Ready);
-    mFlagE5d7 = true;
-    mFloatE4c = 0.f;
+    mGrappling = true;
+    mGrappleHold = 0.f;
     CPlayer* player = TCastToPtr< CPlayer >(mgr.ObjectById(mTargetId));
     if (player != nullptr) {
       player->EnableLeaveMorphBall(false);
       player->EnableEnterMorphBall(false);
       player->AttachActorToPlayer(GetUniqueId(), false);
     }
-    mSfxD04 =
+    mSfxGrapple =
         CSfxManager::AddEmitter(mData.swarm.insideHostSound, GetTranslation(), 127,
                                 GetCurrentAreaId().Value(), true, true, CSfxManager::kMedPriority);
-    mFlagE5d6 = false;
+    mMovingOnSurface = false;
     break;
   }
   case kStateMsg_Update: {
-    CSfxManager::UpdateEmitter(mSfxD04, GetTranslation(), GetTransform().GetForward(), 127);
+    CSfxManager::UpdateEmitter(mSfxGrapple, GetTranslation(), GetTransform().GetForward(), 127);
     const float maxHoldTime = mData.grapple.maxHoldTime;
-    if (mStateMachine->GetTime() <= maxHoldTime && mFloatE4c >= 0.f) {
+    if (mStateMachine->GetTime() <= maxHoldTime && mGrappleHold >= 0.f) {
       CPlayer* player = TCastToPtr< CPlayer >(mgr.ObjectById(mTargetId));
       if (player != nullptr && (player->GetSpawnedMorphballState() == CPlayer::kMS_Unmorphed
                                     ? player->GetMorphballTransitionState()
@@ -2391,12 +2395,12 @@ void CIng::GrappleBall(CStateManager& mgr, EStateMsg msg, float dt) {
           Stop();
         }
         const CDamageInfo damage(CWeaponMode(kWT_AI, false, false, false),
-                                 dt * mData.grapple.unknown_0x67f6c10e, 0.f, 0.f, true);
+                                 dt * mData.grapple.holdDamagePerSecond, 0.f, 0.f, true);
         mgr.ApplyDamage(
             GetUniqueId(), mTargetId, GetUniqueId(), damage,
             CMaterialFilter::MakeIncludeExclude(CMaterialList(skDamageMaterial), CMaterialList()),
             CVector3f::Zero());
-        mFloatE4c = CMath::Min(1.f, 0.3f * dt + mFloatE4c);
+        mGrappleHold = CMath::Min(1.f, 0.3f * dt + mGrappleHold);
       } else {
         mAnimationState.SetState(CAnimationState::kAS_Over);
       }
@@ -2407,8 +2411,8 @@ void CIng::GrappleBall(CStateManager& mgr, EStateMsg msg, float dt) {
   }
   case kStateMsg_Deactivate: {
     mAnimationState.SetState(CAnimationState::kAS_NotReady);
-    mFlagE5d7 = false;
-    mFloatE48 = mData.grapple.postWaitTime;
+    mGrappling = false;
+    mGrappleCooldown = mData.grapple.postWaitTime;
     CPlayer* player = TCastToPtr< CPlayer >(mgr.ObjectById(mTargetId));
     if (player != nullptr) {
       player->EnableLeaveMorphBall(true);
@@ -2417,8 +2421,8 @@ void CIng::GrappleBall(CStateManager& mgr, EStateMsg msg, float dt) {
         player->DetachActorFromPlayer();
       }
     }
-    CSfxManager::RemoveEmitter(mSfxD04);
-    mSfxD04.Clear();
+    CSfxManager::RemoveEmitter(mSfxGrapple);
+    mSfxGrapple.Clear();
     break;
   }
   default:
@@ -2434,7 +2438,7 @@ void CIng::FindMiniPortals(CStateManager& mgr, EStateMsg msg, float dt) {
     mAnimationState.SetState(CAnimationState::kAS_Ready);
     mMiniPortalCount = 0;
     skAngleIndex = 0;
-    if (!GetTargetAimPosition(mgr, mVectorDc8, 0.f)) {
+    if (!GetTargetAimPosition(mgr, mDestination, 0.f)) {
       mAnimationState.SetState(CAnimationState::kAS_Over);
     }
     break;
@@ -2445,15 +2449,16 @@ void CIng::FindMiniPortals(CStateManager& mgr, EStateMsg msg, float dt) {
       const CVector3f center =
           headTransform.GetTranslation() + scale.GetY() * (3.f * GetTransform().GetForward());
       const CMaterialFilter filter = CMaterialFilter::MakeIncludeExclude(
-          CMaterialList(skMaterial9FC),
-          CMaterialList(skMaterialA00, skMaterialA04, skMaterialA08, skMaterialA0C));
+          CMaterialList(skPortalRayInclude),
+          CMaterialList(skPortalRayExclude1, skPortalRayExclude2, skPortalRayExclude3,
+                        skPortalRayExclude4));
       for (uint i = 0; i < 2; ++i) {
         const float angle = (M_PIF / 180.f) * skAnglesDegrees[skAngleIndex++];
         const float cosine = CMath::FastCosR(angle);
         const float sine = CMath::FastSinR(angle);
         const CVector3f point =
             center + GetTransform().Rotate(2.f * (scale * CVector3f(cosine, 0.f, sine)));
-        if (mgr.RayCollideWorld(point, mVectorDc8, filter, this)) {
+        if (mgr.RayCollideWorld(point, mDestination, filter, this)) {
           mMiniPortalPositions[mMiniPortalCount] = point;
           ++mMiniPortalCount;
           if (mMiniPortalCount == 3) {
@@ -2478,7 +2483,7 @@ void CIng::MiniPortalAttack(CStateManager& mgr, EStateMsg msg, float dt) {
   switch (msg) {
   case kStateMsg_Activate:
     mAnimationState.SetState(CAnimationState::kAS_Ready);
-    mIntE28 = 0;
+    mMiniPortalIndex = 0;
     break;
   case kStateMsg_Update:
     if (mAnimationState.CanIssueCommand(*mBodyController, pas::kAS_ProjectileAttack)) {
@@ -2488,7 +2493,7 @@ void CIng::MiniPortalAttack(CStateManager& mgr, EStateMsg msg, float dt) {
     break;
   case kStateMsg_Deactivate:
     mAnimationState.SetState(CAnimationState::kAS_NotReady);
-    mIntE28 = -1;
+    mMiniPortalIndex = -1;
     break;
   default:
     break;
@@ -2499,12 +2504,12 @@ void CIng::Dead(CStateManager& mgr, EStateMsg msg, float dt) {
   switch (mForm) {
   case kF_IngSpot:
   case kF_BodyProjectile:
-  case kF_Unknown5:
+  case kF_Evaporating:
     if (msg == kStateMsg_Activate) {
       RemoveMaterial(kMT_Target, kMT_Orbit, mgr);
-      if (mEffectD28) {
+      if (mIngSpotDeathEffect) {
         CExplosion* explosion =
-            rs_new CExplosion(*mEffectD28, mgr.AllocateUniqueId(),
+            rs_new CExplosion(*mIngSpotDeathEffect, mgr.AllocateUniqueId(),
                               CEntityInfo(GetCurrentAreaId(), CEntity::NullConnectionList, true),
                               rstl::string_l("Ing death Fx"), GetTransform(), 0,
                               GetModelData()->GetScale(), CColor::White(), -1);
@@ -2517,8 +2522,8 @@ void CIng::Dead(CStateManager& mgr, EStateMsg msg, float dt) {
       DeathDelete(mgr);
     }
     break;
-  case kF_Unknown0:
-  case kF_Unknown1:
+  case kF_PossessingHost:
+  case kF_ExitingHost:
     if (msg == kStateMsg_Activate) {
       DeathDelete(mgr);
     }
@@ -2528,7 +2533,7 @@ void CIng::Dead(CStateManager& mgr, EStateMsg msg, float dt) {
     if (!mBurning && !mLaggedBurnDeath) {
       switch (msg) {
       case kStateMsg_Activate:
-        mFloatE54 = 2.f;
+        mDeathDelayTimer = 2.f;
         RemoveMaterial(kMT_Target, kMT_Orbit, mgr);
         mDamageCooldownTimer = skDamageHitTime;
         break;
@@ -2541,11 +2546,11 @@ void CIng::Dead(CStateManager& mgr, EStateMsg msg, float dt) {
           newScale.SetZ(CMath::Max(height, 0.f));
           ModelData()->SetScale(newScale);
           if (height <= 0.f) {
-            mFloatE54 -= dt;
-            mFlagE5d0 = false;
-            mFlagE5d2 = false;
+            mDeathDelayTimer -= dt;
+            mDrawModel = false;
+            mBlobEffectActive = false;
           }
-          if (mFloatE54 <= 0.f) {
+          if (mDeathDelayTimer <= 0.f) {
             DeathDelete(mgr);
           }
         }
@@ -2561,7 +2566,7 @@ void CIng::Dead(CStateManager& mgr, EStateMsg msg, float dt) {
 void CIng::Evaporate(CStateManager& mgr, EStateMsg msg, float dt) {
   switch (msg) {
   case kStateMsg_Activate:
-    mForm = kF_Unknown5;
+    mForm = kF_Evaporating;
     break;
   case kStateMsg_Update:
     if (mStateMachine->GetTime() > 2.f) {
@@ -2699,7 +2704,7 @@ void CIng::SetExitHostDest(CStateManager& mgr, float dt) {
       }
     }
   }
-  mVectorDc8 = destination;
+  mDestination = destination;
 }
 
 void CIng::SetLuredDest(CStateManager& mgr, float dt) {
@@ -2770,13 +2775,13 @@ void CIng::EndRangedAttack(CStateManager& mgr, float dt) {
 void CIng::SplatOntoMesh(CStateManager& mgr, float dt) {
   mForm = kF_IngSpot;
   mBodyController->CommandMgr().DeliverCmd(CBodyStateCmd(kBSC_AbortScripted));
-  const CVector3f normal = mVectorDd4;
+  const CVector3f normal = mSplatNormal;
   mSurfaceAlignment.OrientToSurfaceNormal(*this, normal, 1.f);
   CSfxManager::AddEmitter(mData.bodyProjectile.splatWallSound, GetTranslation(), 127,
                           GetCurrentAreaId().Value(), true, false, CSfxManager::kMedPriority);
-  if (mEffectD48) {
+  if (mSplatEffect) {
     CExplosion* explosion =
-        rs_new CExplosion(*mEffectD48, mgr.AllocateUniqueId(),
+        rs_new CExplosion(*mSplatEffect, mgr.AllocateUniqueId(),
                           CEntityInfo(GetCurrentAreaId(), CEntity::NullConnectionList, true),
                           rstl::string_l("Ing Splat Wall Fx"), GetTransform(), 0,
                           GetModelData()->GetScale(), CColor::White(), -1);
@@ -2791,7 +2796,7 @@ void CIng::ExpelGrappledBall(CStateManager& mgr, float dt) {
   if (player != nullptr && (player->GetSpawnedMorphballState() == CPlayer::kMS_Unmorphed
                                 ? player->GetMorphballTransitionState()
                                 : CPlayer::kMS_Unmorphed) == CPlayer::kMS_Morphed) {
-    if (mFloatE4c >= 0.f) {
+    if (mGrappleHold >= 0.f) {
       mgr.ApplyDamage(
           GetUniqueId(), mTargetId, GetUniqueId(), mData.grapple.exitDamage,
           CMaterialFilter::MakeIncludeExclude(CMaterialList(skDamageMaterial), CMaterialList()),
@@ -2807,13 +2812,13 @@ void CIng::ExpelGrappledBall(CStateManager& mgr, float dt) {
     CSfxManager::AddEmitter(mData.grapple.exitSound, GetTranslation(), 127,
                             GetCurrentAreaId().Value(), true, false, CSfxManager::kMedPriority);
   }
-  mFloatE4c = 0.f;
-  mFlagE5d6 = false;
+  mGrappleHold = 0.f;
+  mMovingOnSurface = false;
 }
 
 void CIng::SetInitialForm(CStateManager& mgr) {
-  mForm = mData.flag0 ? kF_IngSpot : kF_Corporeal;
-  if (mData.flag0) {
+  mForm = mData.startsAsIngSpot ? kF_IngSpot : kF_Corporeal;
+  if (mData.startsAsIngSpot) {
     mBodyController->SetLocomotionType(pas::kLT_Crouch);
     mSurfaceAlignment.AlignNearPosition(*this, mgr, GetTranslation(), 1.f);
   } else {
@@ -2870,16 +2875,16 @@ void CIng::UpdateBlobEffect(float dt, CStateManager& mgr) {
     case kF_IngSpot:
       rate = 1.f;
       break;
-    case kF_Unknown6:
-    case kF_Unknown7:
-    case kF_Unknown8:
-    case kF_Unknown9:
-      if (mFlagE5d2) {
+    case kF_BecomingCorporeal:
+    case kF_BecomingIngSpot:
+    case kF_BecomingBodyProjectile:
+    case kF_BecomingWallProjectile:
+      if (mBlobEffectActive) {
         rate = 1.f;
       }
       break;
     case kF_Corporeal:
-      if (!mAlive && mFlagE5d2) {
+      if (!mAlive && mBlobEffectActive) {
         rate = 1.f;
       }
       break;
@@ -2921,7 +2926,7 @@ void CIng::ReleaseCoverHint(CStateManager& mgr) {
 void CIng::AssignCoverHint(CScriptAIHint& hint) {
   hint.SetInUse(true);
   mCoverHintId = hint.GetUniqueId();
-  mUniqueIdD74 = mCoverHintId;
+  mLastCoverHintId = mCoverHintId;
 }
 
 bool CIng::GetTargetAimPosition(CStateManager& mgr, CVector3f& position, float dt) const {
@@ -2935,12 +2940,12 @@ bool CIng::GetTargetAimPosition(CStateManager& mgr, CVector3f& position, float d
 
 void CIng::UpdateTimers(float dt, CStateManager& mgr) {
   mHeardShotTimer += dt;
-  mFloatE38 += dt;
+  mTimeSinceArmSwipe += dt;
   mFormChangeTimer += dt;
   if (mForm == kF_BodyProjectile) {
-    mFloatE58 += dt;
+    mProjectileFlightTime += dt;
   } else {
-    mFloatE58 = 0.f;
+    mProjectileFlightTime = 0.f;
   }
   if (mForm == kF_Corporeal && PathShagged(mgr, CTriggerData(0.f))) {
     mFrustrationTimer += dt;
@@ -2950,7 +2955,7 @@ void CIng::UpdateTimers(float dt, CStateManager& mgr) {
   if (mForm == kF_IngSpot && mCurDamageRemTime > 0.f) {
     mCurDamageRemTime -= dt;
   }
-  mFloatE48 -= dt;
+  mGrappleCooldown -= dt;
   if (mHitByPlayerProjectile) {
     mUnderFireTimer = 0.f;
     mHitByPlayerProjectile = false;
@@ -2961,22 +2966,22 @@ void CIng::UpdateTimers(float dt, CStateManager& mgr) {
 
 void CIng::UpdateTargetable(CStateManager& mgr) {
   switch (mForm) {
-  case kF_Unknown0:
-  case kF_Unknown1:
+  case kF_PossessingHost:
+  case kF_ExitingHost:
     SetValidTarget(0, false);
     break;
   case kF_IngSpot:
-  case kF_Unknown5: {
+  case kF_Evaporating: {
     const bool darkVisor = mgr.GetPlayerState(0)->GetActiveVisor(mgr) == CPlayerState::kPV_Dark;
-    SetValidTarget(0, darkVisor || mData.flag7);
+    SetValidTarget(0, darkVisor || mData.alwaysTargetable);
     break;
   }
   case kF_Corporeal:
   case kF_BodyProjectile:
-  case kF_Unknown6:
-  case kF_Unknown7:
-  case kF_Unknown8:
-  case kF_Unknown9:
+  case kF_BecomingCorporeal:
+  case kF_BecomingIngSpot:
+  case kF_BecomingBodyProjectile:
+  case kF_BecomingWallProjectile:
   default:
     SetValidTarget(0, true);
     break;
@@ -2988,7 +2993,7 @@ int CIng::RollDoubleSwipe(CStateManager& mgr) { return mgr.Random()->Range(0.f, 
 void CIng::ApplySwipeDamage(CStateManager& mgr, const CSegId& shoulder, const CSegId& elbow,
                             const CSegId& forearm, const CSegId& wrist,
                             const CVector3f& direction) {
-  if (mFlagE5c6) {
+  if (mSwipeDamagePending) {
     const CPhysicsActor* target =
         TCastToPtr< CPhysicsActor >(const_cast< CEntity* >(mgr.GetObjectById(mTargetId)));
     if (target != nullptr) {
@@ -3016,12 +3021,12 @@ void CIng::ApplySwipeDamage(CStateManager& mgr, const CSegId& shoulder, const CS
         }
       }
       if (hit) {
-        mgr.ApplyDamage(
-            GetUniqueId(), mTargetId, GetUniqueId(), mData.armSwipeDamage,
-            CMaterialFilter::MakeIncludeExclude(CMaterialList(skMaterialA10), CMaterialList()),
-            direction);
+        mgr.ApplyDamage(GetUniqueId(), mTargetId, GetUniqueId(), mData.armSwipeDamage,
+                        CMaterialFilter::MakeIncludeExclude(CMaterialList(skSwipeDamageMaterial),
+                                                            CMaterialList()),
+                        direction);
         mCurDamageRemTime = mDamageWaitTime;
-        mFlagE5c6 = false;
+        mSwipeDamagePending = false;
       }
     }
   }
@@ -3041,11 +3046,11 @@ void CIng::UpdateTouchBounds() {
 
 void CIng::UpdateStateMachine(float dt, CStateManager& mgr) {
   if (mBodyController->GetCurrentStateId() != pas::kAS_Locomotion) {
-    mFloatE40 = 0.f;
+    mLocomotionTime = 0.f;
   } else {
-    mFloatE40 += dt;
+    mLocomotionTime += dt;
   }
-  if (mFloatE40 < 2.5f) {
+  if (mLocomotionTime < 2.5f) {
     mBodyController->Update(dt, mgr);
     UpdateAnimation(dt, mgr, true);
   }
@@ -3066,9 +3071,9 @@ void CIng::MoveAlongSurface(const CVector3f& direction, float speed, float dt) {
   if (flat.IsMagnitudeSafe()) {
     const CVector3f heading = flat.AsNormalized();
     SetTranslation(position + heading * speed * dt);
-    mVectorDe0 = heading;
+    mMoveHeading = heading;
   } else {
-    mVectorDe0 = CVector3f::Zero();
+    mMoveHeading = CVector3f::Zero();
   }
   Stop();
 }
@@ -3131,7 +3136,8 @@ void CIng::SetupCollision(CStateManager& mgr) {
   UpdateCollisionVulnerabilities(mgr);
   AddMaterial(kMT_Unknown54, mgr);
   SetMaterialFilter(CMaterialFilter::MakeIncludeExclude(
-      CMaterialList(kMT_Solid), CMaterialList(kMT_CollisionActor, kMT_AIPassthrough, kMT_Player)));
+      CMaterialList(skColliderInclude),
+      CMaterialList(skColliderExclude1, skColliderExclude2, skColliderExclude3)));
 }
 
 void CIng::UpdateCollisionVulnerabilities(CStateManager& mgr) {
@@ -3151,7 +3157,7 @@ void CIng::TouchDamage(CStateManager& mgr, TUniqueId senderId) {
           TCastToConstPtr< CCollisionActor >(mgr.GetObjectById(senderId))) {
     const TUniqueId touched = colAct->GetLastTouchedObject();
     const CPlayer* player = mgr.GetPlayer(0);
-    if (touched == player->GetUniqueId() && mCurDamageRemTime <= 0.f && !mFlagE5c6) {
+    if (touched == player->GetUniqueId() && mCurDamageRemTime <= 0.f && !mSwipeDamagePending) {
       mgr.ApplyDamage(
           GetUniqueId(), player->GetUniqueId(), GetUniqueId(), GetContactDamage(),
           CMaterialFilter::MakeIncludeExclude(CMaterialList(kMT_Solid), CMaterialList()),
@@ -3170,14 +3176,14 @@ void CIng::HandleDamage(CStateManager& mgr, TUniqueId senderId) {
 }
 
 void CIng::IngSpotHit(CStateManager& mgr, TUniqueId senderId) {
-  mFloatE4c = -1.f;
-  mFlagE5e2 = true;
+  mGrappleHold = -1.f;
+  mIngSpotHurt = true;
   if (const CWeapon* weapon = TCastToConstPtr< CWeapon >(mgr.GetObjectById(senderId))) {
     CExplosion* explosion = nullptr;
     if (weapon->GetCurrentDamageInfo().GetDamage(mData.ingSpot.GetVulnerability()) >= 25.f) {
-      if (mEffectD18) {
+      if (mIngSpotHeavyHitEffect) {
         explosion =
-            rs_new CExplosion(*mEffectD18, mgr.AllocateUniqueId(),
+            rs_new CExplosion(*mIngSpotHeavyHitEffect, mgr.AllocateUniqueId(),
                               CEntityInfo(GetCurrentAreaId(), CEntity::NullConnectionList, true),
                               rstl::string_l("Ing damage Fx"), GetTransform(), 0,
                               GetModelData()->GetScale(), CColor::White(), -1);
@@ -3185,9 +3191,9 @@ void CIng::IngSpotHit(CStateManager& mgr, TUniqueId senderId) {
       CSfxManager::AddEmitter(mData.ingSpot.GetHeavyHitSound(), GetTranslation(), 127,
                               GetCurrentAreaId().Value(), true, false, CSfxManager::kMedPriority);
     } else {
-      if (mEffectD08) {
+      if (mIngSpotNormalHitEffect) {
         explosion =
-            rs_new CExplosion(*mEffectD08, mgr.AllocateUniqueId(),
+            rs_new CExplosion(*mIngSpotNormalHitEffect, mgr.AllocateUniqueId(),
                               CEntityInfo(GetCurrentAreaId(), CEntity::NullConnectionList, true),
                               rstl::string_l("Ing damage Fx"), GetTransform(), 0,
                               GetModelData()->GetScale(), CColor::White(), -1);
@@ -3243,15 +3249,15 @@ void CIng::CollisionDamage(CStateManager& mgr, TUniqueId senderId) {
 
 void CIng::SpawnDamageEffect(CStateManager& mgr) {
   CExplosion* explosion = nullptr;
-  if (mEffectD18) {
+  if (mIngSpotHeavyHitEffect) {
     explosion =
-        rs_new CExplosion(*mEffectD18, mgr.AllocateUniqueId(),
+        rs_new CExplosion(*mIngSpotHeavyHitEffect, mgr.AllocateUniqueId(),
                           CEntityInfo(GetCurrentAreaId(), CEntity::NullConnectionList, true),
                           rstl::string_l("Ing damage Fx"), GetTransform(), 0,
                           GetModelData()->GetScale(), CColor::White(), -1);
-  } else if (mEffectD08) {
+  } else if (mIngSpotNormalHitEffect) {
     explosion =
-        rs_new CExplosion(*mEffectD08, mgr.AllocateUniqueId(),
+        rs_new CExplosion(*mIngSpotNormalHitEffect, mgr.AllocateUniqueId(),
                           CEntityInfo(GetCurrentAreaId(), CEntity::NullConnectionList, true),
                           rstl::string_l("Ing damage Fx"), GetTransform(), 0,
                           GetModelData()->GetScale(), CColor::White(), -1);
@@ -3265,7 +3271,7 @@ void CIng::UpdateSounds() {
   bool removeMove = true;
   bool removeIdle = true;
   if (mForm == kF_IngSpot) {
-    if (mFlagE5d6) {
+    if (mMovingOnSurface) {
       removeMove = false;
       if (!mSfxIngSpotMove) {
         mSfxIngSpotMove = CSfxManager::AddEmitter(mData.ingSpot.GetMoveSound(), GetTranslation(),
@@ -3298,9 +3304,9 @@ void CIng::UpdateSounds() {
 }
 
 void CIng::StopSounds() {
-  if (mSfxD58) {
-    CSfxManager::RemoveEmitter(mSfxD58);
-    mSfxD58.Clear();
+  if (mSfxBodyProjectile) {
+    CSfxManager::RemoveEmitter(mSfxBodyProjectile);
+    mSfxBodyProjectile.Clear();
   }
   if (mSfxIngSpotIdle) {
     CSfxManager::RemoveEmitter(mSfxIngSpotIdle);
@@ -3310,27 +3316,27 @@ void CIng::StopSounds() {
     CSfxManager::RemoveEmitter(mSfxIngSpotMove);
     mSfxIngSpotMove.Clear();
   }
-  if (mSfxD00) {
-    CSfxManager::RemoveEmitter(mSfxD00);
-    mSfxD00.Clear();
+  if (mSfxHostInside) {
+    CSfxManager::RemoveEmitter(mSfxHostInside);
+    mSfxHostInside.Clear();
   }
-  if (mSfxD04) {
-    CSfxManager::RemoveEmitter(mSfxD04);
-    mSfxD04.Clear();
+  if (mSfxGrapple) {
+    CSfxManager::RemoveEmitter(mSfxGrapple);
+    mSfxGrapple.Clear();
   }
 }
 
 void CIng::SpawnExitHostSmoke(CStateManager& mgr) {
-  if (mEffectCf0) {
+  if (mExitHostSmokeEffect) {
     CExplosion* explosion =
-        rs_new CExplosion(*mEffectCf0, mgr.AllocateUniqueId(),
+        rs_new CExplosion(*mExitHostSmokeEffect, mgr.AllocateUniqueId(),
                           CEntityInfo(GetCurrentAreaId(), CEntity::NullConnectionList, true),
                           rstl::string_l("IngExitHostSmokeFx"), GetTransform(), 0,
                           GetModelData()->GetScale(), CColor::White(), -1);
     if (explosion != nullptr) {
       mgr.AddObject(explosion);
-      CSfxManager::AddEmitter(mData.swarm.sound, GetTranslation(), 127, GetCurrentAreaId().Value(),
-                              true, false, CSfxManager::kMedPriority);
+      CSfxManager::AddEmitter(mData.swarm.exitHostSmokeSound, GetTranslation(), 127,
+                              GetCurrentAreaId().Value(), true, false, CSfxManager::kMedPriority);
     }
   }
 }

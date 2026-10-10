@@ -15,20 +15,21 @@ class CGenDescription;
 // reconstructed.
 class CIngMiniPortalInfo {
 public:
-  CIngMiniPortalInfo(TUniqueId target, float x4, float x8,
-                     const TLockedToken< CGenDescription >& effect, ushort sound, float x1c,
-                     float x20, const CDamageInfo& damage, const SLdrPlasmaBeamInfo& beamInfo);
+  CIngMiniPortalInfo(TUniqueId target, float fireTime, float endTime,
+                     const TLockedToken< CGenDescription >& effect, ushort sound,
+                     float soundMaxDistance, float soundDistanceComp, const CDamageInfo& damage,
+                     const SLdrPlasmaBeamInfo& beamInfo);
 
 private:
-  TUniqueId mTarget; // Guessed name
-  float x4_;
-  float x8_;
+  TUniqueId mTarget;                       // Guessed name
+  float mFireTime;                         // Guessed name
+  float mEndTime;                          // Guessed name
   TLockedToken< CGenDescription > mEffect; // Guessed name
   ushort mSound;                           // Guessed name
-  float x1c_;
-  float x20_;
-  CDamageInfo mDamage;          // Guessed name
-  SLdrPlasmaBeamInfo mBeamInfo; // Guessed name
+  float mSoundMaxDistance;                 // Guessed name
+  float mSoundDistanceComp;                // Guessed name
+  CDamageInfo mDamage;                     // Guessed name
+  SLdrPlasmaBeamInfo mBeamInfo;            // Guessed name
 };
 
 // Original Wii export name; the actor that is spawned by a mini portal attack.

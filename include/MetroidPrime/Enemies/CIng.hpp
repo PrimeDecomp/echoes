@@ -31,12 +31,12 @@ class CWeapon;
 
 // Guessed struct: how the Ing hurls its body at the player.
 struct SIngBodyProjectileData {
-  SIngBodyProjectileData(const CDamageInfo& contactDamage, float unknown_0xa0d63374, float suckTime,
-                         CAssetId splatEffect, ushort sound, ushort splatWallSound, float speed,
-                         float dropTime, float minAttackDistance, float maxAttackDistance,
-                         float odds)
+  SIngBodyProjectileData(const CDamageInfo& contactDamage, float suckDamagePerSecond,
+                         float suckTime, CAssetId splatEffect, ushort sound, ushort splatWallSound,
+                         float speed, float dropTime, float minAttackDistance,
+                         float maxAttackDistance, float odds)
   : contactDamage(contactDamage)
-  , unknown_0xa0d63374(unknown_0xa0d63374)
+  , suckDamagePerSecond(suckDamagePerSecond)
   , splatEffect(splatEffect)
   , sound(sound)
   , splatWallSound(splatWallSound)
@@ -48,7 +48,7 @@ struct SIngBodyProjectileData {
   , odds(odds) {}
 
   CDamageInfo contactDamage;
-  float unknown_0xa0d63374;
+  float suckDamagePerSecond;
   CAssetId splatEffect;
   ushort sound;
   ushort splatWallSound;
@@ -63,10 +63,10 @@ CHECK_SIZEOF(SIngBodyProjectileData, 0x40)
 
 // Guessed struct: the Ing's grapple of the morph ball.
 struct SIngGrappleData {
-  SIngGrappleData(float unknown_0x67f6c10e, const CDamageInfo& exitDamage, float spitForce,
+  SIngGrappleData(float holdDamagePerSecond, const CDamageInfo& exitDamage, float spitForce,
                   ushort exitSound, ushort grappleSound, float maxHoldTime, float postWaitTime,
                   float pursuitRange, const CDamageVulnerability& vulnerability)
-  : unknown_0x67f6c10e(unknown_0x67f6c10e)
+  : holdDamagePerSecond(holdDamagePerSecond)
   , exitDamage(exitDamage)
   , spitForce(spitForce)
   , exitSound(exitSound)
@@ -76,7 +76,7 @@ struct SIngGrappleData {
   , pursuitRange(pursuitRange)
   , vulnerability(vulnerability) {}
 
-  float unknown_0x67f6c10e;
+  float holdDamagePerSecond;
   CDamageInfo exitDamage;
   float spitForce;
   ushort exitSound;
@@ -110,44 +110,44 @@ CHECK_SIZEOF(SIngMiniPortalData, 0x74)
 
 // Guessed struct: the effects and sounds of the Ing swarm that moves between hosts.
 struct SIngSwarmData {
-  SIngSwarmData(CAssetId swarmEffect, CAssetId unknown_0xd576f379, CAssetId unknown_0x3da219c7,
-                float unknown_0x23271976, CAssetId unknown_0x081e9e6c, float unknown_0xcb39eccb,
-                float unknown_0x587ca175, float unknown_0x0bd7d5a9, ushort swarmMoveSound,
-                ushort exitHostSound, ushort exitHostSafeZoneSound, ushort insideHostSound,
-                ushort sound)
-  : swarmEffect(swarmEffect)
-  , unknown_0xd576f379(unknown_0xd576f379)
-  , unknown_0x3da219c7(unknown_0x3da219c7)
-  , unknown_0x23271976(unknown_0x23271976)
-  , unknown_0x081e9e6c(unknown_0x081e9e6c)
-  , unknown_0xcb39eccb(unknown_0xcb39eccb)
-  , unknown_0x587ca175(unknown_0x587ca175)
-  , unknown_0x0bd7d5a9(unknown_0x0bd7d5a9)
+  SIngSwarmData(CAssetId possessionHudEffect, CAssetId exitHostSwarmEffect,
+                CAssetId exitHostTrailEffect, float exitHostTrailLength,
+                CAssetId exitHostSmokeEffect, float exitHostSpeed, float exitHostHomingTime,
+                float exitHostHomingStrength, ushort swarmMoveSound, ushort exitHostSound,
+                ushort exitHostSafeZoneSound, ushort insideHostSound, ushort exitHostSmokeSound)
+  : possessionHudEffect(possessionHudEffect)
+  , exitHostSwarmEffect(exitHostSwarmEffect)
+  , exitHostTrailEffect(exitHostTrailEffect)
+  , exitHostTrailLength(exitHostTrailLength)
+  , exitHostSmokeEffect(exitHostSmokeEffect)
+  , exitHostSpeed(exitHostSpeed)
+  , exitHostHomingTime(exitHostHomingTime)
+  , exitHostHomingStrength(exitHostHomingStrength)
   , swarmMoveSound(swarmMoveSound)
   , exitHostSound(exitHostSound)
   , exitHostSafeZoneSound(exitHostSafeZoneSound)
   , insideHostSound(insideHostSound)
-  , sound(sound) {}
+  , exitHostSmokeSound(exitHostSmokeSound) {}
 
-  CAssetId swarmEffect;
-  CAssetId unknown_0xd576f379;
-  CAssetId unknown_0x3da219c7;
-  float unknown_0x23271976;
-  CAssetId unknown_0x081e9e6c;
-  float unknown_0xcb39eccb;
-  float unknown_0x587ca175;
-  float unknown_0x0bd7d5a9;
+  CAssetId possessionHudEffect;
+  CAssetId exitHostSwarmEffect;
+  CAssetId exitHostTrailEffect;
+  float exitHostTrailLength;
+  CAssetId exitHostSmokeEffect;
+  float exitHostSpeed;
+  float exitHostHomingTime;
+  float exitHostHomingStrength;
   ushort swarmMoveSound;
   ushort exitHostSound;
   ushort exitHostSafeZoneSound;
   ushort insideHostSound;
-  ushort sound;
+  ushort exitHostSmokeSound;
 };
 CHECK_SIZEOF(SIngSwarmData, 0x2c)
 
 // Guessed struct: the tuned values of an Ing, assembled by the script loader.
 struct SIngData {
-  SIngData(uint flags, float hearingRadius, float unknown_0x5d0d2c40, float unknown_0xc620183a,
+  SIngData(uint flags, float hearingRadius, float coverLeashDistance, float formChangeInterval,
            float frustrationTime, float tauntChance, float aggressiveness, const CColor& lightColor,
            float lightAttenuation, const CDamageInfo& armSwipeDamage,
            const CDamageVulnerability& triggerVulnerability,
@@ -155,8 +155,8 @@ struct SIngData {
            const SIngGrappleData& grapple, const SIngMiniPortalData& miniPortal,
            const SIngSwarmData& swarm)
   : hearingRadius(hearingRadius)
-  , unknown_0x5d0d2c40(unknown_0x5d0d2c40)
-  , unknown_0xc620183a(unknown_0xc620183a)
+  , coverLeashDistance(coverLeashDistance)
+  , formChangeInterval(formChangeInterval)
   , frustrationTime(frustrationTime)
   , tauntChance(tauntChance)
   , aggressiveness(aggressiveness)
@@ -169,18 +169,18 @@ struct SIngData {
   , grapple(grapple)
   , miniPortal(miniPortal)
   , swarm(swarm)
-  , flag0((flags & 0x01) != 0)
-  , flag1((flags & 0x02) != 0)
-  , flag2((flags & 0x04) != 0)
-  , flag3((flags & 0x08) != 0)
-  , flag4((flags & 0x10) != 0)
-  , flag5((flags & 0x20) != 0)
-  , flag6((flags & 0x40) != 0)
-  , flag7((flags & 0x80) != 0) {}
+  , startsAsIngSpot((flags & 0x01) != 0)
+  , disableArmSwipe((flags & 0x02) != 0)
+  , disableBodyProjectile((flags & 0x04) != 0)
+  , disableMiniPortal((flags & 0x08) != 0)
+  , disableGrapple((flags & 0x10) != 0)
+  , disableFormChange((flags & 0x20) != 0)
+  , disablePathMovement((flags & 0x40) != 0)
+  , alwaysTargetable((flags & 0x80) != 0) {}
 
   float hearingRadius;
-  float unknown_0x5d0d2c40;
-  float unknown_0xc620183a;
+  float coverLeashDistance;
+  float formChangeInterval;
   float frustrationTime;
   float tauntChance;
   float aggressiveness;
@@ -193,14 +193,14 @@ struct SIngData {
   SIngGrappleData grapple;
   SIngMiniPortalData miniPortal;
   SIngSwarmData swarm;
-  bool flag0 : 1; // Guessed names
-  bool flag1 : 1;
-  bool flag2 : 1;
-  bool flag3 : 1;
-  bool flag4 : 1;
-  bool flag5 : 1;
-  bool flag6 : 1;
-  bool flag7 : 1;
+  bool startsAsIngSpot : 1; // Guessed names
+  bool disableArmSwipe : 1;
+  bool disableBodyProjectile : 1;
+  bool disableMiniPortal : 1;
+  bool disableGrapple : 1;
+  bool disableFormChange : 1;
+  bool disablePathMovement : 1;
+  bool alwaysTargetable : 1;
 };
 CHECK_SIZEOF(SIngData, 0x214)
 
@@ -209,16 +209,16 @@ CHECK_SIZEOF(SIngData, 0x214)
 class CIng : public CPatterned {
 public:
   enum EForm {
-    kF_Unknown0 = 0,
-    kF_Unknown1 = 1,
+    kF_PossessingHost = 0,
+    kF_ExitingHost = 1,
     kF_Corporeal = 2,      // Guessed name
     kF_IngSpot = 3,        // Guessed name
     kF_BodyProjectile = 4, // Guessed name
-    kF_Unknown5 = 5,
-    kF_Unknown6 = 6,
-    kF_Unknown7 = 7,
-    kF_Unknown8 = 8,
-    kF_Unknown9 = 9,
+    kF_Evaporating = 5,
+    kF_BecomingCorporeal = 6,
+    kF_BecomingIngSpot = 7,
+    kF_BecomingBodyProjectile = 8,
+    kF_BecomingWallProjectile = 9,
     kF_Invalid = -1, // Guessed name
   };
 
@@ -399,90 +399,90 @@ private:
   void AssignCoverHint(CScriptAIHint& hint);                         // Guessed name
   void ReleaseCoverHint(CStateManager& mgr);                         // Guessed name
 
-  SIngData mData;                                                      // Guessed name
-  EForm mForm;                                                         // Guessed name
-  EForm mNextForm;                                                     // Guessed name
-  CPathFindSearch mPathFindSearch;                                     // Guessed name
-  CPathFindPointSearch mPointSearch;                                   // Guessed name
-  rstl::single_ptr< CCollisionActorManager > mCollisionActorManager;   // Guessed name
-  CSurfaceAlignmentHelper mSurfaceAlignment;                           // Guessed name
-  CIngSpotPathFindNavigation mPointNavigation;                         // Guessed name
-  rstl::optional_object< CAABox > mTouchBounds;                        // Guessed name
-  TUniqueId mHostId;                                                   // Guessed name
-  TUniqueId mUniqueIdCde;                                              // Guessed name
-  rstl::optional_object< TLockedToken< CGenDescription > > mEffectCe0; // Guessed name
-  rstl::optional_object< TLockedToken< CGenDescription > > mEffectCf0; // Guessed name
-  CSfxHandle mSfxD00;                                                  // Guessed name
-  CSfxHandle mSfxD04;                                                  // Guessed name
-  rstl::optional_object< TLockedToken< CGenDescription > > mEffectD08; // Guessed name
-  rstl::optional_object< TLockedToken< CGenDescription > > mEffectD18; // Guessed name
-  rstl::optional_object< TLockedToken< CGenDescription > > mEffectD28; // Guessed name
-  rstl::optional_object< TLockedToken< CGenDescription > > mEffectD38; // Guessed name
-  rstl::optional_object< TLockedToken< CGenDescription > > mEffectD48; // Guessed name
-  CSfxHandle mSfxD58;                                                  // Guessed name
-  TUniqueId mBlobEffectId;                                             // Guessed name
-  CSfxHandle mSfxIngSpotIdle;                                          // Guessed name
-  CSfxHandle mSfxIngSpotMove;                                          // Guessed name
-  TUniqueId mLightId;                                                  // Guessed name
-  TUniqueId mTeamManagerId;                                            // Guessed name
-  TUniqueId mTargetId;                                                 // Guessed name
-  TUniqueId mLastTargetId;                                             // Guessed name
-  TUniqueId mUniqueIdD70;                                              // Guessed name
-  TUniqueId mCoverHintId;                                              // Guessed name
-  TUniqueId mUniqueIdD74;                                              // Guessed name
-  TUniqueId mUniqueIdD76;                                              // Guessed name
-  TUniqueId mSafeZoneId;                                               // Guessed name
-  CSegId mCollarSegment;                                               // Guessed name
-  CSegId mHeadSegment;                                                 // Guessed name
-  CSegId mRightShoulderSegment;                                        // Guessed name
-  CSegId mRightElbowSegment;                                           // Guessed name
-  CSegId mRightForearmSegment;                                         // Guessed name
-  CSegId mRightWristSegment;                                           // Guessed name
-  CSegId mLeftShoulderSegment;                                         // Guessed name
-  CSegId mLeftElbowSegment;                                            // Guessed name
-  CSegId mLeftForearmSegment;                                          // Guessed name
-  CSegId mLeftWristSegment;                                            // Guessed name
-  CLineOfSightTracker mLineOfSight;                                    // Guessed name
-  CVector3f mVectorDc8;                                                // Guessed name
-  CVector3f mVectorDd4;                                                // Guessed name
-  CVector3f mVectorDe0;                                                // Guessed name
-  int mSwipeIndex;                                                     // Guessed name
-  CPlane mPortalPlane;                                                 // Guessed name
-  int mMiniPortalCount;                                                // Guessed name
-  CVector3f mMiniPortalPositions[3];                                   // Guessed name
-  int mIntE28;                                                         // Guessed name
-  int mIntE2c;                                                         // Guessed name
-  float mHeardShotTimer;                                               // Guessed name
-  float mUnderFireTimer;                                               // Guessed name
-  float mFloatE38;                                                     // Guessed name
-  float mFormChangeTimer;                                              // Guessed name
-  float mFloatE40;                                                     // Guessed name
-  float mFrustrationTimer;                                             // Guessed name
-  float mFloatE48;                                                     // Guessed name
-  float mFloatE4c;                                                     // Guessed name
-  float mLightIntensity;                                               // Guessed name
-  float mFloatE54;                                                     // Guessed name
-  float mFloatE58;                                                     // Guessed name
-  bool mShouldEvaporate : 1;                                           // Guessed name
+  SIngData mData;                                                                   // Guessed name
+  EForm mForm;                                                                      // Guessed name
+  EForm mNextForm;                                                                  // Guessed name
+  CPathFindSearch mPathFindSearch;                                                  // Guessed name
+  CPathFindPointSearch mPointSearch;                                                // Guessed name
+  rstl::single_ptr< CCollisionActorManager > mCollisionActorManager;                // Guessed name
+  CSurfaceAlignmentHelper mSurfaceAlignment;                                        // Guessed name
+  CIngSpotPathFindNavigation mPointNavigation;                                      // Guessed name
+  rstl::optional_object< CAABox > mTouchBounds;                                     // Guessed name
+  TUniqueId mHostId;                                                                // Guessed name
+  TUniqueId mPossessionEffectId;                                                    // Guessed name
+  rstl::optional_object< TLockedToken< CGenDescription > > mPossessionHudEffect;    // Guessed name
+  rstl::optional_object< TLockedToken< CGenDescription > > mExitHostSmokeEffect;    // Guessed name
+  CSfxHandle mSfxHostInside;                                                        // Guessed name
+  CSfxHandle mSfxGrapple;                                                           // Guessed name
+  rstl::optional_object< TLockedToken< CGenDescription > > mIngSpotNormalHitEffect; // Guessed name
+  rstl::optional_object< TLockedToken< CGenDescription > > mIngSpotHeavyHitEffect;  // Guessed name
+  rstl::optional_object< TLockedToken< CGenDescription > > mIngSpotDeathEffect;     // Guessed name
+  rstl::optional_object< TLockedToken< CGenDescription > > mMiniPortalEffect;       // Guessed name
+  rstl::optional_object< TLockedToken< CGenDescription > > mSplatEffect;            // Guessed name
+  CSfxHandle mSfxBodyProjectile;                                                    // Guessed name
+  TUniqueId mBlobEffectId;                                                          // Guessed name
+  CSfxHandle mSfxIngSpotIdle;                                                       // Guessed name
+  CSfxHandle mSfxIngSpotMove;                                                       // Guessed name
+  TUniqueId mLightId;                                                               // Guessed name
+  TUniqueId mTeamManagerId;                                                         // Guessed name
+  TUniqueId mTargetId;                                                              // Guessed name
+  TUniqueId mLastTargetId;                                                          // Guessed name
+  TUniqueId mPatrolWaypointId;                                                      // Guessed name
+  TUniqueId mCoverHintId;                                                           // Guessed name
+  TUniqueId mLastCoverHintId;                                                       // Guessed name
+  TUniqueId mExitHostEffectId;                                                      // Guessed name
+  TUniqueId mSafeZoneId;                                                            // Guessed name
+  CSegId mCollarSegment;                                                            // Guessed name
+  CSegId mHeadSegment;                                                              // Guessed name
+  CSegId mRightShoulderSegment;                                                     // Guessed name
+  CSegId mRightElbowSegment;                                                        // Guessed name
+  CSegId mRightForearmSegment;                                                      // Guessed name
+  CSegId mRightWristSegment;                                                        // Guessed name
+  CSegId mLeftShoulderSegment;                                                      // Guessed name
+  CSegId mLeftElbowSegment;                                                         // Guessed name
+  CSegId mLeftForearmSegment;                                                       // Guessed name
+  CSegId mLeftWristSegment;                                                         // Guessed name
+  CLineOfSightTracker mLineOfSight;                                                 // Guessed name
+  CVector3f mDestination;                                                           // Guessed name
+  CVector3f mSplatNormal;                                                           // Guessed name
+  CVector3f mMoveHeading;                                                           // Guessed name
+  int mSwipeIndex;                                                                  // Guessed name
+  CPlane mPortalPlane;                                                              // Guessed name
+  int mMiniPortalCount;                                                             // Guessed name
+  CVector3f mMiniPortalPositions[3];                                                // Guessed name
+  int mMiniPortalIndex;                                                             // Guessed name
+  int mSafeZoneCount;                                                               // Guessed name
+  float mHeardShotTimer;                                                            // Guessed name
+  float mUnderFireTimer;                                                            // Guessed name
+  float mTimeSinceArmSwipe;                                                         // Guessed name
+  float mFormChangeTimer;                                                           // Guessed name
+  float mLocomotionTime;                                                            // Guessed name
+  float mFrustrationTimer;                                                          // Guessed name
+  float mGrappleCooldown;                                                           // Guessed name
+  float mGrappleHold;                                                               // Guessed name
+  float mLightIntensity;                                                            // Guessed name
+  float mDeathDelayTimer;                                                           // Guessed name
+  float mProjectileFlightTime;                                                      // Guessed name
+  bool mShouldEvaporate : 1;                                                        // Guessed name
   bool mShouldTaunt : 1;
-  bool mFlagE5c2 : 1;
+  bool mCanBodyProjectile : 1;
   bool mAggressive : 1;
   bool mFoundMovementPos : 1;
-  bool mFlagE5c5 : 1;
-  bool mFlagE5c6 : 1;
-  bool mFlagE5c7 : 1;
-  bool mFlagE5d0 : 1;
-  bool mFlagE5d1 : 1;
-  bool mFlagE5d2 : 1;
-  bool mFlagE5d3 : 1;
-  bool mFlagE5d4 : 1;
+  bool mPathObstructed : 1;
+  bool mSwipeDamagePending : 1;
+  bool mTakeOffReceived : 1;
+  bool mDrawModel : 1;
+  bool mUsePortalPlane : 1;
+  bool mBlobEffectActive : 1;
+  bool mWallProjectileVisible : 1;
+  bool mFollowingWaypoint : 1;
   bool mAlert : 1;
-  bool mFlagE5d6 : 1;
-  bool mFlagE5d7 : 1;
+  bool mMovingOnSurface : 1;
+  bool mGrappling : 1;
   bool mUseProjectileFSMEntry : 1;
   bool mProjectileSplat : 1;
-  bool mFlagE5e2 : 1;
-  bool mFlagE5e3 : 1;
+  bool mIngSpotHurt : 1;
+  bool mInHurtfulSafeZone : 1;
 };
 CHECK_SIZEOF(CIng, 0xe60)
 
