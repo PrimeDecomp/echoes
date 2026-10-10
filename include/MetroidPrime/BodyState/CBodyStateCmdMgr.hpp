@@ -553,6 +553,16 @@ public:
     mHurled = cmd;
   }
 
+  void DeliverCmd(const CBCCoverCmd& cmd) {
+    DeliverCmd(cmd.GetCommandId());
+    mCover = cmd;
+  }
+
+  void DeliverCmd(const CBCWallHangCmd& cmd) {
+    DeliverCmd(cmd.GetCommandId());
+    mWallHang = cmd;
+  }
+
   void DeliverCmd(const CBCSlideCmd& cmd) {
     DeliverCmd(cmd.GetCommandId());
     mSlide = cmd;

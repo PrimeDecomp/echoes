@@ -1927,6 +1927,13 @@ config.libs = [
         extra_cflags=["-pool off"],
     ),
     Rel(
+        "Ing",
+        [
+            Object(NonMatching, "MetroidPrime/Enemies/CIng.cpp"),
+        ],
+        extra_cflags=["-pool off"],
+    ),
+    Rel(
         "MinorIng",
         [
             Object(NonMatching, "MetroidPrime/Enemies/CMinorIng.cpp"),
@@ -1961,6 +1968,16 @@ config.libs = [
         "ScriptCoin",
         [
             Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptCoin.cpp"),
+        ],
+        extra_cflags=["-pool off"],
+    ),
+    Rel(
+        "SpacePirate",
+        [
+            Object(
+                NonMatching,
+                "MetroidPrime/Enemies/CSpacePirate.cpp",
+            ),
         ],
         extra_cflags=["-pool off"],
     ),

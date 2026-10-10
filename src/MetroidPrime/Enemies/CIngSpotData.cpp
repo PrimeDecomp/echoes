@@ -2,7 +2,7 @@
 
 CIngSpotData::CIngSpotData(CAssetId blobEffect, CAssetId normalHitEffect, CAssetId heavyHitEffect,
                            CAssetId deathEffect, float maxSpeed, float maxWallSpeed,
-                           float ballPursuitSpeed, float unknown1c, float turnSpeed,
+                           float ballPursuitSpeed, float hurtSpeed, float turnSpeed,
                            const CDamageVulnerability& vulnerability, ushort idleSound,
                            ushort moveSound, ushort normalHitSound, ushort heavyHitSound,
                            ushort deathSound)
@@ -13,7 +13,7 @@ CIngSpotData::CIngSpotData(CAssetId blobEffect, CAssetId normalHitEffect, CAsset
 , mMaxSpeed(maxSpeed)
 , mMaxWallSpeed(maxWallSpeed)
 , mBallPursuitSpeed(ballPursuitSpeed)
-, x1c_(unknown1c)
+, mHurtSpeed(hurtSpeed)
 , mTurnSpeed(turnSpeed)
 , mVulnerability(vulnerability)
 , mIdleSound(idleSound)

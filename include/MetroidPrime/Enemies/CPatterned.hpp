@@ -45,6 +45,7 @@ enum EPatternedAI {
   kPAI_EyeBall = 0x10,                 // Guessed name; EyeBall REL constructor.
   kPAI_FlyingPirate = 0x15,            // Guessed name; FlyingPirate REL constructor.
   kPAI_Grenchler = 0x16,               // Guessed name; Grenchler REL constructor.
+  kPAI_Ing = 0x18,                     // Guessed name; Ing REL constructor.
   kPAI_IngSpaceJumpGuardian = 0x1a,    // Guessed name; IngSpaceJumpGuardian REL constructor.
   kPAI_IngSpiderballGuardian = 0x1b,   // Guessed name; IngSpiderballGuardian REL constructor.
   kPAI_Lumite = 0x1d, // Guessed name; Lumite REL constructor.
@@ -58,6 +59,7 @@ enum EPatternedAI {
   kPAI_Puffer = 0x2d,                  // Guessed name; Puffer REL constructor.
   kPAI_Rezbit = 0x2e,                  // Guessed name; Rezbit REL constructor.
   kPAI_Ripper = 0x30,                  // Guessed name; Ripper REL constructor.
+  kPAI_SpacePirate = 0x35,             // Guessed name; SpacePirate REL constructor.
   kPAI_SpankWeed = 0x36,               // Guessed name; SpankWeed REL constructor.
   kPAI_Splinter = 0x37,                // Guessed name; Splinter REL constructor.
   kPAI_SplitterMainChassis = 0x38, // Guessed name; SplitterMainChassis REL constructor.
@@ -222,6 +224,8 @@ public:
   CTransform4f GetLctrTransform(const CSegId& id) const;
   bool IsBeingSnatched() const;
   bool IsIngPossessed() const;
+  bool GetFadeToDeath() const { return mFadeToDeath; }    // Guessed Prime name.
+  void SetFadeToDeath(bool fade) { mFadeToDeath = fade; } // Guessed Prime name.
 
   int GetIngPossessionAnimation() const { return mIngPossessionData.unknown_0x2befc1bf; }
 
@@ -318,10 +322,10 @@ public:
   const CAiKnockBackMgr& GetKnockBackController() const { return mKnockBackController; }
 
 protected:
-  TUniqueId mDestObj;
+  mutable TUniqueId mDestObj;
   CVector3f mDestPos;
-  CVector3f mReflectedDestPos;
-  bool mInPosition : 1;
+  mutable CVector3f mReflectedDestPos;
+  mutable bool mInPosition : 1;
   bool mVerticalMovement : 1;
   bool mSolidCollision : 1;
   bool mBlockingCollision : 1; // Guessed name
@@ -367,7 +371,7 @@ protected:
   float mPendingShockDamage;
   float mBurnThinkRateTimer;
   EFlavorType mFlavor;
-  uint mHitByPlayerProjectile : 1;
+  mutable uint mHitByPlayerProjectile : 1;
   uint mAlive : 1;
   uint x420_26_ : 1;
   uint mFadeToDeath : 1;

@@ -133,16 +133,7 @@ public:
   void remove(const T& val);
 
   template < typename Pred >
-  void remove_if(Pred pred) {
-    node* it = mStart;
-    while (it != mEnd) {
-      if (pred(*it->get_value())) {
-        it = do_erase(it);
-      } else {
-        it = it->get_next();
-      }
-    }
-  }
+  void remove_if(Pred pred);
 
   template < typename Cmp >
   void sort(Cmp cmp) {
@@ -257,6 +248,19 @@ template < typename T, typename Alloc >
 void list< T, Alloc >::remove(const T& val) {
   rstl::equal_to< T > equal;
   remove_if(rstl::bind1st(equal, val));
+}
+
+template < typename T, typename Alloc >
+template < typename Pred >
+void list< T, Alloc >::remove_if(Pred pred) {
+  node* it = mStart;
+  while (it != mEnd) {
+    if (pred(*it->get_value())) {
+      it = do_erase(it);
+    } else {
+      it = it->get_next();
+    }
+  }
 }
 
 template < typename T, typename Alloc >

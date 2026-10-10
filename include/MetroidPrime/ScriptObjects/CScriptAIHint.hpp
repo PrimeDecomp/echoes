@@ -10,6 +10,8 @@ public:
     kHT_Unknown0 = 0,
     kHT_Hop = 1,         // Guessed name
     kHT_SunlightHop = 2, // Guessed name
+    kHT_Cover = 3,     // Guessed name
+    kHT_WallCover = 4, // Guessed name
     kHT_Unknown12 = 12,
     kHT_Unknown13 = 13,
     kHT_BloggHint = 16,   // Guessed name
