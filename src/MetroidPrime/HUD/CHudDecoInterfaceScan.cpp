@@ -13,6 +13,7 @@
 #include "Kyoto/CResFactory.hpp"
 #include "Kyoto/CSimplePool.hpp"
 #include "Kyoto/Streams/CInputStream.hpp"
+#include "Kyoto/Streams/CMemoryInStream.hpp"
 #include "Kyoto/Text/CStringTable.hpp"
 #include "MetroidPrime/CActor.hpp"
 #include "MetroidPrime/CStateManager.hpp"
@@ -338,8 +339,8 @@ const CScannableObjectInfo* CHudDecoInterfaceScan::GetCurrScanInfo(const CStateM
 }
 
 float CHudDecoInterfaceScan::GetMessageTextAlpha() const {
-  const float alpha = mScanningTextAlpha < 1.f ? mScanningTextAlpha : 1.f;
-  return 1.f - rstl::max_val(mScanDisplay->GetBodyAlpha(), alpha);
+  const float scanningAlpha = rstl::min_val(1.f, mScanningTextAlpha);
+  return 1.f - rstl::max_val(scanningAlpha, mScanDisplay->GetBodyAlpha());
 }
 
 void CHudDecoInterfaceScan::StartHierarchyLoad() {
@@ -355,16 +356,15 @@ void CHudDecoInterfaceScan::StartHierarchyLoad() {
 }
 
 bool CHudDecoInterfaceScan::CheckHierarchyLoadComplete() {
-  if (mHierarchyRequest.null()) {
-    return true;
+  if (!mHierarchyRequest.null()) {
+    if (!mHierarchyRequest->IsComplete()) {
+      return false;
+    }
+    CMemoryInStream in(mHierarchyBuffer.get(), mHierarchyBufferLength);
+    ReadHierarchy(in);
+    mHierarchyBuffer = rstl::auto_ptr< uchar >();
+    mHierarchyRequest = rstl::auto_ptr< CDvdRequest >();
   }
-  if (!mHierarchyRequest->IsComplete()) {
-    return false;
-  }
-  CInputStream in(mHierarchyBuffer.get(), mHierarchyBufferLength);
-  ReadHierarchy(in);
-  mHierarchyBuffer = rstl::auto_ptr< uchar >();
-  mHierarchyRequest = rstl::auto_ptr< CDvdRequest >();
   return true;
 }
 

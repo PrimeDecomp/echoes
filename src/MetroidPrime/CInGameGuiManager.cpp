@@ -194,10 +194,10 @@ void CInGameGuiManager::PreDraw(CStateManager& mgr, bool cameraActive) {
 }
 
 void CInGameGuiManager::DrawDarkVisorMask(const CStateManager& mgr) const {
-  if (mDarkMaskFrame.get() != nullptr) {
+  if (mDarkOuterMask != nullptr) {
     CGraphics::SetDepthRange(1.f / 512.f, 1.f / 256.f);
-    mSamusHud->GetLoadedHudFrame()->GetRootWidget()->Draw(CGuiWidgetDrawParms::Default());
-    mDarkMaskFrame->GetRootWidget()->Draw(CGuiWidgetDrawParms::Default());
+    mSamusHud->GetLoadedHudFrame()->GetFrameCamera()->Draw(CGuiWidgetDrawParms::Default());
+    mDarkOuterMask->Draw(CGuiWidgetDrawParms::Default());
   }
 }
 
@@ -700,12 +700,8 @@ bool CInGameGuiManager::IsInPausedState() const {
   if (!mQuitScreen.null()) {
     return true;
   }
-  bool gameplay = false;
-  if (InGameGuiStates::IsGameplayState(mPrevState) &&
-      InGameGuiStates::IsGameplayState(mNextState)) {
-    gameplay = true;
-  }
-  return !gameplay;
+  return !(InGameGuiStates::IsGameplayState(mPrevState) &&
+           InGameGuiStates::IsGameplayState(mNextState));
 }
 
 void CInGameGuiManager::EnsureStates(const CStateManager& mgr) {
@@ -832,7 +828,7 @@ void CInGameGuiManager::DestroyAreaTextures(const CStateManager& mgr) {
   CModel::DisableTextureTimeout();
 }
 
-bool CInGameGuiManager::TryReloadAreaTextures() {
+uchar CInGameGuiManager::TryReloadAreaTextures() {
   bool complete = true;
   rstl::list< TDumpedTexture >::iterator it = mDumpedTextures.begin();
   while (it != mDumpedTextures.end()) {
