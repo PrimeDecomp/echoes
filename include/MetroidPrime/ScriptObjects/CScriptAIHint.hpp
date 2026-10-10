@@ -16,9 +16,12 @@ public:
     kHT_SplinterPad = 18, // Guessed name
     kHT_ShadowDashPoint = 19, // Guessed name; DarkCommando shadow dash destinations.
     kHT_Maneuver = 20, // Guessed name
+    kHT_ElitePirateShockwave = 22, // Guessed name; ElitePirate follows with a shockwave.
     kHT_GrenadeLauncherRaisedAim = 23,
     kHT_SplinterAttackBlock = 24, // Guessed name
     kHT_SplinterHide = 25,        // Guessed name
+    kHT_ElitePirateStopPursuit = 26, // Guessed name; ElitePirate stops pursuing inside the radius.
+    kHT_ElitePirateNoAttack = 27, // Guessed name; ElitePirate does not attack while the player is inside.
   };
 
   CScriptAIHint(TUniqueId uid, const rstl::string& name, const CEntityInfo& info,
