@@ -120,9 +120,9 @@ struct SMeleeVariant {
 };
 
 static const SMeleeVariant skMeleeVariants[] = {
-    {pas::kS_Zero, 1.5707964f, 30.f},
-    {pas::kS_One, 1.0471976f, 30.f},
-    {pas::kS_Three, 0.5235988f, 40.f},
+    {pas::kS_Zero, M_PIF / 2.f, 30.f},
+    {pas::kS_One, M_PIF / 3.f, 30.f},
+    {pas::kS_Three, M_PIF / 6.f, 40.f},
 };
 
 static const float skRagDollParticleRadii[] = {0.45f, 0.52f, 0.35f, 0.1f,  0.15f, 0.35f, 0.1f,
@@ -356,7 +356,8 @@ CDarkCommando::CDarkCommando(TUniqueId uid, const rstl::string& name, const CEnt
 , mAttackState(-1)
 , mRagDoll(nullptr)
 , mRagDollTimer(0.f)
-, mBoneTracking(*AnimationData(), rstl::string_l("Head_1"), 1.2217305f, 3.1415927f, kBTF_None)
+, mBoneTracking(*AnimationData(), rstl::string_l("Head_1"), 70.f * (M_PIF / 180.f), M_PIF,
+                kBTF_None)
 , mChargeBeamInfo(data.chargeBeamAttackInfo.projectile,
                   LdrToDamageInfo(data.chargeBeamAttackInfo.damage))
 , mShadowDashVulnerability(LdrToDamageVulnerability(data.shadowDashInfo.shadowDashVulnerability))
@@ -511,7 +512,7 @@ void CDarkCommando::DoUserAnimEvent(CStateManager& mgr, const CInt32POINode& nod
 void CDarkCommando::Render(const CStateManager& mgr) const {
   const float alpha = mColor.GetAlpha();
   if (mAlive && mCloakFading) {
-    const float warp = CMath::FastSinR(3.1415927f * alpha);
+    const float warp = CMath::FastSinR(M_PIF * alpha);
     if (warp > 0.f) {
       mgr.DrawSpaceWarp(GetBoundingBox().GetCenterPoint(), warp);
     }
@@ -811,7 +812,7 @@ void CDarkCommando::FireEMP(CStateManager& mgr, EStateMsg msg, float) {
         return;
       }
       const CVector3f toTarget = target->GetTranslation() - GetTranslation();
-      if (CVector3f::GetAngleDiff(GetTransform().GetColumn(kDY), toTarget) >= 0.5235988f &&
+      if (CVector3f::GetAngleDiff(GetTransform().GetColumn(kDY), toTarget) >= (M_PIF / 6.f) &&
           toTarget.IsMagnitudeSafe()) {
         mBodyController->CommandMgr().DeliverCmd(
             CBCLocomotionCmd(CVector3f::Zero(), toTarget.AsNormalized(), 1.f));
@@ -861,7 +862,7 @@ void CDarkCommando::PostFireChargeBeam(CStateManager& mgr, EStateMsg msg, float)
       const CActor* target = static_cast< const CActor* >(mgr.GetObjectById(mTargetId));
       if (target) {
         const CVector3f toTarget = target->GetTranslation() - GetTranslation();
-        if (CVector3f::GetAngleDiff(GetTransform().GetColumn(kDY), toTarget) >= 0.5235988f &&
+        if (CVector3f::GetAngleDiff(GetTransform().GetColumn(kDY), toTarget) >= (M_PIF / 6.f) &&
             toTarget.IsMagnitudeSafe()) {
           mBodyController->CommandMgr().DeliverCmd(
               CBCLocomotionCmd(CVector3f::Zero(), toTarget.AsNormalized(), 1.f));
@@ -926,7 +927,8 @@ void CDarkCommando::ShadowDash(CStateManager& mgr, EStateMsg msg, float dt) {
 void CDarkCommando::FaceTarget(CStateManager&, EStateMsg msg, float) {
   if (msg == kStateMsg_Activate) {
     mAnimationState.SetState(CAnimationState::kAS_Ready);
-    if (CVector3f::GetAngleDiff(GetTransform().GetColumn(kDY), mFaceVector) <= 0.17453292f) {
+    if (CVector3f::GetAngleDiff(GetTransform().GetColumn(kDY), mFaceVector) <=
+        10.f * (M_PIF / 180.f)) {
       mAnimationState.SetState(CAnimationState::kAS_Over);
     }
   } else if (msg == kStateMsg_Update) {
@@ -1309,9 +1311,9 @@ void CDarkCommando::FireChargeBeamShot(CStateManager& mgr, float dt) {
   CVector3f dir = aim - gunPos;
   const CTransform4f wristXf = GetLctrTransform(mWristSegId);
   const CVector3f wristDir = gunPos - wristXf.GetTranslation();
-  if (CVector3f::GetAngleDiff(dir, wristDir) > 0.5235988f) {
+  if (CVector3f::GetAngleDiff(dir, wristDir) > (M_PIF / 6.f)) {
     dir = CVector3f::Slerp(wristDir.AsNormalized(), dir.AsNormalized(),
-                           CRelAngle::FromRadians(0.5235988f));
+                           CRelAngle::FromRadians(M_PIF / 6.f));
   }
   const CTransform4f xf = CTransform4f::LookAt(gunPos, gunPos + dir, CVector3f::Up());
 
@@ -1331,7 +1333,7 @@ void CDarkCommando::LaunchGrenade(CStateManager& mgr) {
   if (const CActor* target = static_cast< const CActor* >(mgr.GetObjectById(mTargetId))) {
     const CTransform4f launchXf = GetLctrTransform(mGrenadeSegId);
     const CVector3f origin = launchXf.GetTranslation();
-    float angle = 0.34906584f;
+    float angle = 20.f * (M_PIF / 180.f);
     float speed = mData.eMPGrenadeAttackInfo.grenadeMinLaunchSpeed;
     const CVector3f aim = GetGrenadeTargetPosition(mgr, *target);
     SolveGrenadeLaunch(aim, origin, angle, speed);
@@ -1340,8 +1342,8 @@ void CDarkCommando::LaunchGrenade(CStateManager& mgr) {
     flat.SetZ(0.f);
     const CVector3f forward = GetTransform().GetColumn(kDY);
     CVector3f horizontal = flat.CanBeNormalized() ? flat.AsNormalized() : forward;
-    if (CVector3f::GetAngleDiff(forward, horizontal) > 1.0471976f) {
-      horizontal = CVector3f::Slerp(forward, horizontal, CRelAngle::FromRadians(1.0471976f));
+    if (CVector3f::GetAngleDiff(forward, horizontal) > (M_PIF / 3.f)) {
+      horizontal = CVector3f::Slerp(forward, horizontal, CRelAngle::FromRadians(M_PIF / 3.f));
     }
     const CVector3f launchDir =
         CVector3f::Slerp(horizontal, CVector3f::Up(), CRelAngle::FromRadians(angle));
@@ -1385,10 +1387,10 @@ void CDarkCommando::SolveGrenadeLaunch(const CVector3f& target, const CVector3f&
   const float maxSpeedSq = mData.eMPGrenadeAttackInfo.grenadeMaxLaunchSpeed *
                            mData.eMPGrenadeAttackInfo.grenadeMaxLaunchSpeed;
 
-  float startAngle = 0.34906584f;
+  float startAngle = 20.f * (M_PIF / 180.f);
   float stepAngle = 0.043633234f;
   if (target.GetZ() > origin.GetZ()) {
-    startAngle = 0.7853982f;
+    startAngle = M_PIF / 4.f;
     stepAngle = -stepAngle;
   }
 
@@ -1462,7 +1464,7 @@ void CDarkCommando::ThinkRagDoll(float dt, CStateManager& mgr, bool noRagDoll) {
     if (mRagDoll->IsOver() && !mRagDoll->WillContinueSmallMovements() && !mFadeToDeath &&
         mCloakAlpha >= 1.f) {
       mFadeToDeath = true;
-      mAlphaDelta = -0.33333334f;
+      mAlphaDelta = -(1.f / 3.f);
       AddMaterial(kMT_ProjectilePassthrough, mgr);
       SetMomentumWR(CVector3f::Zero());
       Stop();

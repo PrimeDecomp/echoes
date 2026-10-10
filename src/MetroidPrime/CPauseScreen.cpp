@@ -1905,12 +1905,12 @@ void CPauseScreen::DrawModelView(const CTransform4f& xf, float alpha) const {
     gpRender->SetDepthReadWrite(false, false);
     static const int maskAlpha[] = {64, 128};
     static const float radii[] = {0.075f, 0.025f};
-    static const float phases[] = {2.0734513f, 103.67256f};
+    static const float phases[] = {118.8f * (M_PIF / 180.f), 103.67256f};
     for (int layer = 0; layer < 2; ++layer) {
       CGX::SetDstAlpha(true, maskAlpha[layer]);
       const float radius = radii[layer];
       for (int i = 0; i < 3; ++i) {
-        const float angle = 6.2831855f * i / 3.f + phases[layer];
+        const float angle = M_2PIF * i / 3.f + phases[layer];
         const float x = radius * CMath::FastCosR(angle);
         const float z = radius * CMath::FastSinR(angle);
         RenderModels(CTransform4f::Translate(x, 0.f, z) * xf,

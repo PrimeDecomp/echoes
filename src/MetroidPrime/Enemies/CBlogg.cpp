@@ -130,7 +130,7 @@ static EMaterialTypes skHintRayExclude2 = kMT_CollisionActor;             // Gue
 static EMaterialTypes skHintRayExclude3 = kMT_AIPassthrough;              // Guessed name
 static EMaterialTypes skHintRayExclude4 = kMT_ExcludeFromLineOfSightTest; // Guessed name
 
-static float skAttackAngleStep = 0.5235988f;                   // Guessed name
+static float skAttackAngleStep = M_PIF / 6.f;                  // Guessed name
 static CVector3f skWaterTestOffset = CVector3f(0.f, 0.f, 5.f); // Guessed name
 static EMaterialTypes skGrabBallMaterial = kMT_Player;         // Guessed name
 static EMaterialTypes skSpitBallMaterial = kMT_Player;         // Guessed name
@@ -266,11 +266,11 @@ CBlogg::CBlogg(TUniqueId uid, const rstl::string& name, CEntityInfo& info, const
 , mLastForward(xf.GetForward())
 , mTargetForward(xf.GetForward())
 , mContactDamage(patternedInfo.GetContactDamage())
-, mMinAttackAngle(0.017453292f * minAttackAngle)
-, mMaxAttackAngle(0.017453292f * maxAttackAngle)
+, mMinAttackAngle((M_PIF / 180.f) * minAttackAngle)
+, mMaxAttackAngle((M_PIF / 180.f) * maxAttackAngle)
 , mMinAttackRange(patternedInfo.GetMinAttackRange())
 , mMaxAttackRange(patternedInfo.GetMaxAttackRange())
-, mCurrentAttackAngle(0.017453292f * minAttackAngle)
+, mCurrentAttackAngle((M_PIF / 180.f) * minAttackAngle)
 , mCurrentAttackRange(patternedInfo.GetMinAttackRange())
 , mAttackPosition(CVector3f::Zero())
 , mHintId(kInvalidUniqueId)
@@ -293,7 +293,7 @@ CBlogg::CBlogg(TUniqueId uid, const rstl::string& name, CEntityInfo& info, const
 , mArmorVulnerability(armorVulnerability)
 , mIngPossessedArmorVulnerability(ingPossessedArmorVulnerability)
 , xac4_(kInvalidUniqueId)
-, mMouthDamageAngle(0.017453292f * mouthDamageAngle)
+, mMouthDamageAngle((M_PIF / 180.f) * mouthDamageAngle)
 , mChargeDamageRadius(chargeDamageRadius)
 , mChargeDamage(chargeDamage)
 , mChargeTurnSpeed(chargeTurnSpeed)
@@ -375,7 +375,7 @@ CBlogg::CBlogg(TUniqueId uid, const rstl::string& name, CEntityInfo& info, const
   SetMaterialFilter(CMaterialFilter::MakeIncludeExclude(
       CMaterialList(kMT_Character, kMT_CollisionActor, kMT_AIPassthrough, kMT_Player, kMT_Solid),
       CMaterialList()));
-  BodyController()->BodyStateInfo().SetMaximumPitch(1.3962634f);
+  BodyController()->BodyStateInfo().SetMaximumPitch(80.f * (M_PIF / 180.f));
 
   rstl::rc_ptr< CBloggMouthVulnerability > mouthVulnerability(mMouthVulnerability);
   if (mouthVulnerability) {
@@ -476,7 +476,7 @@ bool CBlogg::IsHitInMouthDirection(const CVector3f& direction) const {
   const CTransform4f mouthTransform =
       GetTransform() * GetScaledLocatorTransform(rstl::string_l(skMouthLocatorName));
   const float dot = CVector3f::Dot(direction, mouthTransform.GetForward());
-  return dot < static_cast< float >(cos(rstl::max_val(1.5707964f, 3.1415927f - mMouthDamageAngle)));
+  return dot < static_cast< float >(cos(rstl::max_val(M_PIF / 2.f, M_PIF - mMouthDamageAngle)));
 }
 
 uchar CBlogg::HasCollisionTimeElapsed() const { return mCollisionTime >= mMaxCollisionTime; }
@@ -603,7 +603,7 @@ bool CBlogg::InValidPosition(CStateManager& mgr, const CTriggerData& data) const
 bool CBlogg::IsFacingPlayer(CStateManager& mgr, const CTriggerData& data) const {
   const CVector3f direction(GetDirectionToPlayer(mgr));
   const CVector3f forward = GetTransform().GetForward();
-  return CVector3f::GetAngleDiff(direction, forward) < 0.17453292f;
+  return CVector3f::GetAngleDiff(direction, forward) < (10.f * (M_PIF / 180.f));
 }
 
 bool CBlogg::ProjectileAttackDelay(CStateManager& mgr, const CTriggerData& data) const {
@@ -1599,7 +1599,7 @@ void CBlogg::FindAttackPositions(CStateManager& mgr, const CVector3f& playerPosi
   }
   float angle = skAttackAngleStep;
   const float angleStep = angle;
-  for (; angle < 6.2831855f; angle += angleStep) {
+  for (; angle < M_2PIF; angle += angleStep) {
     const CVector3f rotated = CMatrix3f::RotateZ(CRelAngle::FromRadians(angle)) * direction;
     position = playerPosition + rotated * distance;
     if (mPathFindSearch.OnPath(position) == CPathFindSearch::kR_Success) {

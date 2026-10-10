@@ -1656,7 +1656,7 @@ void CSamusHud::UpdateHudDynamicLights(float dt, const CStateManager& mgr) {
   for (int i = 0; i < 3; ++i) {
     SCachedHudLight& light = mHudLights[i];
     const CVector3f direction = (light.mPosition - position).AsNormalized();
-    if (light.mFade > 0.f && (CVector3f::Dot(lookDirection, direction) <= 0.15707964f ||
+    if (light.mFade > 0.f && (CVector3f::Dot(lookDirection, direction) <= (9.f * (M_PIF / 180.f)) ||
                               !IsCachedLightInAreaLights(light, lights))) {
       light.mFade *= -1.f;
     }
@@ -1675,7 +1675,7 @@ void CSamusHud::UpdateHudDynamicLights(float dt, const CStateManager& mgr) {
     const CLight& light = lights.GetLight(i);
     const CVector3f direction = (light.GetPosition() - position).AsNormalized();
     if (!IsAreaLightInCachedLights(light) &&
-        CVector3f::Dot(lookDirection, direction) > 0.15707964f) {
+        CVector3f::Dot(lookDirection, direction) > (9.f * (M_PIF / 180.f))) {
       const int slot = FindEmptyHudLightSlot(light);
       if (slot != -1) {
         --available;

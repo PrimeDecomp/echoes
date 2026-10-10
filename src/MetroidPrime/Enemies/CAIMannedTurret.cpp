@@ -390,7 +390,7 @@ void CAIMannedTurret::UpdateAim(CStateManager& mgr, float dt, bool snap) {
                               CRelAngle::FromDegrees(maxStep * CMath::Limit(angle / 15.f, 1.f)));
       if (snap) {
         rotation = CQuaternion::LookAt(CUnitVector3f(flatTurretForward), CUnitVector3f(flatAim),
-                                       CRelAngle::FromRadians(6.2831855f));
+                                       CRelAngle::FromRadians(M_2PIF));
       }
       heading = rotation.Transform(flatTurretForward);
     }

@@ -295,7 +295,7 @@ void CPhysicsActor::SetAngularVelocityOR(const CAxisAngle& angVel) {
 void CPhysicsActor::SetMass(float mass) {
   mMass = mass;
   mMassRecip = (mMass > 0.0f) ? (1.0f / mMass) : 1.0f;
-  SetInertiaTensorScalar(0.16666667f * mMass);
+  SetInertiaTensorScalar((1.f / 6.f) * mMass);
 }
 
 void CPhysicsActor::SetInertiaTensorScalar(float tensor) {

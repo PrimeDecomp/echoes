@@ -136,12 +136,12 @@ void CFixedCamera::Think(float dt, CStateManager& mgr) {
               SetTransform(CTransform4f::LookAt(lookPos, lookPos + lookDir));
             } else {
               const float angle = CMath::ArcCosineR(dot);
-              const float fraction = CMath::Clamp(0.f, angle / (1.0471976f * dt), 1.f);
+              const float fraction = CMath::Clamp(0.f, angle / ((M_PIF / 3.f) * dt), 1.f);
               CRelAngle step = CRelAngle::FromRadians(
                   dt * (fraction * CameraManager(mgr).GetBallCamera()->GetTargetAnglePerSecond()));
               const float vertical =
                   CMath::AbsF(CMath::Limit(CVector3f::Dot(lookDir, CVector3f::Up()), 1.f));
-              const float verticalStep = (12.566371f * dt) * (1.f - vertical);
+              const float verticalStep = ((4.f * M_PIF) * dt) * (1.f - vertical);
               if (step.AsRadians() > verticalStep && !GetPlayer(mgr).IsMorphBallTransitioning() &&
                   vertical > 0.999f) {
                 step = CRelAngle::FromRadians(verticalStep);

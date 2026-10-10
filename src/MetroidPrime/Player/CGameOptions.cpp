@@ -303,13 +303,13 @@ int CGameOptions::GetHudAlphaRaw() const { return hudAlpha; }
 
 void CGameOptions::SetHudAlpha(int alpha) { hudAlpha = alpha; }
 
-float CGameOptions::GetHudAlpha() const { return hudAlpha * 0.003921569f; }
+float CGameOptions::GetHudAlpha() const { return hudAlpha * (1.f / 255.f); }
 
 void CGameOptions::SetHelmetAlpha(int alpha) { helmetAlpha = alpha; }
 
 int CGameOptions::GetHelmetAlphaRaw() const { return helmetAlpha; }
 
-float CGameOptions::GetHelmetAlpha() const { return helmetAlpha * 0.003921569f; }
+float CGameOptions::GetHelmetAlpha() const { return helmetAlpha * (1.f / 255.f); }
 
 void CGameOptions::SetHUDLag(bool active) { hudLag = active; }
 

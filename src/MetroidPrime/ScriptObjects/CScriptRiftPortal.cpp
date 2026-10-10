@@ -472,7 +472,7 @@ CEntity* LoadRiftPortal(CStateManager& mgr, CInputStream& input, CEntityInfo& in
       LdrToEntityInfo(info, sldrThis.editorProperties), *model, *backgroundModel,
       *incandescentModel, *lineModel, LdrToTransform4f(sldrThis.editorProperties),
       sldrThis.editorProperties.transform.scale, sldrThis.ripPortal, sldrThis.projectileAttraction,
-      sldrThis.projectileBoxWidth, 0.017453292f * sldrThis.projectileAngle,
+      sldrThis.projectileBoxWidth, (M_PIF / 180.f) * sldrThis.projectileAngle,
       sldrThis.projectileDestructionRadius);
 }
 

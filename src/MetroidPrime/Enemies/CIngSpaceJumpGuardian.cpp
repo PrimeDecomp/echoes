@@ -417,7 +417,7 @@ bool CIngSpaceJumpGuardian::IsFacingTarget(CStateManager& mgr, const CTriggerDat
   if (const CActor* target = static_cast< const CActor* >(mgr.GetObjectById(mFaceTarget))) {
     const CVector3f delta = target->GetTranslation() - GetTranslation();
     const CVector3f direction(delta.GetX(), delta.GetY(), 0.f);
-    return CVector3f::GetAngleDiff(direction, GetTransform().GetForward()) < 20.f * 0.017453292f;
+    return CVector3f::GetAngleDiff(direction, GetTransform().GetForward()) < 20.f * (M_PIF / 180.f);
   }
   return true;
 }
@@ -428,7 +428,8 @@ bool CIngSpaceJumpGuardian::IsFacingWaypoint(CStateManager& mgr, const CTriggerD
             mgr.GetObjectById(mWaypointNavigation.GetDestination()))) {
       const CVector3f delta = waypoint->GetTranslation() - GetTranslation();
       const CVector3f direction(delta.GetX(), delta.GetY(), 0.f);
-      return CVector3f::GetAngleDiff(direction, GetTransform().GetForward()) < 60.f * 0.017453292f;
+      return CVector3f::GetAngleDiff(direction, GetTransform().GetForward()) <
+             60.f * (M_PIF / 180.f);
     }
   }
   return true;
@@ -776,7 +777,7 @@ void CIngSpaceJumpGuardian::FindBestMiniPortals(CStateManager& mgr, float dt) {
       if (mPortalCount >= 3) {
         break;
       }
-      const float angle = skPortalAngles[i] * 0.017453292f;
+      const float angle = skPortalAngles[i] * (M_PIF / 180.f);
       const float c = CMath::FastCosR(angle);
       const float s = CMath::FastSinR(angle);
       const CVector3f offset =

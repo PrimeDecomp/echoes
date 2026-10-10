@@ -713,7 +713,7 @@ void CScriptSafeZone::ApplyRenderEffect(CStateManager& mgr) {
     const CGameCamera* camera =
         mgr.CameraManager(mgr.mCurrentRenderPlayerIndex)->GetCurrentCamera(mgr, true);
     const float fov = camera->GetFov();
-    const float invSin = 1.f / sinf(0.017453292f * fov);
+    const float invSin = 1.f / sinf((M_PIF / 180.f) * fov);
     const CVector3f delta = GetTranslation() - camera->GetTranslation();
     const float invDist = CMath::FastInvSqrtF(delta.MagSquared());
     const float angle =

@@ -372,7 +372,7 @@ void CSporbTop::Death(CStateManager& mgr, const CVector3f& direction, EScriptObj
         const CVector3f pos = GetTranslation();
         const CVector3f target = pos - direction;
         const CTransform4f deathXf = CTransform4f::LookAt(pos, target) *
-                                     CTransform4f::RotateX(CRelAngle::FromRadians(0.7853982f));
+                                     CTransform4f::RotateX(CRelAngle::FromRadians(M_PIF / 4.f));
         SetTransform(deathXf);
       }
     } else {

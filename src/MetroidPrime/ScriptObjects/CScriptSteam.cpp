@@ -62,7 +62,7 @@ void CScriptSteam::Think(float dt, CStateManager& mgr) {
       const float alpha =
           distance >= mMaxDistance
               ? 0.f
-              : CMath::FastCosR(distance * 1.5707964f * mInverseMaxDistance) * GetStrength();
+              : CMath::FastCosR(distance * (M_PIF / 2.f) * mInverseMaxDistance) * GetStrength();
       player->SetVisorSteam(alpha, mAlphaInDuration, mAlphaOutDuration, mTexture);
       if (mEnableSplash) {
         mgr.EnvFxManager()->SetSplashRate(2.f * alpha);

@@ -260,7 +260,7 @@ void CIceImpact::Touch(CActor& actor, CStateManager& mgr) {
       return;
     }
 
-    const CDamageInfo damageInfo(CWeaponMode(kWT_Dark, true), 1.6666666f, 0.1f, 1.f);
+    const CDamageInfo damageInfo(CWeaponMode(kWT_Dark, true), 5.f / 3.f, 0.1f, 1.f);
     if (CPatterned* patterned = TCastToPtr< CPatterned >(&actor)) {
       const CAABox expanded(touchBounds->GetMinPoint() - CVector3f(0.f, 0.f, 0.5f),
                             touchBounds->GetMaxPoint() + CVector3f(0.f, 0.f, 0.5f));

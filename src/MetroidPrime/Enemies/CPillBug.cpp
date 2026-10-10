@@ -609,7 +609,7 @@ void CPillBug::Fall(CStateManager& mgr, EStateMsg msg, float dt) {
     if (CVector3f::Dot(GetTransform().GetUp(), CVector3f::Up()) < -0.998f) {
       SetTransform((CQuaternion::FromMatrix(GetTransform()) *
                     CQuaternion::AxisAngle(CUnitVector3f(GetTransform().GetForward()),
-                                           CRelAngle::FromRadians(0.143117f)))
+                                           CRelAngle::FromRadians(8.2f * (M_PIF / 180.f))))
                        .BuildTransform4f(GetTranslation()));
     }
     mMode = kM_Injured;

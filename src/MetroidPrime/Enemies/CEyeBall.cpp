@@ -39,7 +39,7 @@ CEyeBall::CEyeBall(TUniqueId uid, const rstl::string& name, const CEntityInfo& i
              kBT_Restricted, actParams)
 , mAttackDelay(attackDelay)
 , mAttackStartTime(attackStartTime)
-, mBoneTracking(*GetModelData()->GetAnimationData(), rstl::string_l("Eye"), 0.7853982f, 3.1415927f,
+, mBoneTracking(*GetModelData()->GetAnimationData(), rstl::string_l("Eye"), M_PIF / 4.f, M_PIF,
                 kBTF_NoParentOrigin)
 , mLaserLocatorXf(CTransform4f::Identity())
 , mTargetPosition(CVector3f::Zero())
@@ -245,7 +245,7 @@ void CEyeBall::Think(float dt, CStateManager& mgr) {
   }
 
   const CPlayer* player = mgr.GetPlayer(0);
-  static float minAngle = CMath::FastCosR(0.7853982f);
+  static float minAngle = CMath::FastCosR(M_PIF / 4.f);
   const CVector3f direction = (player->GetTranslation() - GetTranslation()).AsNormalized();
   const float angle = CVector3f::Dot(GetTransform().GetForward(), direction);
 

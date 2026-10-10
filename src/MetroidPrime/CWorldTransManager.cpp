@@ -330,7 +330,7 @@ void CWorldTransManager::UpdateEnabled(float dt) {
         mModelData->mSamusModelData.GetScaledLocatorTransform(rstl::string_l(kGrappleLocator));
     mModelData->mRandTimeout -= dt;
     if (mModelData->mRandTimeout <= 0.f) {
-      mModelData->mRandTimeout = mRandom.Range(0.016666668f, 0.1f);
+      mModelData->mRandTimeout = mRandom.Range(1.f / 60.f, 0.1f);
       const CVector2f shake(mRandom.Range(-0.025f, 0.025f), mRandom.Range(-0.075f, 0.075f));
       mModelData->mShakeDelta = (shake - mModelData->mShakeResult) / mModelData->mRandTimeout;
       const float blur = mRandom.Range(-2.f, 4.f);

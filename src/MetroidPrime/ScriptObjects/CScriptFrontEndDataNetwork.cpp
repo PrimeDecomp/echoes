@@ -993,9 +993,9 @@ void CScriptFrontEndDataNetwork::DrawConnection(const CTransform4f& xf, const CV
   for (int width = 2; width != 0; --width) {
     CGraphics::SetLineWidth(width + 1, kTO_Zero);
     CGraphics::StreamBegin(kP_Lines);
-    CGraphics::StreamColor(colorA.WithAlphaModulatedBy(0.33333334f));
+    CGraphics::StreamColor(colorA.WithAlphaModulatedBy(1.f / 3.f));
     CGraphics::StreamVertex(start);
-    CGraphics::StreamColor(colorB.WithAlphaModulatedBy(0.33333334f));
+    CGraphics::StreamColor(colorB.WithAlphaModulatedBy(1.f / 3.f));
     CGraphics::StreamVertex(end);
     CGraphics::StreamEnd();
   }

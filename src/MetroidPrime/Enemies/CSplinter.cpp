@@ -996,14 +996,14 @@ bool CSplinter::IsFacing(const CVector3f& point, float angle) const {
 }
 
 bool CSplinter::FacingPlayerExactly(CStateManager& mgr, const CTriggerData& data) const {
-  return IsFacing(GetPlayerTargetPosition(mgr), 0.07853982f);
+  return IsFacing(GetPlayerTargetPosition(mgr), 4.5f * (M_PIF / 180.f));
 }
 
 bool CSplinter::FacingPlayer(CStateManager& mgr, const CTriggerData& data) const {
   if (IsMega() == true && IsIngPossessed() == true) {
     return IsFacing(mgr.GetPlayer(0)->GetTranslation(), 0.4712389f);
   }
-  return IsFacing(GetPlayerTargetPosition(mgr), 0.15707964f);
+  return IsFacing(GetPlayerTargetPosition(mgr), 9.f * (M_PIF / 180.f));
 }
 
 void CSplinter::RotateToPlayer(CStateManager& mgr, float dt, float turnSpeed, float aimOffset) {
@@ -1180,7 +1180,7 @@ void CSplinter::SetUnhideTime(CStateManager& mgr) {
 }
 
 void CSplinter::MegaSplinterSpit(CStateManager& mgr, EStateMsg msg, float dt) {
-  RotateToPlayer(mgr, dt, 2.0943952f, 0.2f);
+  RotateToPlayer(mgr, dt, 120.f * (M_PIF / 180.f), 0.2f);
   DeliverCommand(msg, pas::kAS_MeleeAttack, CBCMeleeAttackCmd(pas::kS_One));
 }
 
@@ -1400,7 +1400,7 @@ void CSplinter::FastTurn(CStateManager& mgr, EStateMsg msg, float dt) {
   if (player->GetSidewaysDashing() == true) {
     mSpit->mUnknown5c = mTime;
   }
-  if (IsFacing(GetPlayerTargetPosition(mgr), 0.15707964f) == true) {
+  if (IsFacing(GetPlayerTargetPosition(mgr), 9.f * (M_PIF / 180.f)) == true) {
     BodyController()->CommandMgr().DeliverCmd(
         CBCLocomotionCmd(CVector3f::Zero(), CVector3f::Zero(), 1.f));
   } else {
@@ -1442,7 +1442,8 @@ bool CSplinter::IsAttackBlocked(CStateManager& mgr) const {
         hint->GetHintType() == CScriptAIHint::kHT_SplinterAttackBlock) {
       const CVector3f delta = hint->GetTranslation() - GetTranslation();
       float radius = hint->GetRadius();
-      if (delta.Magnitude() < radius && IsFacing(hint->GetTranslation(), 0.87266463f) == true) {
+      if (delta.Magnitude() < radius &&
+          IsFacing(hint->GetTranslation(), 50.f * (M_PIF / 180.f)) == true) {
         return true;
       }
     }
@@ -2035,7 +2036,7 @@ void CSplinter::Pounce(CStateManager& mgr, EStateMsg msg, float dt) {
       mSpit->mUnknown5c = mTime;
     }
     if (mSpit->mSpitting == true) {
-      RotateToPlayer(mgr, dt, 8.726646f, mSpit->mUnknown60);
+      RotateToPlayer(mgr, dt, 500.f * (M_PIF / 180.f), mSpit->mUnknown60);
     }
     break;
   case kStateMsg_Deactivate:

@@ -251,14 +251,14 @@ void CSpindleCamera::Think(float dt, CStateManager& mgr) {
   const float hintCamCross = CVector3f::Dot(CVector3f::Cross(hintToCamDir, hintDir), up);
   if ((params.GetFlags() & 0x20) != 0) {
     if (!mOutsideClampedAzimuth) {
-      if (hintBallAngle > 0.017453292f * GetInterpolant(params.GetAngularConstraint())) {
+      if (hintBallAngle > (M_PIF / 180.f) * GetInterpolant(params.GetAngularConstraint())) {
         mLookDir = hintToBallDir;
         mOutsideClampedAzimuth = true;
       }
     } else {
-      if ((hintBallAngle < 0.017453292f * GetInterpolant(params.GetConstraintFlipAngle()) &&
+      if ((hintBallAngle < (M_PIF / 180.f) * GetInterpolant(params.GetConstraintFlipAngle()) &&
            hintBallCross * hintCamCross < 0.f) ||
-          hintBallAngle <= 0.017453292f * GetInterpolant(params.GetAngularConstraint())) {
+          hintBallAngle <= (M_PIF / 180.f) * GetInterpolant(params.GetAngularConstraint())) {
         mOutsideClampedAzimuth = false;
       } else {
         hintToBallDir = mLookDir;
@@ -267,7 +267,7 @@ void CSpindleCamera::Think(float dt, CStateManager& mgr) {
   }
 
   float hintBallToCamTargetAzimuth =
-      0.017453292f * GetInterpolant(params.GetDesiredAngularOffset());
+      (M_PIF / 180.f) * GetInterpolant(params.GetDesiredAngularOffset());
   if ((params.GetFlags() & 0x4000) == 0 &&
       CVector3f::Dot(CVector3f::Cross(hintToCamDir, hintToBallDir), up) >= 0.f) {
     hintBallToCamTargetAzimuth = -hintBallToCamTargetAzimuth;
@@ -281,13 +281,13 @@ void CSpindleCamera::Think(float dt, CStateManager& mgr) {
   const float hintToCamDeltaAngleRange =
       CMath::AbsF(acos(CMath::Limit(CVector3f::Dot(hintToCamDir, targetHintToCam), 1.f)));
   const float hintToCamDeltaAngleSpeedFactor = CMath::Limit(
-      hintToCamDeltaAngleRange / (0.017453292f * GetInterpolant(params.GetAngularDampening())),
+      hintToCamDeltaAngleRange / ((M_PIF / 180.f) * GetInterpolant(params.GetAngularDampening())),
       1.f);
 
-  float targetHintToCamDeltaAngleVel = 0.017453292f * GetInterpolant(params.GetAngularSpeed());
+  float targetHintToCamDeltaAngleVel = (M_PIF / 180.f) * GetInterpolant(params.GetAngularSpeed());
   if ((params.GetFlags() & 0x100) == 0) {
     targetHintToCamDeltaAngleVel =
-        CMath::Limit(0.017453292f * GetInterpolant(params.GetLinearSpeed()) / hintToCamDist,
+        CMath::Limit((M_PIF / 180.f) * GetInterpolant(params.GetLinearSpeed()) / hintToCamDist,
                      targetHintToCamDeltaAngleVel);
   }
 
@@ -297,7 +297,7 @@ void CSpindleCamera::Think(float dt, CStateManager& mgr) {
        CVector3f::Dot(CVector3f::Cross(targetHintToCam, hintToCamDir), up) >= 0.f)) {
     targetHintToCamDeltaAngleVel =
         CMath::Limit(targetHintToCamDeltaAngleVel,
-                     0.017453292f * GetInterpolant(params.GetDesiredAngularSpeed()));
+                     (M_PIF / 180.f) * GetInterpolant(params.GetDesiredAngularSpeed()));
   }
 
   float targetHintToCamDeltaAngle =
@@ -327,7 +327,8 @@ void CSpindleCamera::Think(float dt, CStateManager& mgr) {
   }
 
   hintBallToCamAzimuth = acos(CMath::Limit(CVector3f::Dot(hintToBallDir, newHintToCamDir), 1.f));
-  const float minHintBallToCamAzimuth = 0.017453292f * GetInterpolant(params.GetMinAngularOffset());
+  const float minHintBallToCamAzimuth =
+      (M_PIF / 180.f) * GetInterpolant(params.GetMinAngularOffset());
   if (CMath::AbsF(hintBallToCamAzimuth) < minHintBallToCamAzimuth) {
     azimuthQuat = CQuaternion::AxisAngle(CUnitVector3f(hintLine.GetNormal()),
                                          CRelAngle::FromRadians(minHintBallToCamAzimuth));
@@ -339,7 +340,8 @@ void CSpindleCamera::Think(float dt, CStateManager& mgr) {
     newHintToCamDir = azimuthQuat.Transform(hintToBallDir);
   }
 
-  const float maxHintBallToCamAzimuth = 0.017453292f * GetInterpolant(params.GetMaxAngularOffset());
+  const float maxHintBallToCamAzimuth =
+      (M_PIF / 180.f) * GetInterpolant(params.GetMaxAngularOffset());
   if (CMath::AbsF(hintBallToCamAzimuth) > maxHintBallToCamAzimuth) {
     mMaxAzimuthInterpTimer += dt;
     if (mMaxAzimuthInterpTimer < 3.f) {
@@ -374,7 +376,7 @@ void CSpindleCamera::Think(float dt, CStateManager& mgr) {
       const float hintCamAzimuth =
           CMath::AbsF(acos(CMath::Limit(CVector3f::Dot(flatHintDir, newHintToCamDir), 1.f)));
       float clampedAzimuth = CMath::Limit(
-          hintCamAzimuth, 0.017453292f * GetInterpolant(params.GetAngularConstraint()));
+          hintCamAzimuth, (M_PIF / 180.f) * GetInterpolant(params.GetAngularConstraint()));
       if (CVector3f::Dot(CVector3f::Cross(flatHintDir, newHintToCamDir), hintLine.GetNormal()) <
           0.f) {
         clampedAzimuth = -clampedAzimuth;
@@ -473,7 +475,7 @@ CVector3f CSpindleCamera::GetScanObjectIndicatorPosition(const CStateManager& mg
       const float lookDist = flatLookDelta.Magnitude();
       flatLookDelta.Normalize();
 
-      float camLookRelAzimuth = 0.017453292f * -GetInterpolant(params.GetLookAtAngularOffset());
+      float camLookRelAzimuth = (M_PIF / 180.f) * -GetInterpolant(params.GetLookAtAngularOffset());
       CVector3f hintToCamDir = camPos - hintLine.GetClosestPoint(camPos);
       if (hintToCamDir.IsMagnitudeSafe()) {
         hintToCamDir.Normalize();

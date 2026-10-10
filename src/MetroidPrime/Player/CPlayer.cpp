@@ -2698,7 +2698,7 @@ void CPlayer::UpdateFreeLook(float dt) {
       close_enough(mVertFreeLookAngleVel, -GetTweakPlayer()->GetVerticalFreeLookAngleVel())) {
     minDamp = 0.1f;
   }
-  const float vertLookDamp = CMath::Clamp(minDamp, fabsf(angleVel / 1.0471976f), 1.f);
+  const float vertLookDamp = CMath::Clamp(minDamp, fabsf(angleVel / (M_PIF / 3.f)), 1.f);
   if (fabsf(mVertFreeLookAngleVel - mFreeLookPitchAngle) < 0.0017453293f) {
     mFreeLookPitchAngle = mVertFreeLookAngleVel;
   } else {
@@ -2860,8 +2860,9 @@ void CPlayer::PreRender(CStateManager& mgr) {
     mMorphBall->DeleteBallShadow();
   }
 
-  const bool darkVisor = mgr.GetCurrentRenderPlayerState()->GetActiveVisor(mgr) == CPlayerState::kPV_Dark &&
-                         mgr.GetCurrentRenderPlayer()->GetUniqueId() != GetUniqueId();
+  const bool darkVisor =
+      mgr.GetCurrentRenderPlayerState()->GetActiveVisor(mgr) == CPlayerState::kPV_Dark &&
+      mgr.GetCurrentRenderPlayer()->GetUniqueId() != GetUniqueId();
   SetModelFlags(GetModelFlags().DepthCompareUpdate(!darkVisor, mModelDepthUpdateEnabled));
   UpdateModelScale(mgr);
   CActor::PreRender(mgr);
@@ -3612,7 +3613,7 @@ void CPlayer::TakeDamage(bool significant, const CVector3f& location, float dama
       if (type != kWT_AreaDark || mDamageWeaponType == uint(kWT_None)) {
         mDamageWeaponType = type;
       }
-      mDamageColorTimer = 0.33333334f;
+      mDamageColorTimer = 1.f / 3.f;
 
       ushort suitDamageSfx = damageInfo.GetDamageSfxId();
       ushort damageLoopSfx = damageInfo.GetDamageLoopSfxId();
