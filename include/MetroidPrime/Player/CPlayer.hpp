@@ -389,7 +389,7 @@ public:
   void SetSurfaceRestraint(ESurfaceRestraints restraint);
   bool IsOnGround() const;
   CTweakPlayerControls* GetTweakPlayerControls() const;
-  CPlayerState::EBeamId GetCurrentBeam() const;
+  uint GetModelShaderSet() const; // Guessed name
   CHintManager* GetPlayerHintManager();
   const CHintManager* GetPlayerHintManager() const;
   CHintManager* GetControlHintManager();

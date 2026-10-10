@@ -1223,7 +1223,7 @@ void CPlayer::UpdatePlayerDrawFlags(CStateManager& mgr) {
   if (mgr.GetPlayerState()->GetActiveVisor(mgr) == CPlayerState::kPV_Dark) {
     mModelDepthUpdateEnabled = false;
   }
-  SetModelFlags(GetModelFlags().UseShaderSet(mgr.IsMultiplayer() ? GetCurrentBeam() : 0));
+  SetModelFlags(GetModelFlags().UseShaderSet(mgr.IsMultiplayer() ? GetModelShaderSet() : 0));
 }
 
 bool CPlayer::ShouldSampleFailsafe(const CStateManager& mgr) const {
@@ -4685,9 +4685,8 @@ void CPlayer::RenderMultiplayerBeamParticles(const CStateManager& mgr) const {
   }
 }
 
-CPlayerState::EBeamId CPlayer::GetCurrentBeam() const {
-  return mUseAlternateBeam ? static_cast< CPlayerState::EBeamId >(4)
-                           : mPlayerState->GetCurrentBeam();
+uint CPlayer::GetModelShaderSet() const {
+  return mUseAlternateBeam ? 4 : mPlayerState->GetPlayerSelection();
 }
 
 void CPlayer::StopSounds() {

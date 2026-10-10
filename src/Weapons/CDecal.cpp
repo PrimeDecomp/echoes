@@ -393,18 +393,19 @@ void CDecal::BuildClippedGeometry(CQuadDecal& quad, const CDecalDescription::SQu
   const float cosSize = cosine(angle) * quad.mHalfSize;
   rstl::vector< SDecalVertex > vertices;
   vertices.reserve(4);
-  vertices.push_back(SDecalVertex(xf * CVector3f(-(sinSize + cosSize), 0.f, -(cosSize - sinSize)),
-                                  CVector2f(uv.xMin, uv.yMin)));
-  vertices.push_back(SDecalVertex(xf * CVector3f(sinSize - cosSize, 0.f, sinSize + cosSize),
-                                  CVector2f(uv.xMin, uv.yMax)));
-  vertices.push_back(SDecalVertex(xf * CVector3f(sinSize + cosSize, 0.f, cosSize - sinSize),
-                                  CVector2f(uv.xMax, uv.yMax)));
-  vertices.push_back(SDecalVertex(xf * CVector3f(cosSize - sinSize, 0.f, -cosSize - sinSize),
-                                  CVector2f(uv.xMax, uv.yMin)));
+  vertices.push_back_unsafe(
+      SDecalVertex(xf * CVector3f(-(sinSize + cosSize), 0.f, -(cosSize - sinSize)),
+                   CVector2f(uv.xMin, uv.yMin)));
+  vertices.push_back_unsafe(SDecalVertex(xf * CVector3f(sinSize - cosSize, 0.f, sinSize + cosSize),
+                                         CVector2f(uv.xMin, uv.yMax)));
+  vertices.push_back_unsafe(SDecalVertex(xf * CVector3f(sinSize + cosSize, 0.f, cosSize - sinSize),
+                                         CVector2f(uv.xMax, uv.yMax)));
+  vertices.push_back_unsafe(SDecalVertex(xf * CVector3f(cosSize - sinSize, 0.f, -cosSize - sinSize),
+                                         CVector2f(uv.xMax, uv.yMin)));
   quad.mPolygons.clear();
   quad.mPolygons.reserve(surfaces.empty() ? 1 : surfaces.size());
   if (surfaces.empty()) {
-    quad.mPolygons.push_back(CDecalPolygon(vertices));
+    quad.mPolygons.push_back_unsafe(CDecalPolygon(vertices));
     return;
   }
 
@@ -424,7 +425,7 @@ void CDecal::BuildClippedGeometry(CQuadDecal& quad, const CDecalDescription::SQu
       CollisionUtil::RayPlaneIntersection(vertices[j].mPosition - displacement,
                                           vertices[j].mPosition + displacement, surface.GetPlane(),
                                           point);
-      projected.push_back(SDecalVertex(point, vertices[j].mUV));
+      projected.push_back_unsafe(SDecalVertex(point, vertices[j].mUV));
     }
     rstl::vector< SDecalVertex > clipped;
     clipped.reserve(projected.size() + 3);
@@ -441,11 +442,11 @@ void CDecal::BuildClippedGeometry(CQuadDecal& quad, const CDecalDescription::SQu
           const CVector3f delta = current.mPosition - previous.mPosition;
           const float t =
               -plane.GetHeight(previous.mPosition) / CVector3f::Dot(plane.GetNormal(), delta);
-          clipped.push_back(SDecalVertex(previous.mPosition + t * delta,
-                                         previous.mUV + (current.mUV - previous.mUV) * t));
+          clipped.push_back_unsafe(SDecalVertex(previous.mPosition + t * delta,
+                                                previous.mUV + (current.mUV - previous.mUV) * t));
         }
         if (!(distance > 0.f)) {
-          clipped.push_back(current);
+          clipped.push_back_unsafe(current);
         }
         previous = current;
         previousDistance = distance;
@@ -453,6 +454,6 @@ void CDecal::BuildClippedGeometry(CQuadDecal& quad, const CDecalDescription::SQu
       projected = clipped;
       clipped.clear();
     }
-    quad.mPolygons.push_back(CDecalPolygon(projected));
+    quad.mPolygons.push_back_unsafe(CDecalPolygon(projected));
   }
 }

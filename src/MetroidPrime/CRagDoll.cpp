@@ -4,6 +4,7 @@
 #include "Collision/CCollisionInfo.hpp"
 #include "Collision/CollisionUtil.hpp"
 #include "Kyoto/Animation/CCharLayoutInfo.hpp"
+#include "Kyoto/Animation/CHierarchyPoseBuilder.hpp"
 #include "Kyoto/Animation/CJointData_LinearStorage.hpp"
 #include "Kyoto/Math/CMath.hpp"
 #include "Kyoto/Math/CRelAngle.hpp"
@@ -416,6 +417,10 @@ void CRagDoll::AddJointConstraint(int i1, int i2, int i3, int i4, int i5, int i6
 void CRagDoll::AddKneeConstraint(int i1, int i2, int i3, int i4, float minimumDistance) {
   mKneeConstraints.push_back_unsafe(CRagDollKneeConstraint(
       &mParticles[i1], &mParticles[i2], &mParticles[i3], &mParticles[i4], minimumDistance));
+}
+
+void CHierarchyPoseBuilder::Insert(const CSegId& id, const CQuaternion& rot) {
+  mTreeMap[id].SetRotation(rot);
 }
 
 CQuaternion CRagDoll::BoneAlign(CJointData_LinearStorage& pose, const CCharLayoutInfo& layout,

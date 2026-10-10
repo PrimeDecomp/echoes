@@ -27,7 +27,13 @@ public:
   }
   CVector3f GetClosestPoint(const CVector3f& point) const;
   float ClipLineSegment(const CVector3f& start, const CVector3f& end) const;
-  
+  void SetFrom(const float d, const CVector3f& vec) {
+    mNormal.SetX(vec.GetX());
+    mNormal.SetY(vec.GetY());
+    mNormal.SetZ(vec.GetZ());
+    mConstant = d;
+  }
+
 private:
   CUnitVector3f mNormal;
   float mConstant;

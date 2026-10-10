@@ -24,7 +24,7 @@ public:
   // Guessed name: one clipped polygon, rendered as a triangle fan.
   class CDecalPolygon {
   public:
-    explicit CDecalPolygon(const rstl::vector< SDecalVertex >& vertices) : mVertices(vertices) {}
+    explicit CDecalPolygon(const rstl::vector< SDecalVertex >& vertices);
     void Render(const CColor& color, const CVector2f& uvOffset) const;
 
   private:
@@ -85,5 +85,12 @@ NESTED_CHECK_SIZEOF(CDecal, SDecalVertex, 0x14)
 NESTED_CHECK_SIZEOF(CDecal, CDecalPolygon, 0x10)
 NESTED_CHECK_SIZEOF(CDecal, CQuadDecal, 0x34)
 CHECK_SIZEOF(CDecal, 0xbc)
+
+namespace rstl {
+RSTL_DECLARE_TRIVIALLY_CONSTRUCTIBLE(CDecal::SDecalVertex)
+} // namespace rstl
+
+inline CDecal::CDecalPolygon::CDecalPolygon(const rstl::vector< SDecalVertex >& vertices)
+: mVertices(vertices) {}
 
 #endif // _CDECAL

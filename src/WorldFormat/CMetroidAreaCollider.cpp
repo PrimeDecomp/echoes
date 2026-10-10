@@ -1257,22 +1257,22 @@ void CMetroidAreaCollider::CacheAllNodes(const CAreaOctTree::Node& node,
   if (node.GetTreeType() == CAreaOctTree::Node::kTT_Leaf) {
     writer.BeginLeaf(CAABox::MakeMaxInvertedBox());
     CAreaOctTree::TriListReference list = node.GetTriangleArray();
-    const CAreaOctTree& tree = node.GetOwner();
-    const CAreaOctTree& owner = tree;
-    int size = list.GetSize();
+    const CAreaOctTree& owner = node.GetOwner();
+    const int size = list.GetSize();
     writer.ReserveTriangles(size);
     for (int i = 0; i < size; ++i) {
-      uint index = list.GetAt(i);
+      const ushort index = list.GetAt(i);
       if (spDupTriangleList[index] != sDupPrimitiveCheckCount) {
         spDupTriangleList[index] = sDupPrimitiveCheckCount;
-        CCollisionSurface surface = owner.GetTriangle(index);
+        CCollisionSurface surface(owner.GetTriangle(index));
         writer.AddTriangle(surface, index);
       }
     }
   } else {
     for (int i = 0; i < 8; ++i) {
       if (node.GetChildType(i) != CAreaOctTree::Node::kTT_Invalid) {
-        CacheAllNodes(node.GetChild(i), writer);
+        const CAreaOctTree::Node child(node.GetChild(i));
+        CacheAllNodes(child, writer);
       }
     }
   }

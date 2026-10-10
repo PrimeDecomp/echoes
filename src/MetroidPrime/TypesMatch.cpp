@@ -708,7 +708,21 @@ CPatterned* TCastToPtr< CPatterned >(CEntity& entity) {
   return nullptr;
 }
 
-// Casts for cast flag 8 (pointer, then reference form): class not identified yet
+template <>
+CAi* TCastToPtr< CAi >(CEntity* entity) {
+  if (entity != nullptr && (entity->GetCastFlags() & 8) != 0) {
+    return static_cast< CAi* >(entity);
+  }
+  return nullptr;
+}
+
+template <>
+CAi* TCastToPtr< CAi >(CEntity& entity) {
+  if ((entity.GetCastFlags() & 8) != 0) {
+    return static_cast< CAi* >(&entity);
+  }
+  return nullptr;
+}
 
 CBeamProjectile::~CBeamProjectile() {}
 

@@ -1,5 +1,6 @@
 #include "MetroidPrime/Weapons/CBomb.hpp"
 
+#include "Collision/COBBox.hpp"
 #include "Collision/CRayCastResult.hpp"
 #include "Collision/CollisionUtil.hpp"
 #include "Kyoto/Audio/CSfxManager.hpp"
@@ -22,6 +23,8 @@
 
 static const ushort skPlacementSfx[] = {SFXsam_a_bombset_00_oneshot, SFXsa2_a_bombset_00_oneshot};
 static const ushort skExplosionSfx[] = {SFXsam_a_bombexp_00_oneshot, SFXsa2_a_bombexp_00_oneshot};
+
+void DebugDrawOBB(const COBBox& box, float r, float g, float b, float a) {}
 
 CBomb::CBomb(TToken< CGenDescription > particle1, TToken< CGenDescription > particle2,
              TUniqueId uid, TAreaId areaId, TUniqueId ownerId,

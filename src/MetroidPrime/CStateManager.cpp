@@ -1365,9 +1365,9 @@ void CStateManager::DrawSpaceWarp(const CVector3f& position, float strength) con
 void CStateManager::TouchSky() { GetWorld()->TouchSky(); }
 
 void CStateManager::TouchPlayerActor() {
-  if (mPlayerActorHead != kInvalidUniqueId) {
-    const CEntity* entity = GetObjectById(mPlayerActorHead);
-    if (entity != nullptr) {
+  const TUniqueId& playerActor = mPlayerActorHead;
+  if (playerActor != kInvalidUniqueId) {
+    if (const CEntity* entity = GetObjectById(playerActor)) {
       PlayerActor_TouchModels(*const_cast< CEntity* >(entity), *this);
     }
   }

@@ -2637,7 +2637,7 @@ void CMorphBall::Update(float dt, CStateManager& mgr) {
   }
 
   if (mMultiplayer) {
-    mBallModelShader = mPlayer.GetCurrentBeam();
+    mBallModelShader = mPlayer.GetModelShaderSet();
   }
 
   UpdateEffects(dt, mgr);
