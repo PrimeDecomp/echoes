@@ -23,6 +23,7 @@ public:
   void CheckStatic(float dt) override;
 
   CVector3f& TorsoImpulse() { return mTorsoImpulse; }
+  void SetActorAttached(bool attached) { mActorAttached = attached; } // Guessed name.
 
 private:
   // Guessed names.

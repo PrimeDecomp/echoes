@@ -43,6 +43,7 @@ public:
   void SetMaximumPitch(float pitch) { mMaxPitch = pitch; } // Guessed name
 
   bool GetLocoAnimChangeAtEndOfAnimOnly() const { return mChangeLocoAtEndOfAnimOnly; }
+  void SetLocoAnimChangeAtEndOfAnimOnly(bool only) { mChangeLocoAtEndOfAnimOnly = only; }
 
   pas::EAnimationState GetCurrentStateId() const { return mState; }
 
@@ -51,6 +52,7 @@ public:
   void SetState(pas::EAnimationState state);
   const CBodyState* GetCurrentState() const;
   CBodyState* GetCurrentState();
+  bool IsInAir() const { return GetCurrentState()->IsInAir(*mBodyController); } // Guessed name
   bool ApplyHeadTracking() const;
   void SetAdditiveState(pas::EAnimationState state);
   CAdditiveBodyState* GetCurrentAdditiveState();

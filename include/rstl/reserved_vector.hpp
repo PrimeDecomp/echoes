@@ -35,8 +35,9 @@ public:
   reserved_vector(const reserved_vector& other) : mCount(other.mCount) {
     uninitialized_copy_n(other.data(), mCount, data());
   }
-  reserved_vector(const T* first, const T* last) : mCount(last - first) {
-    uninitialized_copy_n(first, mCount, data());
+  reserved_vector(const T* first, const T* last) : mCount(0) {
+    mCount = last - first;
+    uninitialized_copy(first, last, data());
   }
   reserved_vector(CInputStream& in);
 

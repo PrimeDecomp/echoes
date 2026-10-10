@@ -109,6 +109,7 @@ public:
 
   void OnDockTouch(CStateManager& mgr); // Guessed name.
   TUniqueId GetAttackTargetId() const { return mAttackTarget; }
+  bool IsAttacking() const { return mIsAttacking; } // Guessed name.
 
   // Triggers
   bool StateOver(CStateManager& mgr, const CTriggerData& data) const;
