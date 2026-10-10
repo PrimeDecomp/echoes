@@ -149,11 +149,11 @@ CHECK_SIZEOF(CBCProjectileAttackCmd, 0x1c)
 
 class CBCLoopAttackCmd : public CBodyStateCmd {
 public:
-  CBCLoopAttackCmd(pas::ELoopAttackType type, bool waitForAnimOver = false)
+  CBCLoopAttackCmd(pas::ELoopAttackType type, bool waitForAnimOver = false, bool skipInto = false)
   : CBodyStateCmd(kBSC_LoopAttack)
   , mType(type)
   , mWaitForAnimOver(waitForAnimOver)
-  , mSkipInto(false) {}
+  , mSkipInto(skipInto) {}
 
   pas::ELoopAttackType GetAttackType() const { return mType; }
   int WaitForAnimOver() const { return mWaitForAnimOver; }
@@ -200,7 +200,6 @@ public:
   , mTargetTransform(false)
   , mOverrideAnim(animId != -1)
   , mInterruptKnockBack(false) {}
-
 
   CBCGenerateCmd(pas::EGenerateType type, const CVector3f& targetPos, bool targetTransform = false,
                  bool overrideAnim = false)
