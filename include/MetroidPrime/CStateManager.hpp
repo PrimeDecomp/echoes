@@ -151,7 +151,7 @@ public:
   enum EFilteredObjectListType {
     kFOL_Door,
     kFOL_Dock,
-    kFOL_Type124, // The qualifying entity type's class remains unidentified.
+    kFOL_Parasite,
     kFOL_ForgottenObject,
     kFOL_GameCamera,
     kFOL_GrapplePoint
@@ -422,7 +422,7 @@ public:
     return mFilteredObjectLists[0]->GetObjects();
   }
   const rstl::list< CEntity* >& GetParasiteList() const { // Guessed name
-    return mFilteredObjectLists[kFOL_Type124]->GetObjects();
+    return mFilteredObjectLists[kFOL_Parasite]->GetObjects();
   }
   const rstl::list< CEntity* >& GetDockList() const {
     return mFilteredObjectLists[kFOL_Dock]->GetObjects();

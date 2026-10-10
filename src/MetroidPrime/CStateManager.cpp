@@ -2075,7 +2075,7 @@ CStateManager::CStateManager(
 
   mFilteredObjectLists[kFOL_Dock] = rs_new CFilteredDockList();
   mFilteredObjectLists[kFOL_Door] = rs_new CFilteredDoorList();
-  mFilteredObjectLists[kFOL_Type124] = rs_new CFilteredType124List();
+  mFilteredObjectLists[kFOL_Parasite] = rs_new CFilteredParasiteList();
   mFilteredObjectLists[kFOL_ForgottenObject] = rs_new CFilteredForgottenObjectList();
   mFilteredObjectLists[kFOL_GameCamera] = rs_new CFilteredGameCameraList();
   mFilteredObjectLists[kFOL_GrapplePoint] = rs_new CFilteredGrapplePointList();

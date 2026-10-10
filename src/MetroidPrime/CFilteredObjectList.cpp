@@ -56,10 +56,10 @@ bool CFilteredDockList::IsQualified(const CEntity& entity) const {
   return TCastToConstPtr< CScriptDock >(entity) != nullptr;
 }
 
-CFilteredType124List::CFilteredType124List() : CFilteredObjectList(false) {}
+CFilteredParasiteList::CFilteredParasiteList() : CFilteredObjectList(false) {}
 
-bool CFilteredType124List::IsQualified(const CEntity& entity) const {
-  return TCastToPtr< CParasite >(const_cast< CEntity& >(entity)) != nullptr;
+bool CFilteredParasiteList::IsQualified(const CEntity& entity) const {
+  return TCastToConstPtr< CParasite >(entity) != nullptr;
 }
 
 CFilteredForgottenObjectList::CFilteredForgottenObjectList() : CFilteredObjectList(false) {}
