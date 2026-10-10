@@ -149,11 +149,11 @@ CHECK_SIZEOF(CBCProjectileAttackCmd, 0x1c)
 
 class CBCLoopAttackCmd : public CBodyStateCmd {
 public:
-  CBCLoopAttackCmd(pas::ELoopAttackType type, bool waitForAnimOver = false)
+  CBCLoopAttackCmd(pas::ELoopAttackType type, bool waitForAnimOver = false, bool skipInto = false)
   : CBodyStateCmd(kBSC_LoopAttack)
   , mType(type)
   , mWaitForAnimOver(waitForAnimOver)
-  , mSkipInto(false) {}
+  , mSkipInto(skipInto) {}
 
   pas::ELoopAttackType GetAttackType() const { return mType; }
   int WaitForAnimOver() const { return mWaitForAnimOver; }
@@ -200,7 +200,6 @@ public:
   , mTargetTransform(false)
   , mOverrideAnim(animId != -1)
   , mInterruptKnockBack(false) {}
-
 
   CBCGenerateCmd(pas::EGenerateType type, const CVector3f& targetPos, bool targetTransform = false,
                  bool overrideAnim = false)
@@ -408,6 +407,7 @@ CHECK_SIZEOF(CBCWallHangCmd, 0xc)
 class CBCAdditiveAimCmd : public CBodyStateCmd {
 public:
   CBCAdditiveAimCmd() : CBodyStateCmd(kBSC_AdditiveAim), mAimType(0) {}
+  explicit CBCAdditiveAimCmd(bool aimType) : CBodyStateCmd(kBSC_AdditiveAim), mAimType(aimType) {}
 
   int GetAimType() const { return mAimType; } // Guessed name
 
@@ -600,6 +600,11 @@ public:
   void DeliverCmd(const CBCScriptedCmd& cmd) {
     DeliverCmd(cmd.GetCommandId());
     mScripted = cmd;
+  }
+
+  void DeliverCmd(const CBCCoverCmd& cmd) {
+    DeliverCmd(cmd.GetCommandId());
+    mCover = cmd;
   }
 
   void BlendSteeringCmds();

@@ -1804,6 +1804,13 @@ config.libs = [
         extra_cflags=["-pool off"],
     ),
     Rel(
+        "CommandoPirate",
+        [
+            Object(NonMatching, "MetroidPrime/Enemies/CCommandoPirate.cpp"),
+        ],
+        extra_cflags=["-pool off"],
+    ),
+    Rel(
         "DarkCommando",
         [
             Object(NonMatching, "MetroidPrime/Enemies/CDarkCommando.cpp"),

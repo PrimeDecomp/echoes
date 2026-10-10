@@ -6,6 +6,13 @@ Sections:
 	.data       type:data align:8
 	.bss        type:bss align:8
 
+MetroidPrime/Enemies/CCommandoPirate.cpp:
+	.text       start:0x00000000 end:0x00010480
+	.ctors      start:0x00000000 end:0x00000004
+	.rodata     start:0x00000000 end:0x00000920
+	.data       start:0x00000000 end:0x00000B44
+	.bss        start:0x00000000 end:0x0000003C
+
 REL/global_destructor_chain.c:
 	.text       start:0x00010480 end:0x000104F4
 	.dtors      start:0x00000000 end:0x00000004 rename:.dtors$10
