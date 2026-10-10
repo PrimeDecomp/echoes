@@ -173,7 +173,7 @@ void CScriptPlayerTurret::Think(float dt, CStateManager& mgr) {
   const float diff = mTargetElevation - mElevation;
   if (CMath::AbsF(diff) >= 0.0017453292f) {
     float scale =
-        1.f - CMath::PhongBlob(CMath::Clamp(0.f, CMath::AbsF(diff / 1.5707964f), 1.f), 8.f);
+        1.f - CMath::PhongBlob(CMath::Clamp(0.f, CMath::AbsF(diff / (M_PIF / 2.f)), 1.f), 8.f);
     if (!blend) {
       scale = 1.f;
     }
@@ -190,11 +190,11 @@ void CScriptPlayerTurret::Think(float dt, CStateManager& mgr) {
   if (base != nullptr && base->GetAnimationData() != nullptr) {
     if (mElevation >= 0.f) {
       base->AnimationData()->AddAdditiveAnimation(
-          mAimUpAnim, CMath::Clamp(0.f, mElevation / 1.5707964f, 1.f), false, false);
+          mAimUpAnim, CMath::Clamp(0.f, mElevation / (M_PIF / 2.f), 1.f), false, false);
       base->AnimationData()->AddAdditiveAnimation(mAimDownAnim, 0.f, false, false);
     } else {
       base->AnimationData()->AddAdditiveAnimation(
-          mAimDownAnim, CMath::Clamp(0.f, -mElevation / 1.5707964f, 1.f), false, false);
+          mAimDownAnim, CMath::Clamp(0.f, -mElevation / (M_PIF / 2.f), 1.f), false, false);
       base->AnimationData()->AddAdditiveAnimation(mAimUpAnim, 0.f, false, false);
     }
   }
@@ -237,7 +237,7 @@ void CScriptPlayerTurret::Think(float dt, CStateManager& mgr) {
       }
       if (mRotationSfxHandle) {
         CSfxManager::PitchBend(mRotationSfxHandle,
-                               static_cast< int >(4000.f * (mElevation / 1.5707964f) + 8192.f));
+                               static_cast< int >(4000.f * (mElevation / (M_PIF / 2.f)) + 8192.f));
       }
     }
   } else if (mRotationSfxHandle) {
