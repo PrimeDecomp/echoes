@@ -8,7 +8,7 @@ class CIngSpotData {
 public:
   CIngSpotData(CAssetId blobEffect, CAssetId normalHitEffect, CAssetId heavyHitEffect,
                CAssetId deathEffect, float maxSpeed, float maxWallSpeed, float ballPursuitSpeed,
-               float unknown1c, float turnSpeed, const CDamageVulnerability& vulnerability,
+               float hurtSpeed, float turnSpeed, const CDamageVulnerability& vulnerability,
                ushort idleSound, ushort moveSound, ushort normalHitSound, ushort heavyHitSound,
                ushort deathSound);
 
@@ -19,6 +19,7 @@ public:
   float GetMaxSpeed() const { return mMaxSpeed; }
   float GetMaxWallSpeed() const { return mMaxWallSpeed; }
   float GetBallPursuitSpeed() const { return mBallPursuitSpeed; }
+  float GetHurtSpeed() const { return mHurtSpeed; } // Guessed name
   float GetTurnSpeed() const { return mTurnSpeed; }
   const CDamageVulnerability& GetVulnerability() const { return mVulnerability; }
   ushort GetIdleSound() const { return mIdleSound; }
@@ -35,7 +36,7 @@ private:
   float mMaxSpeed;
   float mMaxWallSpeed;
   float mBallPursuitSpeed;
-  float x1c_;
+  float mHurtSpeed;
   float mTurnSpeed;
   CDamageVulnerability mVulnerability;
   ushort mIdleSound;

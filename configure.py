@@ -1920,6 +1920,13 @@ config.libs = [
         extra_cflags=["-pool off"],
     ),
     Rel(
+        "Ing",
+        [
+            Object(NonMatching, "MetroidPrime/Enemies/CIng.cpp"),
+        ],
+        extra_cflags=["-pool off"],
+    ),
+    Rel(
         "MinorIng",
         [
             Object(NonMatching, "MetroidPrime/Enemies/CMinorIng.cpp"),
