@@ -208,6 +208,7 @@ public:
                const CTransform4f& xf, const CModelData& modelData,
                const CPatternedInfo& patternedInfo, const CActorParameters& actorParams,
                const CElitePirateData& data);
+  ~CElitePirate() override;
 
   // CEntity
   void Think(float dt, CStateManager& mgr) override;
@@ -221,11 +222,11 @@ public:
   void DoUserAnimEvent(CStateManager& mgr, const CInt32POINode& node, EUserEventType type,
                        float dt) override;
 
-  // CPatterned
-  CPathFindSearch* GetSearchPath() override { return &mPathFindSearch; }
-
   // CPhysicsActor
   const CCollisionPrimitive* GetCollisionPrimitive() const override { return &mCollisionAabb; }
+
+  // CPatterned
+  CPathFindSearch* GetSearchPath() override { return &mPathFindSearch; }
 
   // CPatterned
   CProjectileInfo* ProjectileInfo() override;
