@@ -44,6 +44,7 @@ enum EPatternedAI {
   kPAI_EyeBall = 0x10,                 // Guessed name; EyeBall REL constructor.
   kPAI_FlyingPirate = 0x15,            // Guessed name; FlyingPirate REL constructor.
   kPAI_Grenchler = 0x16,               // Guessed name; Grenchler REL constructor.
+  kPAI_Ing = 0x18,                     // Guessed name; Ing REL constructor.
   kPAI_IngSpaceJumpGuardian = 0x1a,    // Guessed name; IngSpaceJumpGuardian REL constructor.
   kPAI_IngSpiderballGuardian = 0x1b,   // Guessed name; IngSpiderballGuardian REL constructor.
   kPAI_Lumite = 0x1d, // Guessed name; Lumite REL constructor.

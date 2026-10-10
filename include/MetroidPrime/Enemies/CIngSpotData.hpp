@@ -19,6 +19,7 @@ public:
   float GetMaxSpeed() const { return mMaxSpeed; }
   float GetMaxWallSpeed() const { return mMaxWallSpeed; }
   float GetBallPursuitSpeed() const { return mBallPursuitSpeed; }
+  float GetUnknown1c() const { return x1c_; } // Guessed name
   float GetTurnSpeed() const { return mTurnSpeed; }
   const CDamageVulnerability& GetVulnerability() const { return mVulnerability; }
   ushort GetIdleSound() const { return mIdleSound; }

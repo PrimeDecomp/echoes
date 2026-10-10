@@ -17,13 +17,16 @@ public:
   explicit CPathFindPointSearch(CPFArea* area);
   EResult Search(const CPFPoint& source, const CPFPoint& destination);
   EClosestPointResult FindClosestPhysicalPoint(const CVector3f& position, int& point,
-                                              const CPathFindPointSearchFilter& filter) const;
+                                               const CPathFindPointSearchFilter& filter) const;
+  CPFArea* GetArea() const { return mArea; }             // Guessed name
+  void SetArea(CPFArea* area) { mArea = area; }          // Guessed name
+  void ClearWaypoints() { mWaypoints.clear(); }          // Guessed name
   CVector3f GetSplinePoint(int waypoint, float t) const; // Guessed name
   const rstl::reserved_vector< CVector3f, 32 >& GetWaypoints() const { return mWaypoints; }
 
 private:
   EResult SearchInternal(const CPFPoint& source, const CPFPoint& destination); // Guessed name
-  float Heuristic(int point, const CVector3f& destination) const;          // Guessed name
+  float Heuristic(int point, const CVector3f& destination) const;              // Guessed name
 
   CPFArea* mArea;                                    // Guessed name
   rstl::reserved_vector< CVector3f, 32 > mWaypoints; // Guessed name
