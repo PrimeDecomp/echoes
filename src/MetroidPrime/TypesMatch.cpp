@@ -40,6 +40,7 @@
 #include "MetroidPrime/Enemies/CMetaree.hpp"
 #include "MetroidPrime/Enemies/CMetareeSwarm.hpp"
 #include "MetroidPrime/Enemies/CMetroid.hpp"
+#include "MetroidPrime/Enemies/CMinorIng.hpp"
 #include "MetroidPrime/Enemies/COctapedeSegment.hpp"
 #include "MetroidPrime/Enemies/CParasite.hpp"
 #include "MetroidPrime/Enemies/CPatterned.hpp"
@@ -352,7 +353,7 @@ TYPES_MATCH_IMPL(CSporbBase, CPatterned, kET_SporbBase)
 TYPES_MATCH_IMPL(CSporbNeedle, CPhysicsActor, kET_SporbNeedle)
 TYPES_MATCH_IMPL(CSporbTop, CPatterned, kET_SporbTop)
 TYPES_MATCH_IMPL(CSporbProjectile, CPatterned, kET_SporbProjectile)
-// 147: class not declared yet (MinorIng REL); parent CPatterned
+TYPES_MATCH_IMPL(CMinorIng, CPatterned, kET_MinorIng)
 // 148: class not declared yet (IngBoostBallGuardian REL); parent CPhysicsActor
 TYPES_MATCH_IMPL(CBlogg, CPatterned, kET_Blogg)
 TYPES_MATCH_IMPL(CWallWalker, CWallCrawler, kET_WallWalker)
@@ -636,7 +637,8 @@ CAST_TO_REF_IMPL(CSporbTop, kET_SporbTop)
 CAST_TO_PTR_IMPL(CSporbTop, kET_SporbTop)
 CAST_TO_REF_IMPL(CSporbProjectile, kET_SporbProjectile)
 CAST_TO_PTR_IMPL(CSporbProjectile, kET_SporbProjectile)
-// 147: class not declared yet (MinorIng REL)
+CAST_TO_REF_IMPL(CMinorIng, kET_MinorIng)
+CAST_TO_PTR_IMPL(CMinorIng, kET_MinorIng)
 // 148: class not declared yet (IngBoostBallGuardian REL)
 CAST_TO_REF_IMPL(CBlogg, kET_Blogg)
 CAST_TO_PTR_IMPL(CBlogg, kET_Blogg)

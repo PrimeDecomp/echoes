@@ -6,6 +6,13 @@ Sections:
 	.data       type:data align:8
 	.bss        type:bss align:8
 
+MetroidPrime/Enemies/CMinorIng.cpp:
+	.text       start:0x00000000 end:0x0000B484
+	.ctors      start:0x00000000 end:0x00000004
+	.rodata     start:0x00000000 end:0x000004D8
+	.data       start:0x00000000 end:0x000007A8
+	.bss        start:0x00000000 end:0x00000088
+
 REL/global_destructor_chain.c:
 	.text       start:0x0000B484 end:0x0000B4F8
 	.dtors      start:0x00000000 end:0x00000004 rename:.dtors$10

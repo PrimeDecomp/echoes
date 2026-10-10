@@ -144,6 +144,7 @@ enum EEntityType {
   kET_SporbNeedle = 144,               // Target-derived class tag.
   kET_SporbTop = 145,                  // Target-derived class tag.
   kET_SporbProjectile = 146,           // Target-derived class tag.
+  kET_MinorIng = 147,                  // Target-derived class tag.
   kET_Blogg = 149,                     // Target-derived class tag.
   kET_WallWalker = 150,                // Target-derived class tag.
   kET_Shredder = 151,                  // Target-derived class tag.
