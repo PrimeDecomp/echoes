@@ -11,7 +11,7 @@
 class CInputStream;
 class CFactoryFnReturn;
 class CVParamTransfer;
-class SObjectTag;
+struct SObjectTag;
 
 // PTLA resource. Nested type and method names are target-derived reconstructions.
 class CPortalAreaData {

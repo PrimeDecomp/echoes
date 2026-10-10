@@ -8,7 +8,7 @@
 #include "rstl/string.hpp"
 
 class CStringTable;
-class SLdrTransform;
+struct SLdrTransform;
 
 // Class, method and member names are guessed.
 class CScanTreeNode {

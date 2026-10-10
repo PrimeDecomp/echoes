@@ -22,7 +22,7 @@ class CScannableParameters;
 class CVector2f;
 class CVector3f;
 class CAABox;
-class TAreaId;
+struct TAreaId;
 class CModelData;
 class CHealthInfo;
 class CDamageVulnerability;
