@@ -25,6 +25,9 @@ public:
   void Render(const CStateManager& mgr) const override;
 
   void SetSlowedSpeed(float speed);
+  void SetAddColor(const CColor& color) { mDamageAddColor = color; }      // Guessed name
+  void SetFollowPlayer(bool follow) { mFollowPlayer = follow; }           // Guessed name
+  const CTransform4f& GetTurretTransform() const { return mTurretTransform; } // Guessed name
 
 private:
   bool IsTrackingPlayer() const;

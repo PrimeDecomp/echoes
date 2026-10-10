@@ -26,6 +26,7 @@ public:
 
   CAABox Transform(const CTransform4f& xf) const;
   const CAABox& GetBox() const { return mAabb; }
+  void SetBox(const CAABox& box) { mAabb = box; } // Guessed name
 
   static void SetStaticTableIndex(uint idx);
   static CCollisionPrimitive::Type GetType();
