@@ -114,6 +114,10 @@ inline SLdrGunTurretBase::SLdrGunTurretBase()
   poleSparksSound = 0;
   maxAudibleDistance = 100.0f;
   soundFallOff = 0.0f;
+  patterned.health.hI_KnockBackResistance = 2.0f;
+  patterned.echoParameters.isEchoEmitter = true;
+  actorInformation.lighting.ambientColor = CColor(1.0f, 1.0f, 1.0f, 1.0f);
+  actorInformation.visor.visorFlags = 0x0000000fu;
 }
 
 inline SLdrGunTurretBase::~SLdrGunTurretBase() {}

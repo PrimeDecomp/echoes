@@ -68,19 +68,33 @@ USHORT_COUNT_STRUCTS = {"CameraWaypoint", "SpiderBallWaypoint"}
 U16_COUNT_STRUCTS = {
     "ActorRotate",
     "AreaDamage",
+    "AtomicAlpha",
     "CameraHint",
+    "ChozoGhost",
     "ColorModulate",
     "ControlHint",
     "ControllerAction",
     "Debris",
     "DebrisExtended",
+    "DestructibleBarrier",
     "DistanceFog",
     "Dock",
+    "EyeBall",
+    "FishCloud",
     "FogVolume",
+    "GuiMenu",
+    "GuiSlider",
+    "GuiWidget",
+    "GunTurretBase",
+    "GunTurretTop",
+    "Metaree",
     "PickupGenerator",
     "PlayerStateChange",
     "PointOfInterest",
+    "Puffer",
     "Ripper",
+    "SafeZone",
+    "SafeZoneCrystal",
     "ScanTreeCategory",
     "ScanTreeInventory",
     "ScanTreeMenu",
@@ -96,10 +110,17 @@ U16_COUNT_STRUCTS = {
     "Steam",
     "Subtitle",
     "Trigger",
+    "Tryclops",
     "VisorFlare",
+    "WallWalker",
     "Water",
     "WorldTeleporter",
 }
+
+# Script object loaders whose loop index is declared before the count and whose
+# property IDs are read with ReadInt32 (LoadFrontEndDataNetwork,
+# ScriptFrontEndDataNetwork.rel).
+HOISTED_INDEX_STRUCTS = {"FrontEndDataNetwork"}
 
 PROFILE_DIRECTORY = Path(__file__).resolve().parent.parent / "config" / "loader_profiles"
 
@@ -351,6 +372,96 @@ NATIVE_INSTANCE_DEFAULTS: dict[str, tuple[tuple[int, ...], ...]] = {
         (0x7E397FED, 0xB028DB0E, 0xA33E5B0E),
         (0x7E397FED, 0x05AD250E, 0xCA19E8C6),
     ),
+    # ---- REL constructors (G2ME01 module loaders) ----
+    # SLdrAtomicAlpha, AtomicAlpha.rel
+    "SLdrAtomicAlpha": (
+        (0xB3774750, 0xCF90D15E, 0x3A2D17E4),
+        (0x7E397FED, 0xB028DB0E, 0xA33E5B0E),
+        (0x7E397FED, 0x05AD250E, 0xCA19E8C6),
+    ),
+    # SLdrMetaree, Metaree.rel
+    "SLdrMetaree": (
+        (0x255A4580, 0x5D298A43),
+        (0xB3774750, 0x4476BED8, 0x17ADDFC6),
+        (0x7E397FED, 0xB028DB0E, 0xA33E5B0E),
+        (0x7E397FED, 0x05AD250E, 0xCA19E8C6),
+    ),
+    # SLdrDestructibleBarrier, DestructibleBarrier.rel
+    "SLdrDestructibleBarrier": (
+        (0x255A4580, 0x5D298A43),
+        (0x7E397FED, 0xB028DB0E, 0xA33E5B0E),
+        (0x7E397FED, 0x05AD250E, 0xCA19E8C6),
+    ),
+    # SLdrEyeBall, EyeBall.rel
+    "SLdrEyeBall": (
+        (0x255A4580, 0x5D298A43),
+        (0xB3774750, 0xCF90D15E, 0x3A2D17E4),
+        (0xB3774750, 0x4476BED8, 0x17ADDFC6),
+        (0x7E397FED, 0xB028DB0E, 0xA33E5B0E),
+        (0x7E397FED, 0x05AD250E, 0xCA19E8C6),
+    ),
+    # SLdrFishCloud, FishCloud.rel
+    "SLdrFishCloud": ((0x255A4580, 0x5D298A43),),
+    # SLdrGunTurretBase, GunTurret.rel
+    "SLdrGunTurretBase": (
+        (0xB3774750, 0xCF90D15E, 0x3A2D17E4),
+        (0xB3774750, 0x4476BED8, 0x17ADDFC6),
+        (0x7E397FED, 0xB028DB0E, 0xA33E5B0E),
+        (0x7E397FED, 0x05AD250E, 0xCA19E8C6),
+    ),
+    # SLdrGunTurretTop, GunTurret.rel
+    "SLdrGunTurretTop": (
+        (0xB3774750, 0xCF90D15E, 0x3A2D17E4),
+        (0x7E397FED, 0xB028DB0E, 0xA33E5B0E),
+        (0x7E397FED, 0x05AD250E, 0xCA19E8C6),
+    ),
+    # SLdrParasite, Parasite.rel
+    "SLdrParasite": (
+        (0xB3774750, 0xCF90D15E, 0x3A2D17E4),
+        (0x7E397FED, 0xB028DB0E, 0xA33E5B0E),
+        (0x7E397FED, 0x05AD250E, 0xCA19E8C6),
+    ),
+    # SLdrBrizgee, Parasite.rel
+    "SLdrBrizgee": (
+        (0xB3774750, 0xCF90D15E, 0x3A2D17E4),
+        (0x7E397FED, 0xB028DB0E, 0xA33E5B0E),
+        (0x7E397FED, 0x05AD250E, 0xCA19E8C6),
+    ),
+    # SLdrCrystallite, Parasite.rel
+    "SLdrCrystallite": (
+        (0xB3774750, 0xCF90D15E, 0x3A2D17E4),
+        (0x7E397FED, 0xB028DB0E, 0xA33E5B0E),
+        (0x7E397FED, 0x05AD250E, 0xCA19E8C6),
+    ),
+    # SLdrPuffer, Puffer.rel
+    "SLdrPuffer": (
+        (0xB3774750, 0xCF90D15E, 0x3A2D17E4),
+        (0x7E397FED, 0xB028DB0E, 0xA33E5B0E),
+        (0x7E397FED, 0x05AD250E, 0xCA19E8C6),
+    ),
+    # SLdrFrontEndDataNetwork, ScriptFrontEndDataNetwork.rel
+    "SLdrFrontEndDataNetwork": ((0x255A4580, 0x5D298A43),),
+    # SLdrSafeZoneCrystal, ScriptSafeZone.rel
+    "SLdrSafeZoneCrystal": (
+        (0x255A4580, 0x5D298A43),
+        (0xD29C031D, 0xB028DB0E, 0xA33E5B0E),
+        (0xD29C031D, 0x05AD250E, 0xCA19E8C6),
+    ),
+    # SLdrTryclops, Tryclops.rel
+    "SLdrTryclops": (
+        (0xB3774750, 0xCF90D15E, 0x3A2D17E4),
+        (0x7E397FED, 0xB028DB0E, 0xA33E5B0E),
+        (0x7E397FED, 0x05AD250E, 0xCA19E8C6),
+    ),
+    # SLdrWallWalker, WallWalker.rel
+    "SLdrWallWalker": (
+        (0xB3774750, 0xCF90D15E, 0x3A2D17E4),
+        (0x7E397FED, 0xB028DB0E, 0xA33E5B0E),
+        (0x7E397FED, 0x05AD250E, 0xCA19E8C6),
+    ),
+    # SLdrGuiSlider, ScriptGui.rel
+    "SLdrGuiSlider": ((0x255A4580, 0x5D298A43),),
+    # ---- end REL constructors ----
 }
 
 # Header-only objects whose native constructor is an out-of-line function in the
@@ -1338,10 +1449,20 @@ class Generator:
         else:
             count = "  const int propertyCount = input.ReadUint16();"
         size_type = "ushort" if name in TWEAKS_USHORT_SIZE_STRUCTS else "u16"
-        lines = [
-            count,
-            "  for (int i = 0; i < propertyCount; ++i) {",
-            "    const uint propertyId = input.Get< uint >();",
+        if name in HOISTED_INDEX_STRUCTS:
+            lines = [
+                "  int i;",
+                count,
+                "  for (i = 0; i < propertyCount; ++i) {",
+                "    const uint propertyId = input.ReadInt32();",
+            ]
+        else:
+            lines = [
+                count,
+                "  for (int i = 0; i < propertyCount; ++i) {",
+                "    const uint propertyId = input.Get< uint >();",
+            ]
+        lines += [
             f"    const {size_type} propertySize = input.ReadUint16();",
             "    switch (propertyId) {",
         ]

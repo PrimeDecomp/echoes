@@ -65,6 +65,9 @@ inline SLdrSafeZoneCrystal::SLdrSafeZoneCrystal()
 , hitOffset(CVector3f::Zero())
 , effectOffset(CVector3f::Zero())
 , unknown_0xbbbee60b() {
+  editorProperties.unknown_0x5d298a43 = 0x00000003u;
+  actorParameters.lighting.ambientColor = CColor(1.0f, 1.0f, 1.0f, 1.0f);
+  actorParameters.visor.visorFlags = 0x0000000fu;
   safezoneType = 0;
   initiallyEntangled = false;
   maxTimeExpanded = 5.0f;
