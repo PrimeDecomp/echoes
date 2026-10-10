@@ -171,7 +171,7 @@ void CScriptPlayerTurret::Think(float dt, CStateManager& mgr) {
     mTargetElevation = 0.f;
   }
   const float diff = mTargetElevation - mElevation;
-  if (CMath::AbsF(diff) >= 0.0017453292f) {
+  if (CMath::AbsF(diff) >= (0.1f * (M_PIF / 180.f))) {
     float scale =
         1.f - CMath::PhongBlob(CMath::Clamp(0.f, CMath::AbsF(diff / (M_PIF / 2.f)), 1.f), 8.f);
     if (!blend) {
@@ -179,9 +179,9 @@ void CScriptPlayerTurret::Think(float dt, CStateManager& mgr) {
     }
     const float scaledStep = vertStep * scale;
     if (diff > 0.f) {
-      mElevation = CMath::Clamp(-3.1415927f, mElevation + scaledStep, mTargetElevation);
+      mElevation = CMath::Clamp(-M_PIF, mElevation + scaledStep, mTargetElevation);
     } else {
-      mElevation = CMath::Clamp(mTargetElevation, mElevation - scaledStep, 3.1415927f);
+      mElevation = CMath::Clamp(mTargetElevation, mElevation - scaledStep, M_PIF);
     }
   } else {
     mElevation = mTargetElevation;
@@ -479,7 +479,7 @@ void CScriptPlayerTurret::Fire(CStateManager& mgr) {
         mPlayerId, kInvalidUniqueId, 0, false, CVector3f::One(), CImpactVisorEffect::None(), false,
         true, false, 1.f, 4.f, 4.f);
     if (projectile != nullptr) {
-      projectile->AddCollisionCooldown(mHullId, 3.4028235e38f);
+      projectile->AddCollisionCooldown(mHullId, FLT_MAX);
       mgr.AddObject(projectile);
       if (CActor* base = TCastToPtr< CActor >(mgr.ObjectById(mBaseId))) {
         if (base->GetAnimationData() != nullptr) {
@@ -508,11 +508,12 @@ CEntity* LoadPlayerTurret(CStateManager& mgr, CInputStream& input, CEntityInfo& 
   return rs_new CScriptPlayerTurret(
       mgr.AllocateUniqueId(), sldrThis.editorProperties.name,
       LdrToEntityInfo(info, sldrThis.editorProperties), LdrToTransform4f(sldrThis.editorProperties),
-      sldrThis.flagsPlayerTurret, 0.017453292f * sldrThis.maxHorizRotationLeft,
-      0.017453292f * sldrThis.maxHorizRotationRight, 0.017453292f * sldrThis.maxVertElevationUp,
-      0.017453292f * sldrThis.maxVertElevationDown, 0.017453292f * sldrThis.damageAngle,
-      0.017453292f * sldrThis.horizSpeed, 0.017453292f * sldrThis.vertSpeed, sldrThis.fireRate,
-      LdrToDamageInfo(sldrThis.weaponDamage), sldrThis.weaponEffect,
+      sldrThis.flagsPlayerTurret, (M_PIF / 180.f) * sldrThis.maxHorizRotationLeft,
+      (M_PIF / 180.f) * sldrThis.maxHorizRotationRight,
+      (M_PIF / 180.f) * sldrThis.maxVertElevationUp,
+      (M_PIF / 180.f) * sldrThis.maxVertElevationDown, (M_PIF / 180.f) * sldrThis.damageAngle,
+      (M_PIF / 180.f) * sldrThis.horizSpeed, (M_PIF / 180.f) * sldrThis.vertSpeed,
+      sldrThis.fireRate, LdrToDamageInfo(sldrThis.weaponDamage), sldrThis.weaponEffect,
       sldrThis.weaponEffectMultiPlayer,
       sldrThis.sFXTurretRotation == -1 ? CSfxManager::kInternalInvalidSfxId
                                        : sldrThis.sFXTurretRotation,
