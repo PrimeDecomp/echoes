@@ -30,7 +30,7 @@ public:
   CScriptPlatform(TUniqueId uid, const rstl::string& name, const CEntityInfo& info,
                   const CTransform4f& xf, const CModelData& model, const CActorParameters& params,
                   const CAABox& bounds,
-                  const rstl::optional_object< TLockedToken< COBBTreeGroup > >& dcln,
+                  const rstl::optional_object< TLockedToken< const COBBTreeGroup > >& dcln,
                   const CHealthInfo& health, const CDamageVulnerability& vulnerability,
                   const CMaterialList& materials, bool renderRainSplashes, uint maxRainSplashes,
                   uint rainGenRate, const CGameSplineDesc& motionSpline, uint motionFlags,
@@ -117,7 +117,7 @@ private:
   CHealthInfo mInitialHealth;
   CHealthInfo mHealth;
   CDamageVulnerability mDamageVulnerability;
-  rstl::optional_object< TLockedToken< COBBTreeGroup > > mTreeGroupContainer;
+  rstl::optional_object< TLockedToken< const COBBTreeGroup > > mTreeGroupContainer;
   rstl::single_ptr< CCollisionPrimitive > mTreeGroup;
   rstl::vector< SRiders > mRiders;
   rstl::vector< SRiders > mStaticSlaves;

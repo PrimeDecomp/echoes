@@ -72,7 +72,7 @@ private:
   TUniqueId mOwner;
   CVector3f mBoxSize;
   CVector3f mCenter;
-  rstl::single_ptr< COBBTreeGroup > mObbContainer;
+  rstl::single_ptr< const COBBTreeGroup > mObbContainer;
   rstl::single_ptr< CCollidableOBBTreeGroup > mObbTreeGroupPrimitive;
   rstl::single_ptr< CCollidableAABox > mAaboxPrimitive;
   rstl::single_ptr< CCollidableSphere > mSpherePrimitive;

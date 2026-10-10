@@ -56,10 +56,9 @@ CScriptActor::CScriptActor(TUniqueId uid, const rstl::string& name, CEntityInfo&
     }
   }
   if (collisionTree != kInvalidAssetId) {
-    mTreeGroupContainer =
-        TLockedToken< COBBTreeGroup >(gpSimplePool->GetObj(SObjectTag('DCLN', collisionTree)));
-    mCollisionPrimitive = rs_new CCollidableOBBTreeGroup(
-        static_cast< const COBBTreeGroup* >(**mTreeGroupContainer), GetMaterialList());
+    mTreeGroupContainer = TLockedToken< const COBBTreeGroup >(
+        gpSimplePool->GetObj(SObjectTag('DCLN', collisionTree)));
+    mCollisionPrimitive = rs_new CCollidableOBBTreeGroup(**mTreeGroupContainer, GetMaterialList());
   }
   SetMomentumWR(CVector3f(0.f, 0.f, -zMomentum));
   AllocateEchoEmitter(true, GetBoundingBox(), echoParameters);
