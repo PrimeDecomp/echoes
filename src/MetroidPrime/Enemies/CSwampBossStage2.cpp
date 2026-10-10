@@ -1087,7 +1087,7 @@ bool CSwampBossStage2::IsLevel(CStateManager& mgr, const CTriggerData& data) con
   const CVector2f targetDirection = (xd60_ - GetTranslation()).ToVec2f().AsNormalized();
   const CVector2f facing = GetTransform().GetForward().ToVec2f();
   const float alignment = CVector2f::Dot(targetDirection, facing);
-  static const float skMinAlignment = CMath::FastCosR(0.034906585f);
+  static const float skMinAlignment = CMath::FastCosR(M_PIF / 90.f);
   bool level = false;
   if (locomotion) {
     if (xe24_ < 0.2f && heightDifference < 1.f && distance < 2.f && alignment > skMinAlignment) {
