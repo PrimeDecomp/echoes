@@ -99,6 +99,7 @@ enum EWeaponCollisionResponseTypes {
   kWCR_PuddleSporeWeakSpot = 94, // Guessed name
   kWCR_Unknown105 = 105,         // Guessed name
   kWCR_Unknown107 = 107, // Last response in Echoes's extended reflection range.
+  kWCR_SwampBossStage1Reflect = 108, // Guessed name; set by SwampBossStage1 on its reflecting collision actors.
   // Guessed names: target-derived fallback ranges, not individual enemy identities.
   kWCR_EnemyNormalFirst = 19,
   kWCR_EnemyNormalLast = 47,
