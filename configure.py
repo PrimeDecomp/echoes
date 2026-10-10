@@ -1855,6 +1855,13 @@ config.libs = [
         extra_cflags=["-pool off"],
     ),
     Rel(
+        "WallCrawler",
+        [
+            Object(NonMatching, "MetroidPrime/Enemies/CWallCrawler.cpp"),
+        ],
+        extra_cflags=["-pool off"],
+    ),
+    Rel(
         "OctapedeSegment",
         [
             Object(NonMatching, "MetroidPrime/Enemies/COctapedeSegment.cpp"),

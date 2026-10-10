@@ -14,6 +14,7 @@ class CScriptWaypoint;
 class CWallCrawler : public CPatterned {
 public:
   enum EType {
+    kT_Parasite = 0, // Guessed name; Prime wall walker parasite type
     kT_PillBug = 5,
     kT_OctapedeSegment = 8, // Guessed name
     kT_WallWalker = 9
@@ -51,8 +52,10 @@ public:
   void AlignToFloor(CStateManager& mgr, float radius, const CVector3f& newPos, float dt);
   void AlignToPlane(const CUnitVector3f& normal, float dt);
   const CPlane& GetConstraintPlane() const;
+  int GetConstraintType() const; // Guessed name
   static CVector3f ProjectVectorToPlane(const CVector3f& vec, const CVector3f& planeDir);
-  static CVector3f GetClosestPointOnPlane(const CVector3f& point, const CPlane& plane); // Guessed name
+  static CVector3f GetClosestPointOnPlane(const CVector3f& point,
+                                          const CPlane& plane); // Guessed name
 
 protected:
   CCollisionSurface mAlignSurface;
@@ -66,11 +69,10 @@ protected:
   float mBendingHackWeight;
   EType mType;
   short mThinkCounter;
-  int x834_;
-  CVector3f x838_;
-  float x844_;
-  float x848_;
-  float x84c_;
+  int mConstraintType;     // Guessed name; set by SetConstraint
+  CPlane mConstraintPlane; // Guessed name; plane written by UpdateConstraintPlane
+  float mTouchBoundsScale; // Guessed name; scale for GetTouchBounds
+  float mFloorAlignRate;   // Guessed name; PreThink lerps toward the floor at 60 * rate * dt
   float x850_;
   float x854_;
   float x858_;
