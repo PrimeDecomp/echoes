@@ -54,10 +54,10 @@ class CCommandoShieldData {
 public:
   CCommandoShieldData(const CDamageInfo& chargeDamage, const CDamageVulnerability& vulnerability,
                       float chargeMinAttackDist, float chargeMaxAttackDist, float chargeSpeed,
-                      CAssetId explodeEffect, ushort sound_Explode, float x60, float x64,
-                      float armChance, float armTime, float armTimeVariation,
-                      CAssetId armExplodeEffect, CAssetId chargeEffect, CAssetId armEffect,
-                      ushort sound_TurnOn, ushort sound_TurnOff)
+                      CAssetId explodeEffect, ushort sound_Explode, float armDamageThreshold,
+                      float armDamageDecayTime, float armChance, float armTime,
+                      float armTimeVariation, CAssetId armExplodeEffect, CAssetId chargeEffect,
+                      CAssetId armEffect, ushort sound_TurnOn, ushort sound_TurnOff)
   : mChargeDamage(chargeDamage)
   , mVulnerability(vulnerability)
   , mChargeMinAttackDist(chargeMinAttackDist)
@@ -65,8 +65,8 @@ public:
   , mChargeSpeed(chargeSpeed)
   , mExplodeEffect(explodeEffect)
   , mSound_Explode(sound_Explode)
-  , x60_(x60)
-  , x64_(x64)
+  , mArmDamageThreshold(armDamageThreshold)
+  , mArmDamageDecayTime(armDamageDecayTime)
   , mArmChance(armChance)
   , mArmTime(armTime)
   , mArmTimeVariation(armTimeVariation)
@@ -83,8 +83,9 @@ public:
   float mChargeSpeed;
   CAssetId mExplodeEffect;
   ushort mSound_Explode;
-  float x60_;
-  float x64_;
+  float mArmDamageThreshold; // Guessed name; recent damage that makes the pirate arm its shield
+  float mArmDamageDecayTime; // Guessed name; seconds for the recent damage to decay from the
+                             // threshold
   float mArmChance;
   float mArmTime;
   float mArmTimeVariation;
@@ -101,7 +102,7 @@ class CCommandoPirateData {
 public:
   CCommandoPirateData(uint flags, float aggressiveness, float coverCheck, float searchRadius,
                       float dodgeCheck, ushort sound_Impact, ushort sound_Hurled,
-                      ushort sound_Death, ushort unknown_0xfca76593, int unknown_0x467c3d94,
+                      ushort sound_Death, ushort sound_Drowning, int drowningEffect,
                       const CDamageInfo& bladeDamage, CAssetId projectile,
                       const CDamageInfo& projectileDamage, ushort sound_Projectile,
                       float hearingRadius, float intraBurstShotTime, float intraBurstShotVariation,
@@ -109,8 +110,8 @@ public:
   : mSound_Impact(sound_Impact)
   , mSound_Hurled(sound_Hurled)
   , mSound_Death(sound_Death)
-  , x6_(unknown_0xfca76593)
-  , x8_(unknown_0x467c3d94)
+  , mSound_Drowning(sound_Drowning)
+  , mDrowningEffect(drowningEffect)
   , mBladeDamage(bladeDamage)
   , mProjectile(projectile)
   , mProjectileDamage(projectileDamage)
@@ -124,30 +125,45 @@ public:
   , mIntraBurstShotVariation(intraBurstShotVariation)
   , mGrenade(grenade)
   , mShield(shield)
-  , x15c_24_(flags & 0x1)
-  , x15c_25_(flags & 0x2)
-  , x15c_26_(flags & 0x4)
-  , x15c_27_(flags & 0x8)
-  , x15c_28_(flags & 0x10)
-  , x15c_29_(flags & 0x20)
-  , x15c_30_(flags & 0x40)
-  , x15c_31_(flags & 0x80)
-  , x15d_24_(flags & 0x100)
-  , x15d_25_(flags & 0x200)
-  , x15d_26_(flags & 0x400)
-  , x15d_27_(flags & 0x800) {}
+  , mPendingAmbush(flags & 0x1)
+  , mBreakAmbush(flags & 0x2)
+  , mNoDodge(flags & 0x4)
+  , mMelee(flags & 0x8)
+  , mStationary(flags & 0x10)
+  , mNoKnockbackImpulseReset(flags & 0x20)
+  , mNoMeleeAttack(flags & 0x40)
+  , mFloatingCorpse(flags & 0x80)
+  , mTrooper(flags & 0x100)
+  , mNoShieldCharge(flags & 0x200)
+  , mNoArmShield(flags & 0x400)
+  , mNoGrenadeAttack(flags & 0x800) {}
 
+  /*
+   * Script flags (SLdr property 0x7abed4ce); names are inferred from how the REL uses each bit.
+   * 0x1: pendingAmbush
+   * 0x2: breakAmbush
+   * 0x4: noDodge
+   * 0x8: melee (never shoots)
+   * 0x10: stationary (never retreats, jumps back, takes cover or path finds)
+   * 0x20: noKnockbackImpulseReset
+   * 0x40: noMeleeAttack
+   * 0x80: floatingCorpse
+   * 0x100: trooper (warps in and out)
+   * 0x200: noShieldCharge
+   * 0x400: noArmShield
+   * 0x800: noGrenadeAttack
+   */
   ushort mSound_Impact;
   ushort mSound_Hurled;
   ushort mSound_Death;
-  ushort x6_;
-  int x8_;
+  ushort mSound_Drowning; // Guessed name; played when the pirate drowns
+  int mDrowningEffect;    // Guessed name; CAssetId of the explosion spawned when the pirate drowns
   CDamageInfo mBladeDamage;
   CAssetId mProjectile;
   CDamageInfo mProjectileDamage;
   ushort mSound_Projectile;
   float mAggressiveness;
-  float mCoverCheck;
+  float mCoverCheck; // Guessed name
   float mSearchRadius;
   float mDodgeCheck;
   float mHearingRadius;
@@ -155,18 +171,18 @@ public:
   float mIntraBurstShotVariation;
   CCommandoGrenadeData mGrenade;
   CCommandoShieldData mShield;
-  bool x15c_24_ : 1;
-  bool x15c_25_ : 1;
-  bool x15c_26_ : 1;
-  bool x15c_27_ : 1;
-  bool x15c_28_ : 1;
-  bool x15c_29_ : 1;
-  bool x15c_30_ : 1;
-  bool x15c_31_ : 1;
-  bool x15d_24_ : 1;
-  bool x15d_25_ : 1;
-  bool x15d_26_ : 1;
-  bool x15d_27_ : 1;
+  bool mPendingAmbush : 1;           // Guessed name
+  bool mBreakAmbush : 1;             // Guessed name
+  bool mNoDodge : 1;                 // Guessed name
+  bool mMelee : 1;                   // Guessed name
+  bool mStationary : 1;              // Guessed name
+  bool mNoKnockbackImpulseReset : 1; // Guessed name
+  bool mNoMeleeAttack : 1;           // Guessed name
+  bool mFloatingCorpse : 1;          // Guessed name
+  bool mTrooper : 1;                 // Guessed name
+  bool mNoShieldCharge : 1;          // Guessed name
+  bool mNoArmShield : 1;             // Guessed name
+  bool mNoGrenadeAttack : 1;         // Guessed name
 };
 CHECK_SIZEOF(CCommandoPirateData, 0x160)
 // Guessed class: the Commando Pirate, a shielded pirate that charges, jumps, boosts, fires
@@ -327,9 +343,9 @@ private:
   static const SBurst skBurstsD[];
   static const SBurst* skBursts[];
 
-  CCommandoPirateData mData; // Guessed name
-  int x920_;
-  int x924_;
+  CCommandoPirateData mData;                                      // Guessed name
+  int mWarpPhase;                                                 // Guessed name
+  int mActionPhase;                                               // Guessed name
   CPathFindSearch mPathFindSearch;                                // Guessed name
   CProjectileInfo mProjectileInfo;                                // Guessed name
   rstl::single_ptr< CCollisionActorManager > mShieldCollisionMgr; // Guessed name
@@ -338,94 +354,94 @@ private:
   CBoneTracking mBoneTracking;                                    // Guessed name
   CLineOfSightTracker mLineOfSightTracker;                        // Guessed name
   CBurstFire mBurstFire;                                          // Guessed name
-  uint xb50_;
-  uint xb54_;
-  uint xb58_;
-  float xb5c_;
-  float xb60_;
-  float xb64_;
-  float xb68_;
-  float xb6c_;
-  float xb70_;
-  float mGrenadeAttackTimer; // Guessed name
-  float xb78_;
-  float xb7c_;
-  float xb80_;
-  float xb84_;
-  float xb88_;
-  float xb8c_;
-  float xb90_;
-  CVector3f xb94_;
-  CVector3f xba0_;
-  CVector3f xbac_;
-  CVector3f xbb8_;
-  TUniqueId xbc4_;
-  TUniqueId xbc6_;
-  TUniqueId xbc8_;
-  TUniqueId xbca_;
-  TUniqueId xbcc_;
-  TUniqueId xbce_;
-  TUniqueId xbd0_;
-  TUniqueId xbd2_;
-  TUniqueId xbd4_;
-  TUniqueId xbd6_;
-  TUniqueId xbd8_;
-  TUniqueId xbda_;
-  pas::EStepDirection mDodgeDir; // Guessed name
-  float xbe0_;
-  float xbe4_;
-  float xbe8_;
-  float xbec_;
-  CVector3f xbf0_;
-  rstl::single_ptr< CPirateRagDoll > mRagDoll; // Guessed name
-  float xc00_;
-  CSfxHandle xc04_;
+  uint mBurstCount;                                               // Guessed name
+  uint mNextShieldChargeBurst;                                    // Guessed name
+  uint mNextArmShieldBurst;                                       // Guessed name
+  float mBurstCooldown;                                           // Guessed name
+  float mTimeSinceHeardShot;                                      // Guessed name
+  float mTimeSinceHit;                                            // Guessed name
+  float mDodgeCheckTimer;                                         // Guessed name
+  float mCoverCheckTimer;                                         // Guessed name
+  float mAggressionCheckTimer;                                    // Guessed name
+  float mGrenadeAttackTimer;                                      // Guessed name
+  float mJumpPointSearchTimer;                                    // Guessed name
+  float mTimeSinceMelee;                                          // Guessed name
+  float mArmShieldTimer;                                          // Guessed name
+  float mChargeBlockedTime;                                       // Guessed name
+  float mChargeDuration;                                          // Guessed name
+  float mSeekCoverTime;                                           // Guessed name
+  float mSeekCoverTimeLimit;                                      // Guessed name
+  CVector3f mTargetPosition;
+  CVector3f mFaceDirection;
+  CVector3f mChargeUp;
+  CVector3f mChargeCollisionNormal;
+  TUniqueId mTeamAiMgrId;             // Guessed name
+  TUniqueId mShieldCollisionActorId;  // Guessed name
+  TUniqueId mBladeCollisionActorId;   // Guessed name
+  TUniqueId mTargetId;                // Guessed name
+  TUniqueId mAlertedTargetId;         // Guessed name
+  TUniqueId mRetreatWaypointId;       // Guessed name
+  TUniqueId mJumpPointId;             // Guessed name
+  TUniqueId mCoverPointId;            // Guessed name
+  TUniqueId mLastCoverPointId;        // Guessed name
+  TUniqueId mWallHangWaypointId;      // Guessed name
+  TUniqueId mSpawnedObjectId;         // Guessed name
+  TUniqueId mAttackPatternWaypointId; // Guessed name
+  pas::EStepDirection mDodgeDir;      // Guessed name
+  float mJumpBackDistance;            // Guessed name
+  float mDodgeDistance;               // Guessed name
+  float mJumpDistance;                // Guessed name
+  float mJumpApexHeight;              // Guessed name
+  CVector3f mJumpDestination;
+  rstl::single_ptr< CPirateRagDoll > mRagDoll;                                      // Guessed name
+  float mRagDollTimer;                                                              // Guessed name
+  CSfxHandle mHurledSfxHandle;                                                      // Guessed name
   rstl::optional_object< TLockedToken< CGenDescription > > mShieldExplodeEffect;    // Guessed name
   rstl::optional_object< TLockedToken< CGenDescription > > mArmShieldExplodeEffect; // Guessed name
-  rstl::optional_object< TLockedToken< CGenDescription > > mUnknownEffect;          // Guessed name
+  rstl::optional_object< TLockedToken< CGenDescription > > mDrowningEffect;         // Guessed name
   CSfxHandle mSfxHandle;                                                            // Guessed name
   rstl::single_ptr< CElementGen > mArmShieldEffect;                                 // Guessed name
   rstl::single_ptr< CElementGen > mShieldChargeEffect;                              // Guessed name
-  float xc44_;
-  float xc48_;
-  int xc4c_;
-  float xc50_;
-  int xc54_;
-  float xc58_;
-  CSegId mHeadSeg;       // Guessed name
-  CSegId mLaunchSeg;     // Guessed name
-  CSegId mGunSeg;        // Guessed name
-  CSegId mGrenadeSeg;    // Guessed name
-  CSegId mRightWristSeg; // Guessed name
-  CSegId mRightElbowSeg; // Guessed name
-  CSegId mLeftWristSeg;  // Guessed name
-  bool xc63_24_ : 1;
-  bool xc63_25_ : 1;
-  bool xc63_26_ : 1;
-  bool xc63_27_ : 1;
-  bool xc63_28_ : 1;
-  bool xc63_29_ : 1;
-  bool xc63_30_ : 1;
-  bool xc63_31_ : 1;
-  bool xc64_24_ : 1;
-  bool xc64_25_ : 1;
-  bool xc64_26_ : 1;
-  bool xc64_27_ : 1;
-  bool xc64_28_ : 1;
-  bool xc64_29_ : 1;
-  bool xc64_30_ : 1;
-  bool xc64_31_ : 1;
-  bool xc65_24_ : 1;
-  bool xc65_25_ : 1;
-  bool xc65_26_ : 1;
-  bool xc65_27_ : 1;
-  bool xc65_28_ : 1;
-  bool xc65_29_ : 1;
-  bool xc65_30_ : 1;
-  bool xc65_31_ : 1;
-  bool xc66_24_ : 1;
-  bool xc66_25_ : 1;
-  bool xc66_26_ : 1;
+  float mShieldEffectScale;                                                         // Guessed name
+  float mShieldEffectTargetScale;                                                   // Guessed name
+  int mShieldEffectType;                                                            // Guessed name
+  float mRecentDamage;                                                              // Guessed name
+  int mMeleeVariant;                                                                // Guessed name
+  float mWarpAnimTime;                                                              // Guessed name
+  CSegId mHeadSeg;                                                                  // Guessed name
+  CSegId mLaunchSeg;                                                                // Guessed name
+  CSegId mGunSeg;                                                                   // Guessed name
+  CSegId mGrenadeSeg;                                                               // Guessed name
+  CSegId mRightWristSeg;                                                            // Guessed name
+  CSegId mRightElbowSeg;                                                            // Guessed name
+  CSegId mLeftWristSeg;                                                             // Guessed name
+  bool mPathBlocked : 1;                                                            // Guessed name
+  bool mEnableRetreat : 1;                                                          // Guessed name
+  bool mWarpInRequested : 1;                                                        // Guessed name
+  bool mDeleteAfterWarpOut : 1;                                                     // Guessed name
+  bool mJumpVelSet : 1;                                                             // Guessed name
+  bool mEnableDodge : 1;                                                            // Guessed name
+  bool mEnableGrenadeAttack : 1;                                                    // Guessed name
+  bool mCoverCheck : 1;                                                             // Guessed name
+  bool mArmShieldWanted : 1;                                                        // Guessed name
+  bool mAggressive : 1;                                                             // Guessed name
+  bool mStopped : 1;                                                                // Guessed name
+  bool mAdditiveAimEnabled : 1;                                                     // Guessed name
+  bool mChargeStarted : 1;                                                          // Guessed name
+  bool mAbortShield : 1;                                                            // Guessed name
+  bool mChargeBlocked : 1;                                                          // Guessed name
+  bool mShieldBroken : 1;                                                           // Guessed name
+  bool mPathDestValid : 1;                                                          // Guessed name
+  bool mWarpTimeCaptured : 1;                                                       // Guessed name
+  bool mMeleeAttacking : 1;                                                         // Guessed name
+  bool mGettingUp : 1;                                                              // Guessed name
+  bool mArmingShield : 1;                                                           // Guessed name
+  bool mShieldCharging : 1;                                                         // Guessed name
+  bool mInWallHang : 1;                                                             // Guessed name
+  bool mEGrenadeAttacking : 1;                                                      // Guessed name
+  bool mFollowingAttackPattern : 1;                                                 // Guessed name
+  bool mSeekingCover : 1;                                                           // Guessed name
+  bool mShieldOn : 1;                                                               // Guessed name
 };
 CHECK_SIZEOF(CCommandoPirate, 0xc68)
 
