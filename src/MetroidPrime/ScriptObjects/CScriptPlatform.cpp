@@ -35,9 +35,9 @@
 CScriptPlatform::CScriptPlatform(
     TUniqueId uid, const rstl::string& name, const CEntityInfo& info, const CTransform4f& xf,
     const CModelData& model, const CActorParameters& params, const CAABox& bounds,
-    const rstl::optional_object< TLockedToken< COBBTreeGroup > >& dcln, const CHealthInfo& health,
-    const CDamageVulnerability& vulnerability, const CMaterialList& materials,
-    bool renderRainSplashes, uint maxRainSplashes, uint rainGenRate,
+    const rstl::optional_object< TLockedToken< const COBBTreeGroup > >& dcln,
+    const CHealthInfo& health, const CDamageVulnerability& vulnerability,
+    const CMaterialList& materials, bool renderRainSplashes, uint maxRainSplashes, uint rainGenRate,
     const CGameSplineDesc& motionSpline, uint motionFlags, const CVector3f& conveyorVelocity,
     const CMayaSpline& rollSpline, const CMayaSpline& yawSpline, const CMayaSpline& pitchSpline,
     float initialTime, float randomAnimationOffset)
@@ -939,9 +939,9 @@ CEntity* LoadPlatform(CStateManager& mgr, CInputStream& input, CEntityInfo& info
     bounds = model->GetBounds(LdrToTransform4f(sldrThis.editorProperties).GetRotation());
   }
 
-  rstl::optional_object< TLockedToken< COBBTreeGroup > > dcln;
+  rstl::optional_object< TLockedToken< const COBBTreeGroup > > dcln;
   if (gpResourceFactory->GetResourceTypeById(sldrThis.collisionModel) != 0) {
-    dcln = TLockedToken< COBBTreeGroup >(
+    dcln = TLockedToken< const COBBTreeGroup >(
         gpSimplePool->GetObj(SObjectTag('DCLN', sldrThis.collisionModel)));
   }
 

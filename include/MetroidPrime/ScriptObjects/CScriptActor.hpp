@@ -71,7 +71,7 @@ protected:
   CHealthInfo mCurrentHealth;
   CDamageVulnerability mDamageVulnerability;
   rstl::optional_object< CProjectileInfo > mProjectileInfo;
-  rstl::optional_object< TLockedToken< COBBTreeGroup > > mTreeGroupContainer;
+  rstl::optional_object< TLockedToken< const COBBTreeGroup > > mTreeGroupContainer;
   rstl::single_ptr< CCollisionPrimitive > mCollisionPrimitive;
   rstl::single_ptr< CPlane > mPortalPlane;
   float mFadeInTime;

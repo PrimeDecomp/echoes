@@ -40,10 +40,10 @@ static const CMaterialList skStaticGeometryMaterials(sStaticGeometryMaterial0,
                                                      sStaticGeometryMaterial1);
 
 // Guessed names: prebuilt OBB trees for the unit primitives.
-static rstl::optional_object< TLockedToken< COBBTreeGroup > > sUnitCube;
-static rstl::optional_object< TLockedToken< COBBTreeGroup > > sUnitSphereLow;
-static rstl::optional_object< TLockedToken< COBBTreeGroup > > sUnitSphereMedium;
-static rstl::optional_object< TLockedToken< COBBTreeGroup > > sUnitSphereHigh;
+static rstl::optional_object< TLockedToken< const COBBTreeGroup > > sUnitCube;
+static rstl::optional_object< TLockedToken< const COBBTreeGroup > > sUnitSphereLow;
+static rstl::optional_object< TLockedToken< const COBBTreeGroup > > sUnitSphereMedium;
+static rstl::optional_object< TLockedToken< const COBBTreeGroup > > sUnitSphereHigh;
 static uchar* sDuplicatePrimitiveBuffer; // Guessed name.
 
 static float CollisionImpulseFiniteVsInfinite(float, float, float);
@@ -91,10 +91,10 @@ void CGameCollision::InitCollision(CStateManager* mgr) {
                                                        sDuplicatePrimitiveBuffer + 0x20e0, 0x1400);
   }
 
-  sUnitCube = TLockedToken< COBBTreeGroup >(gpSimplePool->GetObj("UnitCube"));
-  sUnitSphereLow = TLockedToken< COBBTreeGroup >(gpSimplePool->GetObj("UnitSphere_Low"));
-  sUnitSphereMedium = TLockedToken< COBBTreeGroup >(gpSimplePool->GetObj("UnitSphere_Med"));
-  sUnitSphereHigh = TLockedToken< COBBTreeGroup >(gpSimplePool->GetObj("UnitSphere_High"));
+  sUnitCube = TLockedToken< const COBBTreeGroup >(gpSimplePool->GetObj("UnitCube"));
+  sUnitSphereLow = TLockedToken< const COBBTreeGroup >(gpSimplePool->GetObj("UnitSphere_Low"));
+  sUnitSphereMedium = TLockedToken< const COBBTreeGroup >(gpSimplePool->GetObj("UnitSphere_Med"));
+  sUnitSphereHigh = TLockedToken< const COBBTreeGroup >(gpSimplePool->GetObj("UnitSphere_High"));
   COBBTree::SetPrebuiltTree((*sUnitCube.data())->GetTree(0), COBBTree::kPBT_UnitCube);
   COBBTree::SetPrebuiltTree((*sUnitSphereLow.data())->GetTree(0), COBBTree::kPBT_UnitSphereLow);
   COBBTree::SetPrebuiltTree((*sUnitSphereMedium.data())->GetTree(0),
@@ -103,10 +103,10 @@ void CGameCollision::InitCollision(CStateManager* mgr) {
 }
 
 void CGameCollision::UninitializeCollision() {
-  sUnitCube = rstl::optional_object< TLockedToken< COBBTreeGroup > >();
-  sUnitSphereLow = rstl::optional_object< TLockedToken< COBBTreeGroup > >();
-  sUnitSphereMedium = rstl::optional_object< TLockedToken< COBBTreeGroup > >();
-  sUnitSphereHigh = rstl::optional_object< TLockedToken< COBBTreeGroup > >();
+  sUnitCube = rstl::optional_object< TLockedToken< const COBBTreeGroup > >();
+  sUnitSphereLow = rstl::optional_object< TLockedToken< const COBBTreeGroup > >();
+  sUnitSphereMedium = rstl::optional_object< TLockedToken< const COBBTreeGroup > >();
+  sUnitSphereHigh = rstl::optional_object< TLockedToken< const COBBTreeGroup > >();
   COBBTree::SetPrebuiltTree(nullptr, COBBTree::kPBT_UnitCube);
   COBBTree::SetPrebuiltTree(nullptr, COBBTree::kPBT_UnitSphereLow);
   COBBTree::SetPrebuiltTree(nullptr, COBBTree::kPBT_UnitSphereMedium);
