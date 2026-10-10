@@ -35,6 +35,7 @@ public:
   float GetAdditiveFlinchWeight() const;
   float GetFlinchRemainingTime() const { return mFlinchRemainingTime; } // Guessed name
   void SetSeverity(pas::ESeverity severity) { mSeverity = severity; }   // Guessed name
+  void SetFlinchType(int type) { mFlinchType = type; } // Guessed name
 
   // Guessed names, correlated with Prime's impulse implementation.
   void ApplyImpulse(float dt, CPhysicsActor& actor);
