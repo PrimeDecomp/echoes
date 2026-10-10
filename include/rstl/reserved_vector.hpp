@@ -92,7 +92,7 @@ public:
       return;
     }
     if (mCount > count) {
-      destroy(data() + count, data() + mCount);
+      destroy(begin() + count, end());
     } else {
       uninitialized_fill_n(data() + mCount, count - mCount, item);
     }

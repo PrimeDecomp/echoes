@@ -581,8 +581,10 @@ void CCubeRenderer::RemoveStaticGeometry(const rstl::vector< CMetroidModelInstan
 void CCubeRenderer::SetModelMatrix(const CTransform4f& xf) { CGraphics::SetModelMatrix(xf); }
 
 void CCubeRenderer::SetWorldViewpoint(const CTransform4f& xf) {
-  CGraphics::SetViewPointMatrix(xf);
-  mViewPlane = CPlane(xf.GetTranslation(), CUnitVector3f(xf.GetForward(), CUnitVector3f::kN_No));
+    CGraphics::SetViewPointMatrix(xf);
+    CVector3f vec0 = xf.GetForward();
+    *(CVector3f*)((char*)this + 0xa0) = vec0;
+    *(float*)((char*)this + 0xac) = CVector3f::Dot(vec0, xf.GetTranslation());
 }
 
 void CCubeRenderer::BeginScene() {
@@ -1243,14 +1245,18 @@ void CCubeRenderer::SetWorldFog(ERglFogMode mode, float start, float end, const 
 }
 
 int CCubeRenderer::GetStaticWorldDataSize() {
-  int size = 0;
-  for (rstl::list< CAreaListItem >::const_iterator area = mAreaListItems.begin();
-       area != mAreaListItems.end(); ++area) {
-    if (area->mTextures.get() != nullptr) {
-      size += area->mTextures->size() * sizeof(TCachedToken< CTexture >);
+    rstl::list<CCubeRenderer::CAreaListItem, rstl::rmemory_allocator>::node* node2;
+    rstl::list < CCubeRenderer::CAreaListItem , rstl::rmemory_allocator >::node* node3 = *(rstl::list<CCubeRenderer::CAreaListItem, rstl::rmemory_allocator>::node**)((char*)this + 0x20);
+    int result = 0;
+    node2 = *(rstl::list<CCubeRenderer::CAreaListItem, rstl::rmemory_allocator>::node**)((char*)this + 0x24);
+    while (node3 != node2) {
+        unsigned int val = *(int*)((char*)node3 + 0x20);
+        if (val != 0) {
+            result = result + *(int*)(val + 0x4) * 12;
+        }
+        node3 = (rstl::list<CCubeRenderer::CAreaListItem, rstl::rmemory_allocator>::node*)*(int*)((char*)node3 + 0x4);
     }
-  }
-  return size;
+    return result;
 }
 
 void CCubeRenderer::DrawFogFan(const CVector3f* vertices, int count) {
@@ -4289,4 +4295,17 @@ void ReleaseRendererWorkspace() { Buckets::Shutdown(); }
 
 void CCubeRenderer::DrawString(const char* text, int x, int y) {
   mFont.DrawString(text, x, y, CColor::White());
+}
+
+extern "C" void fn_802729B4();
+extern "C" void fn_80272958() {
+    uint* ptr = &TOneStatic<CCubeRenderer>::ReferenceCount();
+    *ptr = *ptr + 1;
+    fn_802729B4();
+}
+
+extern "C" void fn_80270698(const char* ptr, int obj) {
+    for (int i = *(int*)ptr; i != (unsigned int)*(int*)obj; i += 12) {
+        ((TCachedToken<CTexture>*)i)->~TCachedToken<CTexture>();
+    }
 }

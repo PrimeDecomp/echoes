@@ -1252,30 +1252,43 @@ void CCollisionCacheWriter::AddTriangle(const CCollisionSurface& surface, ushort
   mLeafBounds->AccumulateBounds(surface.GetVert(2));
 }
 
-void CMetroidAreaCollider::CacheAllNodes(const CAreaOctTree::Node& node,
-                                         CCollisionCacheWriter& writer) {
-  if (node.GetTreeType() == CAreaOctTree::Node::kTT_Leaf) {
-    writer.BeginLeaf(CAABox::MakeMaxInvertedBox());
-    CAreaOctTree::TriListReference list = node.GetTriangleArray();
-    const CAreaOctTree& tree = node.GetOwner();
-    const CAreaOctTree& owner = tree;
-    int size = list.GetSize();
-    writer.ReserveTriangles(size);
-    for (int i = 0; i < size; ++i) {
-      uint index = list.GetAt(i);
-      if (spDupTriangleList[index] != sDupPrimitiveCheckCount) {
-        spDupTriangleList[index] = sDupPrimitiveCheckCount;
-        CCollisionSurface surface = owner.GetTriangle(index);
-        writer.AddTriangle(surface, index);
-      }
+void CMetroidAreaCollider::CacheAllNodes(const CAreaOctTree::Node& node, CCollisionCacheWriter& writer) {
+    unsigned short index;
+    const unsigned char* ptr;
+    int val;
+    const CAreaOctTree* areaOctTree;
+    if (node.GetTreeType() == 2) {
+        writer.BeginLeaf(CAABox::mskInvertedBox);
+        int val3 = (int)*(const unsigned short**)&node.GetTriangleArray();
+        areaOctTree = *(const CAreaOctTree**)((char*)&node + 0x1c);
+        int count = *(unsigned short*)((char*)val3 + 0x18);
+        int val2 = val3 + 26;
+        writer.ReserveTriangles(count);
+        int i = 0;
+        while (i < count) {
+            index = *(unsigned short*)val2;
+            unsigned char* spDupTriangleList2 = CMetroidAreaCollider::spDupTriangleList;
+            if (CMetroidAreaCollider::sDupPrimitiveCheckCount != (*(spDupTriangleList2 + index))) {
+                *(spDupTriangleList2 + index) = CMetroidAreaCollider::sDupPrimitiveCheckCount;
+                CCollisionSurface surface(areaOctTree->GetTriangle(index));
+                writer.AddTriangle(surface, index);
+            }
+            i++;
+            val2 += 2;
+        }
+    } else {
+        ptr = *(const unsigned char**)((char*)&node + 0x18);
+        int i2 = 0;
+        val = 0;
+        do {
+            if (*(unsigned short*)ptr >> val & 3) {
+                CAreaOctTree::Node node2(node.GetChild(i2));
+                CMetroidAreaCollider::CacheAllNodes(node2, writer);
+            }
+            i2++;
+            val += 2;
+        } while (i2 < 8);
     }
-  } else {
-    for (int i = 0; i < 8; ++i) {
-      if (node.GetChildType(i) != CAreaOctTree::Node::kTT_Invalid) {
-        CacheAllNodes(node.GetChild(i), writer);
-      }
-    }
-  }
 }
 
 static void FlagEdgeIndicesForFace(uint face, bool* edgeFlags) {

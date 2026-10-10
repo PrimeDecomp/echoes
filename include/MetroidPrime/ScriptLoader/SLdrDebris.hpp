@@ -39,6 +39,7 @@ inline SLdrDebris::SLdrDebris()
 , particle(kInvalidAssetId)
 , particleSystemScale(CVector3f::Zero()) {
   editorProperties.active = false;
+  editorProperties.unknown_0x5d298a43 = 0x00000003u;
   impulse = 20.0f;
   impulseVariance = CVector3f(20.0f, 20.0f, 25.0f);
   fadeOutColor = CColor(1.0f, 0.0f, 0.0f, 0.0f);
@@ -47,6 +48,8 @@ inline SLdrDebris::SLdrDebris()
   lifeTime = 1.0f;
   scaleType = 0;
   randomSpin = true;
+  actorInformation.lighting.ambientColor = CColor(1.0f, 1.0f, 1.0f, 1.0f);
+  actorInformation.visor.visorFlags = 0x0000000fu;
   particleSystemScale = CVector3f(1.0f, 1.0f, 1.0f);
   isCollider = true;
   doNotDeleteAttachedObject = false;

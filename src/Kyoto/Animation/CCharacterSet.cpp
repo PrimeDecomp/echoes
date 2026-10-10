@@ -9,3 +9,7 @@ CCharacterSet::CCharacterSet(CInputStream& in) : mTableCount(in.Get< ushort >())
     mCharacters.push_back_unsafe(in);
   }
 }
+
+extern "C" void fn_80293EA4(int obj) {
+  rstl::destroy_impl< rstl::pair< int, CCECharacterInfo > >((rstl::pair< int, CCECharacterInfo >*)obj);
+}

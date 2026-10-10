@@ -31,18 +31,28 @@ CCameraColliderGroup::CCameraColliderGroup()
 , mColliderIterator(0)
 , x3c_24_(true) {}
 
-void CCameraColliderGroup::UpdateCollidersDistances(float xMag, float zMag, float angleOffset) {
-  float theta = angleOffset;
-  for (int i = 0; i < mColliders.size(); ++i) {
-    float z = zMag * cosf(theta);
-    if (theta > M_PIF / 2.f) {
-      z *= 0.25f;
+void CCameraColliderGroup::UpdateCollidersDistances(float xMag, float zMag, const float angleOffset) {
+    int val;
+    float f2;
+    float angleOffset2 = angleOffset;
+    int i = 0;
+    val = 0;
+    for (; i < mColliders.mCount; ) {
+        float f = zMag * (float)cos(angleOffset2);
+        if (!(angleOffset2 > 1.5707964f)) {
+            f = f;
+        } else {
+            f /= 4.0f;
+        }
+        f2 = CMath::Limit(sin(angleOffset2), 1.0);
+        unsigned char* ptr = (unsigned char*)mColliders.mItems + val + 20;
+        val += 64;
+        *(float*)ptr = xMag * f2;
+        i++;
+        *(float*)(ptr + 0x4) = 0.0f;
+        *(float*)(ptr + 0x8) = f;
+        angleOffset2 = angleOffset2 + 6.2831855f / mColliders.mCount;
     }
-
-    const float x = xMag * CMath::Limit(sinf(theta), 1.f);
-    mColliders[i].SetDesiredPosition(CVector3f(x, 0.f, z));
-    theta += 2.f * M_PIF / mColliders.size();
-  }
 }
 
 void CCameraColliderGroup::UpdateColliders(const CTransform4f& xf, const CVector3f& lookPosition,

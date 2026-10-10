@@ -113,3 +113,10 @@ void CPortalAreaData::FindOverlappingVolumes(const CAABox& bounds,
     }
   }
 }
+
+extern "C" void fn_80255BE4(int obj, int obj2) {
+    unsigned int i = *(int*)obj;
+    while (i != (*(int*)obj2)) {
+        i += 72;
+    }
+}

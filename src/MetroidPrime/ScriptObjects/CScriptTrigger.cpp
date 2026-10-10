@@ -489,15 +489,20 @@ bool CScriptTrigger::ShouldSendScriptMsgs(CActor& actor, CStateManager& mgr) con
 
 bool CScriptTrigger::GetPlayerInside(int playerIndex) const { return mPlayerInside[playerIndex]; }
 
+extern "C" int fn_80097540(CActor*);
+extern "C" int fn_80097554();
 bool CScriptTrigger::IsAI(CStateManager& mgr, CActor& actor) const {
-  if (TCastToPtr< CPatterned >(&actor)) {
-    return true;
-  }
-  if (CCollisionActor* collisionActor = TCastToPtr< CCollisionActor >(&actor)) {
-    return TCastToConstPtr< CPatterned >(mgr.GetObjectById(collisionActor->GetOwnerId())) !=
-           nullptr;
-  }
-  return false;
+    if ((unsigned int)fn_80097540(&actor) != 0) {
+        return true;
+    }
+    CCollisionActor* collisionActor = TCastToPtr<CCollisionActor>(*(&actor));
+    if (collisionActor) {
+        mgr.GetObjectById(collisionActor->GetOwnerId());
+        if ((unsigned int)fn_80097554() != 0) {
+            return true;
+        }
+    }
+    return false;
 }
 
 const bool CScriptTrigger::ReplaceInhabitant(TUniqueId oldId, TUniqueId newId, CStateManager& mgr) {

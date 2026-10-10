@@ -926,7 +926,7 @@ private:
   rstl::single_ptr< void > mScanTargetIdTextureData;
   rstl::single_ptr< void > mDepthHighTextureData;
   rstl::single_ptr< void > mDepthLowTextureData;
-  uint mRezbitRecoveryDirection;
+  int mRezbitRecoveryDirection;
   uint mRezbitRecoveryInputCount;
   CControlMapper mControlMapper;
   rstl::single_ptr< CHintManager > mControlHintManager;

@@ -61,9 +61,45 @@ TWEAKS_USHORT_COUNT_STRUCTS = {
     "TweakPlayerGun_Beam_Combo",
 }
 TWEAKS_USHORT_SIZE_STRUCTS = {"TweakPlayer_Collision"}
+# Script object loaders whose target reads the count the same way as the Tweaks above.
+USHORT_COUNT_STRUCTS = {"CameraWaypoint", "SpiderBallWaypoint"}
 # Script object loaders whose target keeps the property count in a u16 (LoadRipper,
 # Ripper.rel .text 0x178; with an int count the loop allocates registers differently).
-U16_COUNT_STRUCTS = {"Ripper"}
+U16_COUNT_STRUCTS = {
+    "ActorRotate",
+    "AreaDamage",
+    "CameraHint",
+    "ColorModulate",
+    "ControlHint",
+    "ControllerAction",
+    "Debris",
+    "DebrisExtended",
+    "DistanceFog",
+    "Dock",
+    "FogVolume",
+    "PickupGenerator",
+    "PlayerStateChange",
+    "PointOfInterest",
+    "Ripper",
+    "ScanTreeCategory",
+    "ScanTreeInventory",
+    "ScanTreeMenu",
+    "ScanTreeScan",
+    "ScanTreeSlider",
+    "ScannableObjectInfo",
+    "ScriptLayerController",
+    "SequenceTimer",
+    "Silhouette",
+    "SoundModifier",
+    "SpecialFunction",
+    "SpindleCamera",
+    "Steam",
+    "Subtitle",
+    "Trigger",
+    "VisorFlare",
+    "Water",
+    "WorldTeleporter",
+}
 
 PROFILE_DIRECTORY = Path(__file__).resolve().parent.parent / "config" / "loader_profiles"
 
@@ -81,6 +117,8 @@ G2ME01_ABSENT_PROPERTIES: dict[str, frozenset[int]] = {
     # G2ME01 LoadSubtitle 8020DB08 and TextPane ctor 8020038C have one text record.
     "SLdrSubtitle": frozenset({0xC8E441FA, 0x53A7F7A7, 0xEB1B90C2}),
     "SLdrTextPane": frozenset({0xC8E441FA}),
+    # G2ME01 SLdrBallTrigger ctor (CScriptBallTrigger) stores no bounds size multiplier.
+    "SLdrBallTrigger": frozenset({0x2766636A}),
 }
 
 KEYWORDS: set[str] = {
@@ -265,6 +303,41 @@ NATIVE_INSTANCE_DEFAULTS: dict[str, tuple[tuple[int, ...], ...]] = {
         (0x7E397FED, 0xB028DB0E, 0xA33E5B0E),
         (0x7E397FED, 0x05AD250E, 0xCA19E8C6),
     ),
+    "SLdrSequenceTimer": ((0x255A4580, 0x5D298A43),),
+    "SLdrHUDHint": ((0x255A4580, 0x5D298A43),),
+    "SLdrRepulsor": ((0x255A4580, 0x5D298A43),),
+    "SLdrActorRotate": ((0x255A4580, 0x5D298A43),),
+    "SLdrCameraHint": ((0x255A4580, 0x5D298A43),),
+    "SLdrColorModulate": ((0x255A4580, 0x5D298A43),),
+    "SLdrRoomAcoustics": ((0x255A4580, 0x5D298A43),),
+    "SLdrPortalTransition": ((0x255A4580, 0x5D298A43),),
+    "SLdrEffect": ((0x255A4580, 0x5D298A43), (0xB028DB0E, 0xA33E5B0E)),
+    # Door and Debris constructors re-store the editor flags, ambient color and visor.
+    "SLdrDoor": (
+        (0x255A4580, 0x5D298A43),
+        (0x7E397FED, 0xB028DB0E, 0xA33E5B0E),
+        (0x7E397FED, 0x05AD250E, 0xCA19E8C6),
+    ),
+    "SLdrDebris": (
+        (0x255A4580, 0x5D298A43),
+        (0x7E397FED, 0xB028DB0E, 0xA33E5B0E),
+        (0x7E397FED, 0x05AD250E, 0xCA19E8C6),
+    ),
+    "SLdrDebrisExtended": (
+        (0x255A4580, 0x5D298A43),
+        (0x7E397FED, 0xB028DB0E, 0xA33E5B0E),
+        (0x7E397FED, 0x05AD250E, 0xCA19E8C6),
+    ),
+    # SLdrVisorFlare, G2ME01 CScriptVisorFlare: each flare re-stores its color.
+    "SLdrVisorFlare": tuple(
+        (flare, 0x37C7D09D)
+        for flare in (0x3C257223, 0x05A84EE6, 0x12D35AA5, 0x76B2376C, 0x61C9232F)
+    ),
+    # SLdrWater::SLdrWater, G2ME01 CScriptWater: editor scale and flags.
+    "SLdrWater": ((0x255A4580, 0x5846524D, 0x2), (0x255A4580, 0x5D298A43)),
+    # LoadTrigger and LoadDock re-store the editor transform scale.
+    "SLdrTrigger": ((0x255A4580, 0x5846524D, 0x2),),
+    "SLdrDock": ((0x255A4580, 0x5846524D, 0x2),),
     # LoadRipper, Ripper.rel .text 0x178: knockback resistance, ambient color and visor.
     "SLdrRipper": (
         (0xB3774750, 0xCF90D15E, 0x3A2D17E4),
@@ -273,8 +346,100 @@ NATIVE_INSTANCE_DEFAULTS: dict[str, tuple[tuple[int, ...], ...]] = {
     ),
 }
 
+# Header-only objects whose native constructor is an out-of-line function in the
+# object's source (SLdrSteam::SLdrSteam, G2ME01 CScriptSteam): the header only
+# declares it and the hand-written source defines it before LoadX.
+OUTLINE_CONSTRUCTORS = frozenset({"SLdrSteam"})
+
+# Records whose native constructor departs from the template defaults: property ID ->
+# initializer value, or None for a member the constructor does not store (a record
+# member still runs its own constructor, without instance re-stores)
+# (SLdrMasterLayer, inlined into LoadScriptLayerController: areaID(-1), no layer store).
+NATIVE_CONSTRUCTOR_OVERRIDES: dict[str, dict[int, str | None]] = {
+    "SLdrMasterLayer": {0x0: "-1", 0x1: None},
+    # SLdrCommandData::SLdrCommandData (inlined in SLdrControlHint, G2ME01
+    # CScriptControlHint) does not re-store the command choice.
+    "SLdrCommandData": {0x359C7AAF: None},
+    # SLdrDebrisExtended::SLdrDebrisExtended, G2ME01 CScriptDebris.
+    "SLdrDebrisExtended": {0x0BB3CCAE: "-1"},
+    # SLdrWater::SLdrWater, G2ME01 CScriptWater: the sounds start invalid.
+    "SLdrWater": {
+        0xBA717F19: "-1",
+        0xEEF81E4C: "-1",
+        0x63C96763: "-1",
+        0xD36209BC: "-1",
+    },
+    # SLdrPortalTransition::SLdrPortalTransition, G2ME01 CScriptPortalTransition.
+    "SLdrPortalTransition": {0x508520E1: "-1", 0x34C7C1CC: "-1", 0xB253B362: "-1"},
+}
+
+# Constructor defaults whose native constant differs from the template's value
+# (e.g. a color the templates store as n/255 that the target rounds): record ->
+# property ID -> C++ expression assigned in the constructor body.
+NATIVE_BODY_DEFAULTS: dict[str, dict[int, str]] = {
+    # SLdrSilhouette::SLdrSilhouette, G2ME01 CScriptSpecialFunction.
+    "SLdrSilhouette": {0x8C8B3289: "CColor(0.3f, 0.6f, 1.0f, 0.5f)"},
+    # SLdrWater::SLdrWater, G2ME01 CScriptWater.
+    "SLdrWater": {
+        0x041398D5: "CColor(0.0f, 0.0f, 0.5f, 1.0f)",
+        0x5A96218C: "CColor(0.0f, 0.5f, 1.0f, 1.0f)",
+    },
+}
+
+# Inline records whose reader is an out-of-line function in the object's source
+# (LoadTypedefMasterLayer, G2ME01 CScriptLayerController): the header declares it.
+OUTLINE_READERS = frozenset({"SLdrMasterLayer"})
+
+# Template defaults the native record constructor stores differently from the
+# templates: archetype or object template name -> property ID -> DefaultValue text.
+NATIVE_TEMPLATE_DEFAULTS: dict[str, dict[int, str]] = {
+    # SLdrScanTreeMenu::SLdrScanTreeMenu (G2ME01 CScanTree) numbers the menu values.
+    "ScanTreeMenu": {0x50BCE632: "0", 0x420949DC: "1", 0xFAB52EB9: "2", 0x67621600: "3"},
+    # SLdrFlareDef::SLdrFlareDef (inlined in SLdrVisorFlare, G2ME01 CScriptVisorFlare)
+    # stores scale 1.0, so the visor flare instances do not re-store it.
+    "FlareDef": {0x2C51A676: "1.0"},
+    # SLdrLayerInfo::SLdrLayerInfo (inlined in SLdrWater, G2ME01 CScriptWater) holds
+    # the water layer defaults; the template archetype has placeholder values.
+    "LayerInfo": {
+        0xE94F7E87: "0",
+        0x3C5B0C98: "5.0",
+        0x89E3D294: "0.15000001",
+        0x080C7499: "10.0",
+    },
+}
+
+# Instance overrides a native constructor does not re-store because the nested
+# record's own constructor already holds the value: record -> property-ID paths.
+NATIVE_INHERITED_DEFAULTS: dict[str, tuple[tuple[int, ...], ...]] = {
+    # SLdrVisorFlare, G2ME01 CScriptVisorFlare: flare scale 1.0 comes from SLdrFlareDef.
+    "SLdrVisorFlare": tuple(
+        (flare, 0x2C51A676)
+        for flare in (0x3C257223, 0x05A84EE6, 0x12D35AA5, 0x76B2376C, 0x61C9232F)
+    ),
+    # SLdrWater, G2ME01 CScriptWater: the flow layers keep SLdrLayerInfo's defaults.
+    "SLdrWater": tuple(
+        (layer, pid)
+        for layer in (0x244E9E6D, 0xE75248E4, 0x385E0D43, 0xD369B640, 0x6DDEA66D)
+        for pid in (0xE94F7E87, 0x3C5B0C98, 0x89E3D294, 0x080C7499)
+    ),
+}
+
 # An enumeration without a template default is still assigned zero in the body.
 ZERO_DEFAULT_KINDS = frozenset({"Choice"})
+
+# Object constructors that build scalar template defaults in the initializer list instead
+# of assigning them in the body. Record -> property IDs.
+NATIVE_INITIALIZER_DEFAULTS: dict[str, frozenset[int]] = {
+    # SLdrAmbientAI, G2ME01 0x801795D8: animation_React and animation_Damaged.
+    "SLdrAmbientAI": frozenset({0xBFE017DE, 0xED5F16AC}),
+}
+
+# Object constructors that do not re-store a nested record's template overrides.
+# Record -> property IDs.
+NATIVE_SKIPPED_OVERRIDES: dict[str, frozenset[int]] = {
+    # SLdrAmbientAI, G2ME01 0x801795D8: the vulnerability effects keep their record defaults.
+    "SLdrAmbientAI": frozenset({0x7B71AE90}),
+}
 pwe_type_lookup = {
     "Bool": "bool",
     "Short": "short",
@@ -529,6 +694,9 @@ class Generator:
             raw = self.source.xml(self.archetypes[name]).find("PropertyArchetype")
             if raw is None:
                 raise TemplateError("Missing PropertyArchetype: " + name)
+            if name in NATIVE_TEMPLATE_DEFAULTS:
+                raw = copy.deepcopy(raw)
+                self.apply_native_template_defaults(name, raw)
             self.raw[name] = raw
         if name not in self.resolved:
             self.resolved[name] = self.resolve(self.raw[name], trail + (name,))
@@ -746,7 +914,9 @@ class Generator:
                 raise TemplateError("Object name collision: " + name)
             used.add(name)
             cpp = "SLdr" + name
+            self.apply_native_template_defaults(name, node)
             self.apply_native_instance_defaults(cpp, node)
+            self.apply_native_inherited_defaults(cpp, node)
             self.add_struct(cpp, node, path, is_object=True)
             keys = sorted(key for key, value in self.objects.items() if value == path)
             self.loaders.append(Loader(name, cpp, tuple(keys)))
@@ -791,6 +961,48 @@ class Generator:
         # This family has its own native constructor/helper context, not the
         # otherwise private inline LoadTypedefConnection in SequenceTimer.
         self.header_owners["SLdrConnection"] = "SLdrConnection"
+
+    @staticmethod
+    def apply_native_template_defaults(name: str, node: ET.Element) -> None:
+        """Replace or add DefaultValue texts of direct children of a template node."""
+        children = {
+            property_id(child): child for child in node.findall("SubProperties/Element")
+        }
+        for pid, text in NATIVE_TEMPLATE_DEFAULTS.get(name, {}).items():
+            if pid not in children:
+                raise TemplateError(f"Missing template property 0x{pid:08x} in {name}")
+            default = children[pid].find("DefaultValue")
+            if default is None:
+                default = ET.SubElement(children[pid], "DefaultValue")
+            default.text = text
+
+    def apply_native_inherited_defaults(self, name: str, node: ET.Element) -> None:
+        """Reset instance overrides to the archetype so defaults() emits no re-store."""
+        for path in NATIVE_INHERITED_DEFAULTS.get(name, ()):
+            parent = node
+            for pid in path[:-1]:
+                children = {
+                    property_id(child): child
+                    for child in parent.findall("SubProperties/Element")
+                }
+                if pid not in children:
+                    raise TemplateError(f"Missing inherited property 0x{pid:08x} in {name}")
+                parent = children[pid]
+            archetype = parent.get("Archetype")
+            if not archetype:
+                raise TemplateError(f"Inherited default without archetype in {name}")
+            inherited = {
+                property_id(child): child
+                for child in self.archetype(archetype).findall("SubProperties/Element")
+            }
+            container = parent.find("SubProperties")
+            current = {property_id(child): child for child in container}
+            pid = path[-1]
+            if pid not in current or pid not in inherited:
+                raise TemplateError(f"Missing inherited property 0x{pid:08x} in {name}")
+            position = list(container).index(current[pid])
+            container.remove(current[pid])
+            container.insert(position, inherited[pid])
 
     @staticmethod
     def apply_native_instance_defaults(name: str, node: ET.Element) -> None:
@@ -1097,10 +1309,19 @@ class Generator:
             )
         parameter = "data" if struct.is_object else "sldrThis"
         initializers: list[tuple[str | None, str]] = []
+        initializer_defaults = NATIVE_INITIALIZER_DEFAULTS.get(name, frozenset())
+        overrides = NATIVE_CONSTRUCTOR_OVERRIDES.get(name, {})
+        body_defaults = NATIVE_BODY_DEFAULTS.get(name, {})
         for prop in struct.fields:
             kind = prop.node.attrib["Type"]
             value = ""
-            if not prop.dependency:
+            if property_id(prop.node) in overrides:
+                value = overrides[property_id(prop.node)]
+                if value is None:
+                    continue
+            elif property_id(prop.node) in initializer_defaults:
+                value = (prop.node.findtext("DefaultValue") or "").strip()
+            elif not prop.dependency:
                 if kind == "Color":
                     value = "CColor::Green()"
                 elif kind == "Vector":
@@ -1142,19 +1363,30 @@ class Generator:
                     prop.condition,
                     [
                         line if line.startswith("#") else "  " + line
-                        for line in self.defaults(prop, prop.name)
+                        for line in (
+                            [prop.name + " = " + body_defaults[property_id(prop.node)] + ";"]
+                            if property_id(prop.node) in body_defaults
+                            else self.defaults(prop, prop.name)
+                        )
                     ],
                 )
                 for prop in struct.fields
+                if property_id(prop.node) not in overrides
+                and property_id(prop.node)
+                not in initializer_defaults | NATIVE_SKIPPED_OVERRIDES.get(name, frozenset())
             ]
         )
-        source += [
-            "}",
-            "",
-            prefix + name + "::~" + name + "() {}",
-        ]
+        source += ["}", ""]
+        if prefix and name in OUTLINE_CONSTRUCTORS:
+            source = []  # Defined by hand in the object source.
+        source += [prefix + name + "::~" + name + "() {}"]
         if prefix and struct.is_object:
             return source  # The property loop is the includable fragment.
+        if prefix and name in OUTLINE_READERS:
+            return source + [
+                "",
+                f"void {self.loader_name(name)}({name}& {parameter}, CInputStream& input);",
+            ]
         source += [
             "",
             f"{prefix}void "
@@ -1189,7 +1421,7 @@ class Generator:
         self, struct: Struct, parameter: str, indent: str = "  "
     ) -> list[str]:
         name = struct.name.removeprefix("SLdr")
-        if name in TWEAKS_USHORT_COUNT_STRUCTS:
+        if name in TWEAKS_USHORT_COUNT_STRUCTS or name in USHORT_COUNT_STRUCTS:
             count = "  const ushort propertyCount = input.ReadInt16();"
         elif name in U16_COUNT_STRUCTS:
             count = "  const u16 propertyCount = input.ReadUint16();"

@@ -14,10 +14,7 @@ struct SLdrCommandData {
   int state;           // 0x4063422a
 };
 
-inline SLdrCommandData::SLdrCommandData() : command() {
-  command.command = 0;
-  state = 0;
-}
+inline SLdrCommandData::SLdrCommandData() { state = 0; }
 
 inline SLdrCommandData::~SLdrCommandData() {}
 

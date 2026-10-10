@@ -71,12 +71,14 @@ inline SLdrDebrisExtended::SLdrDebrisExtended()
 , model(kInvalidAssetId)
 , actorInformation()
 , particle1(kInvalidAssetId)
+, bounceSound(-1)
 , particleSystem1Scale(CVector3f::Zero())
 , particle2(kInvalidAssetId)
 , particleSystem2Scale(CVector3f::Zero())
 , deathParticle(kInvalidAssetId)
 , deathParticleSystemScale(CVector3f::Zero()) {
   editorProperties.active = false;
+  editorProperties.unknown_0x5d298a43 = 0x00000003u;
   coneSpread = 180.0f;
   movementDirection = CVector3f(0.0f, 0.0f, 1.0f);
   minimumSpeed = 5.0f;
@@ -94,7 +96,8 @@ inline SLdrDebrisExtended::SLdrDebrisExtended()
   finalScale = CVector3f(1.0f, 1.0f, 1.0f);
   bounciness = 0.375f;
   gravity = 25.0f;
-  bounceSound = 0;
+  actorInformation.lighting.ambientColor = CColor(1.0f, 1.0f, 1.0f, 1.0f);
+  actorInformation.visor.visorFlags = 0x0000000fu;
   maxBounceSounds = 1;
   bounceSoundVolumeDecay = 1.0f;
   bounceSoundSpeedThreshold = 1.0f;

@@ -238,42 +238,60 @@ void* CGameAllocator::Alloc(size_t size, const EHint hint, const EScope scope, c
   return ++info;
 }
 
-CGameAllocator::SGameMemInfo* CGameAllocator::FindFreeBlock(uint len) {
-  uint delta;
-  CGameAllocator::SGameMemInfo* ret = nullptr;
-  uint binIndex = GetFreeBinEntryForSize(len);
-
-  uint chosenBin = 0;
-  SGameMemInfo* previous = nullptr;
-  uint bestDelta = 0x10000000;
-
-  for (; binIndex < 16 && !ret; ++binIndex) {
-    SGameMemInfo* candidate = mBins[binIndex];
-    SGameMemInfo* last = nullptr;
-    for (; candidate; last = candidate, candidate = candidate->GetNextFree()) {
-      if (!candidate->IsAllocated() && candidate->mSize >= len) {
-        delta = candidate->mSize - len;
-        if (delta < bestDelta && candidate->GetNext()) {
-          ret = candidate;
-          previous = last;
-          bestDelta = delta;
-          chosenBin = binIndex;
-          if (delta < sizeof(SGameMemInfo)) {
+CGameAllocator::SGameMemInfo* CGameAllocator::FindFreeBlock(unsigned int val) {
+    int val3;
+    unsigned int val4;
+    unsigned char* ptr;
+    unsigned int val10 = 0;
+    uint freeBinEntryForSize = CGameAllocator::GetFreeBinEntryForSize(val);
+    int val5 = 0;
+    unsigned int val6 = 0;
+    int val7 = 0x10000000;
+    ptr = (unsigned char*)this + (freeBinEntryForSize << 2);
+    while (freeBinEntryForSize < 16 && val10 == 0) {
+        unsigned int val8 = *(int*)(ptr + 0x14);
+        int val9 = 0;
+        while (val8 > 0) {
+            if (!(*(int*)(val8 + 0x10) & 1)) {
+                int val2 = *(int*)(val8 + 0x4);
+                if (val2 >= val) {
+                    val4 = val2 - val;
+                    if (val4 < val7 && (*(int*)(val8 + 0x14) & 0xffffffe0)) {
+                        val10 = val8;
+                        val6 = val9;
+                        val7 = val4;
+                        val5 = freeBinEntryForSize;
+                        if (val4 >= 32) {
+                            goto block_7;
+                        }
+                    } else {
+                        goto block_7;
+                    }
+                } else {
+                    goto block_7;
+                }
+            } else {
+block_7:;
+                val9 = val8;
+                val8 = *(int*)(val8 + 0x18) & 0xffffffe0;
+                continue;
+            }
             break;
-          }
         }
-      }
+        ptr = (ptr + 0x4);
+        freeBinEntryForSize = uint(freeBinEntryForSize + 1);
     }
-  }
-
-  if (ret) {
-    if (previous == NULL) {
-      mBins[chosenBin] = ret->GetNextFree();
-    } else {
-      previous->SetNextFree(ret->GetNextFree());
+    if (val10 != 0) {
+        if (val6 == 0) {
+            mBins[val5] = (CGameAllocator::SGameMemInfo*)(*(int*)(val10 + 0x18) & 0xffffffe0);
+        } else {
+            int* ptr2 = (int*)(val6 + 0x18);
+            val3 = *ptr2;
+            *ptr2 = *(int*)(val10 + 0x18) & 0xffffffe0;
+            *ptr2 = (val3 & 31) | (*ptr2 & 0xffffffe0);
+        }
     }
-  }
-  return ret;
+    return (CGameAllocator::SGameMemInfo*)val10;
 }
 
 CGameAllocator::SGameMemInfo* CGameAllocator::FindFreeBlockFromTopOfHeap(uint size) {

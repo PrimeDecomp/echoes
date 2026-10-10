@@ -139,3 +139,27 @@ CCharacterFactory::GetCharLayoutInfoDB(CSimplePool& store,
 }
 
 CCharacterFactory::~CCharacterFactory() {}
+
+extern "C" void fn_80030DA8(const char* ptr, int obj) {
+    for (int i = *(int*)ptr; (unsigned int)i != (*(int*)obj); i += 16) {
+        if ((unsigned int)i != 0 && i + 8) {
+            ((rstl::rc_ptr<IMetaTrans>*)(i + 8))->ReleaseData();
+        }
+    }
+}
+
+extern "C" void fn_80030EC4(const char* ptr, int obj) {
+    for (int i = *(int*)ptr; i != (unsigned int)*(int*)obj; i += 12) {
+        if ((unsigned int)i != 0 && i + 4) {
+            ((rstl::rc_ptr<IMetaTrans>*)(i + 4))->ReleaseData();
+        }
+    }
+}
+
+extern "C" void fn_80030A4C(const char* ptr, int obj) {
+    for (int i = *(int*)ptr; i != (unsigned int)*(int*)obj; i += 24) {
+        if ((unsigned int)i != 0) {
+            ((rstl::basic_string<char, rstl::char_traits<char>, rstl::rmemory_allocator>*)(i + 8))->~basic_string();
+        }
+    }
+}

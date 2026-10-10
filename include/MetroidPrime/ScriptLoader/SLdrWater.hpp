@@ -20,11 +20,11 @@ struct SLdrLayerInfo {
 };
 
 inline SLdrLayerInfo::SLdrLayerInfo() {
-  motionType = -2143184152;
-  timeToCycleTex = 0.0f;
+  motionType = 0;
+  timeToCycleTex = 5.0f;
   rotation = 0.0f;
-  amplitude = -0.0f;
-  textureScale = 0.0f;
+  amplitude = 0.15000001f;
+  textureScale = 10.0f;
 }
 
 inline SLdrLayerInfo::~SLdrLayerInfo() {}
@@ -154,48 +154,30 @@ inline SLdrWater::SLdrWater()
 , splash_Big(kInvalidAssetId)
 , visorRunoff(kInvalidAssetId)
 , visorRunoffBall(kInvalidAssetId)
+, sound_SoundRunoff(-1)
 , sound_SoundRunoffBall(-1)
+, sound_Splash_Small(-1)
+, sound_Splash_Medium(-1)
+, sound_Splash_Big(-1)
 , fogColor(CColor::Green()) {
+  editorProperties.transform.scale = CVector3f(1.0f, 1.0f, 1.0f);
+  editorProperties.unknown_0x5d298a43 = 0x00000003u;
   alphaFadeinTime = 0.0f;
   alphaFadeoutTime = 0.0f;
   morphTimeTo = 5.0f;
   morphTimeRestore = 5.0f;
   fluidType = 0;
   envMapSize = 1.0f;
-  baseColor = CColor(0.0f, 0.0f, 0.49803901f, 1.0f);
+  baseColor = CColor(0.0f, 0.0f, 0.5f, 1.0f);
   alpha = 0.60000002f;
   glossFlat = 0.2f;
   glossTopDown = 1.0f;
   refractWarpFlat = 1.0f;
   refractWarpTopDown = 0.0f;
-  flowColor.motionType = 0;
-  flowColor.timeToCycleTex = 5.0f;
-  flowColor.amplitude = 0.15000001f;
-  flowColor.textureScale = 10.0f;
-  flowColorWarp.motionType = 0;
-  flowColorWarp.timeToCycleTex = 5.0f;
-  flowColorWarp.amplitude = 0.15000001f;
-  flowColorWarp.textureScale = 10.0f;
-  flowGloss1.motionType = 0;
-  flowGloss1.timeToCycleTex = 5.0f;
-  flowGloss1.amplitude = 0.15000001f;
-  flowGloss1.textureScale = 10.0f;
-  flowGloss2.motionType = 0;
-  flowGloss2.timeToCycleTex = 5.0f;
-  flowGloss2.amplitude = 0.15000001f;
-  flowGloss2.textureScale = 10.0f;
-  flowRefractWarp.motionType = 0;
-  flowRefractWarp.timeToCycleTex = 5.0f;
-  flowRefractWarp.amplitude = 0.15000001f;
-  flowRefractWarp.textureScale = 10.0f;
   flowSpeed = 10.0f;
   flowOrientation = 0.0f;
-  underwaterFogColor = CColor(0.0f, 0.49803901f, 1.0f, 1.0f);
+  underwaterFogColor = CColor(0.0f, 0.5f, 1.0f, 1.0f);
   splashColor = CColor(1.0f, 1.0f, 1.0f, 1.0f);
-  sound_SoundRunoff = 0;
-  sound_Splash_Small = 0;
-  sound_Splash_Medium = 0;
-  sound_Splash_Big = 0;
   fogColor = CColor(1.0f, 1.0f, 1.0f, 1.0f);
   fogHeight = 0.0f;
   fogBobHeight = 0.0f;

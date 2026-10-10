@@ -617,22 +617,37 @@ void CGunWeapon::LoadFxIdle(float dt, CStateManager& mgr) {
 }
 
 void CGunWeapon::LoadAnimations() {
-  CAnimData& animData = *mSolidModelData->AnimationData();
-  BuildAnimationIdList(animData);
-  const CPASAnimState* state = animData.GetPASDatabase().GetAnimState(pas::kAS_LoopReaction);
-  rstl::vector< int > animIds;
-  const int numAnims = state->GetNumAnims();
-  animIds.reserve(numAnims);
-  for (int i = 0; i < numAnims; ++i) {
-    animIds.push_back_unsafe(state->GetAnimInfoByIndex(i)->GetAnimId());
-  }
-  NWeaponTypes::get_token_vector(animData, animIds, mAnims, true);
-  int defaultAnim = 10;
-  if (mSubtypeBasePose) {
-    defaultAnim = 0;
-  }
-  mSolidModelData->AnimationData()->SetAnimation(
-      CAnimPlaybackParms(mAnimIds[defaultAnim], -1, 1.f, true), true);
+    const CPASAnimInfo* animInfoByIndex;
+    int val;
+    int val2;
+    s32 animId;
+    unsigned char val3[16];
+    int animData = *(int*)((char*)this + 0x3c);
+    BuildAnimationIdList(*(const CAnimData*)animData);
+    const CPASAnimState* animState = ((CPASDatabase*)(animData + 60))->GetAnimState(10);
+    *(int*)((char*)val3 + 0x4) = 0;
+    *(int*)((char*)val3 + 0x8) = 0;
+    *(int*)((char*)val3 + 0xc) = 0;
+    int val4 = *(int*)((char*)animState + 0x18);
+    ((rstl::vector<int, rstl::rmemory_allocator>*)val3)->reserve(val4);
+    int i = 0;
+    while (i < val4) {
+        animInfoByIndex = animState->GetAnimInfoByIndex(i);
+        val2 = *(int*)((char*)val3 + 0x4);
+        i++;
+        animId = animInfoByIndex->GetAnimId();
+        val = *(int*)((char*)val3 + 0xc);
+        *(int*)((char*)val3 + 0x4) = val2 + 1;
+        ((int*)val)[val2] = animId;
+    }
+    NWeaponTypes::get_token_vector(*(CAnimData*)animData, *(const rstl::vector<int, rstl::rmemory_allocator>*)val3, mAnims, true);
+    int val5 = 10;
+    int* items = mAnimIds.mItems;
+    if (mSubtypeBasePose) {
+        val5 = 0;
+    }
+    ((CAnimData*)*(int*)((char*)this + 0x3c))->SetAnimation(CAnimPlaybackParms(items[val5], -1, 1.0f, true), true);
+    ((rstl::vector<int, rstl::rmemory_allocator>*)val3)->~vector();
 }
 
 bool CGunWeapon::IsAnimsLoaded() const {

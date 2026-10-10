@@ -28,7 +28,7 @@ public:
   void SetTargetFlags(CStateManager& mgr, const CModelFlags& flags);
   void End(CStateManager& mgr);
   CModelFlags CalculateFlags(const CColor& color) const;
-  void SetExternalTime(float time);         // Guessed name
+  void SetExternalTime(float time, CStateManager& mgr); // Guessed name
   void CopyTargetColor(CStateManager& mgr); // Guessed name
 
 private:

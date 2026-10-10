@@ -4,6 +4,7 @@
 #include "MetroidPrime/CActorParameters.hpp"
 #include "MetroidPrime/CAnimData.hpp"
 #include "MetroidPrime/CEnvFxManager.hpp"
+#include "MetroidPrime/CExplosion.hpp"
 #include "MetroidPrime/CGameCollision.hpp"
 #include "MetroidPrime/CStateManager.hpp"
 #include "MetroidPrime/CWorld.hpp"
@@ -109,12 +110,13 @@ CScriptPlatform::CScriptPlatform(
 CScriptPlatform::~CScriptPlatform() {}
 
 rstl::optional_object< CAABox > CScriptPlatform::GetTouchBounds() const {
-  if (!GetActive())
-    return rstl::optional_object< CAABox >();
-  if (mTreeGroup.get()) {
-    return mTreeGroup->CalculateAABox(GetTransform());
+  if (GetActive()) {
+    if (mTreeGroup.get()) {
+      return mTreeGroup->CalculateAABox(GetTransform());
+    }
+    return GetBoundingBox();
   }
-  return GetBoundingBox();
+  return rstl::optional_object< CAABox >();
 }
 
 void CScriptPlatform::StopMotion() {
@@ -185,32 +187,34 @@ void CScriptPlatform::AddRider(rstl::vector< SRiders >& riders, TUniqueId id,
   rstl::vector< SRiders >::iterator it =
       rstl::find(riders.begin(), riders.end(),
                  SRiders(id, CTransform4f::Identity(), rstl::optional_object< float >()));
-  if (it != riders.end()) {
-    it->mDecayTimer = decayTimer;
-    return;
-  }
-
-  SRiders rider(id, CTransform4f::Identity(), decayTimer);
-  if (ridee) {
-    if (CPhysicsActor* actor = TCastToPtr< CPhysicsActor >(mgr.ObjectById(id))) {
-      rider.mTransform = CTransform4f::Translate(
-          ridee->GetTransform().TransposeRotate(actor->GetTranslation() - ridee->GetTranslation()));
-      mgr.DeliverScriptMsg(
-          CScriptMsg(ridee->GetUniqueId(), actor->GetUniqueId(), EScriptObjectMessage('XONP')));
+  if (it == riders.end()) {
+    SRiders rider(id, CTransform4f::Identity(), rstl::optional_object< float >(decayTimer));
+    if (ridee) {
+      if (CPhysicsActor* actor = TCastToPtr< CPhysicsActor >(mgr.ObjectById(id))) {
+        const CVector3f offset = ridee->GetTransform().TransposeRotate(
+            actor->GetTranslation() - ridee->GetTranslation());
+        rider.mTransform = CTransform4f::Translate(offset);
+        if (ridee) {
+          mgr.DeliverScriptMsg(
+              CScriptMsg(ridee->GetUniqueId(), actor->GetUniqueId(), EScriptObjectMessage('XONP')));
+        }
+      }
+    } else {
+      mgr.DeliverScriptMsg(CScriptMsg(kInvalidUniqueId, id, EScriptObjectMessage('XONP')));
     }
+    riders.reserve(riders.size() + 1);
+    riders.push_back_unsafe(rider);
   } else {
-    mgr.DeliverScriptMsg(CScriptMsg(kInvalidUniqueId, id, EScriptObjectMessage('XONP')));
+    (*it).mDecayTimer = decayTimer;
   }
-  riders.reserve(riders.size() + 1);
-  riders.push_back(rider);
 }
 
 CScriptPlatform::TNearList
 CScriptPlatform::BuildNearListFromRiders(CStateManager& mgr,
                                          const rstl::vector< SRiders >& riders) {
   TNearList result;
-  for (int i = 0; i < riders.size(); ++i) {
-    if (CActor* actor = TCastToPtr< CActor >(mgr.ObjectById(riders[i].mUid))) {
+  for (rstl::vector< SRiders >::const_iterator it = riders.begin(); it != riders.end(); ++it) {
+    if (CActor* actor = TCastToPtr< CActor >(mgr.ObjectById(it->mUid))) {
       result.push_back(actor->GetUniqueId());
     }
   }
@@ -371,7 +375,7 @@ void CScriptPlatform::BuildSlaveList(CStateManager& mgr) {
         actor->AddMaterial(kMT_PlatformSlave, mgr);
         CTransform4f xf = actor->GetTransform();
         xf.SetTranslation(actor->GetTranslation() - GetTranslation());
-        mStaticSlaves.push_back(
+        mStaticSlaves.push_back_unsafe(
             SRiders(actor->GetUniqueId(), xf, rstl::optional_object< float >()));
       }
     } else if (it->state == kSS_InheritBounds && it->msg == kSM_Activate) {
@@ -387,12 +391,15 @@ void CScriptPlatform::BuildSlaveList(CStateManager& mgr) {
 
 void CScriptPlatform::DragSlave(CStateManager& mgr, TMovedList& moved, const SRiders& slave) {
   CActor* actor = TCastToPtr< CActor >(mgr.ObjectById(slave.mUid));
-  if (!actor || IsInMovedList(slave.mUid, moved)) {
+  if (!actor) {
+    return;
+  }
+  if (IsInMovedList(slave.mUid, moved)) {
     return;
   }
   moved.push_back(slave.mUid.Value());
   CTransform4f parent = CTransform4f::Identity();
-  const bool explosion = TryCast(actor, kET_Explosion) != nullptr;
+  CExplosion* explosion = TCastToPtr< CExplosion >(actor);
   CScriptEffect* effect = TCastToPtr< CScriptEffect >(actor);
   CWeapon* weapon = TCastToPtr< CWeapon >(actor);
   if ((mMotionFlags & 0x20) != 0 || explosion || effect || weapon) {
@@ -430,8 +437,9 @@ void CScriptPlatform::DragSlave(CStateManager& mgr, TMovedList& moved, const SRi
 }
 
 void CScriptPlatform::DragSlaves(CStateManager& mgr, TMovedList& moved) {
-  for (int i = 0; i < mStaticSlaves.size(); ++i) {
-    const SRiders& slave = mStaticSlaves[i];
+  for (rstl::vector< SRiders >::const_iterator it = mStaticSlaves.begin();
+       it != mStaticSlaves.end(); ++it) {
+    const SRiders& slave = *it;
     if ((mMotionFlags & 0x400) != 0) {
       if (CScriptPlatform* platform = TCastToPtr< CScriptPlatform >(mgr.ObjectById(slave.mUid))) {
         platform->TranslateMotion(mDragDelta);
@@ -502,7 +510,7 @@ void CScriptPlatform::Think(float dt, CStateManager& mgr) {
 bool CScriptPlatform::IsInMovedList(TUniqueId id, const TMovedList& moved) {
   const ushort index = id.Value();
   for (TMovedList::const_iterator it = moved.begin(); it != moved.end(); ++it) {
-    if (*it == index)
+    if (index == *it)
       return true;
   }
   return false;
@@ -562,10 +570,10 @@ void CScriptPlatform::RotateMotion(const CQuaternion& rotation, const CVector3f&
 
 void CScriptPlatform::fn_800a1df8() {
   x48d_25_ = true;
-  if ((mMotionFlags & 8) == 0) {
-    StopMotion();
-  } else {
+  if ((mMotionFlags & 8) != 0) {
     mMotionActive = true;
+  } else {
+    StopMotion();
   }
   mDead = false;
   mHealth = mInitialHealth;
@@ -675,12 +683,12 @@ void CScriptPlatform::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg)
 }
 
 const CCollisionPrimitive* CScriptPlatform::GetCollisionPrimitive() const {
-  return mTreeGroup.get() ? mTreeGroup.get() : CPhysicsActor::GetCollisionPrimitive();
+  return !mTreeGroup.get() ? CPhysicsActor::GetCollisionPrimitive() : mTreeGroup.get();
 }
 
 CTransform4f CScriptPlatform::GetPrimitiveTransform() const {
   CTransform4f xf = GetTransform();
-  xf.SetTranslation(xf.GetTranslation() + GetPrimitiveOffset());
+  xf.AddTranslation(GetPrimitiveOffset());
   return xf;
 }
 
@@ -689,7 +697,7 @@ void CScriptPlatform::SplashThink(const CAABox& bounds, const CFluidPlane& fluid
 
 void CScriptPlatform::AddRider(TUniqueId id, CStateManager& mgr,
                                const rstl::optional_object< float >& decayTimer) {
-  AddRider(mRiders, id, this, mgr, decayTimer);
+  AddRider(mRiders, id, this, mgr, rstl::optional_object< float >(decayTimer));
 }
 
 void CScriptPlatform::AddSlave(TUniqueId id, CStateManager& mgr,
@@ -697,23 +705,26 @@ void CScriptPlatform::AddSlave(TUniqueId id, CStateManager& mgr,
   rstl::vector< SRiders >::iterator it =
       rstl::find(mDynamicSlaves.begin(), mDynamicSlaves.end(),
                  SRiders(id, CTransform4f::Identity(), rstl::optional_object< float >()));
-  if (it != mDynamicSlaves.end()) {
-    it->mDecayTimer = decayTimer;
-    return;
-  }
-  if (CActor* actor = TCastToPtr< CActor >(mgr.ObjectById(id))) {
-    actor->AddMaterial(kMT_PlatformSlave, mgr);
-    const CTransform4f xf = GetTransform().GetQuickInverse() * actor->GetTransform();
-    mDynamicSlaves.reserve(mDynamicSlaves.size() + 1);
-    mDynamicSlaves.push_back(SRiders(id, xf, decayTimer));
+  if (it == mDynamicSlaves.end()) {
+    if (CActor* actor = TCastToPtr< CActor >(mgr.ObjectById(id))) {
+      actor->AddMaterial(kMT_PlatformSlave, mgr);
+      const CTransform4f xf = GetTransform().GetQuickInverse() * actor->GetTransform();
+      mDynamicSlaves.reserve(mDynamicSlaves.size() + 1);
+      mDynamicSlaves.push_back_unsafe(SRiders(id, xf, rstl::optional_object< float >(decayTimer)));
+    }
+  } else {
+    SRiders& rider = *it;
+    rider.mDecayTimer = decayTimer;
   }
 }
 
 void CScriptPlatform::UpdateSlaveTransforms(CStateManager& mgr) {
   const CTransform4f inverse = GetTransform().GetQuickInverse();
-  for (int i = 0; i < mDynamicSlaves.size(); ++i) {
-    if (CActor* actor = TCastToPtr< CActor >(mgr.ObjectById(mDynamicSlaves[i].mUid))) {
-      mDynamicSlaves[i].mTransform = inverse * actor->GetTransform();
+  for (rstl::vector< SRiders >::iterator it = mDynamicSlaves.begin(); it != mDynamicSlaves.end();
+       ++it) {
+    if (CActor* actor = TCastToPtr< CActor >(mgr.ObjectById(it->mUid))) {
+      const CTransform4f xf = inverse * actor->GetTransform();
+      it->mTransform = xf;
       if (CScriptPlatform* platform = TCastToPtr< CScriptPlatform >(actor)) {
         platform->UpdateSlaveTransforms(mgr);
       }
@@ -743,14 +754,12 @@ SRiders::SRiders(TUniqueId uid, const CTransform4f& xf,
 : mUid(uid), mDecayTimer(decayTimer), mTransform(xf) {}
 
 bool CScriptPlatform::IsSlave(TUniqueId id) const {
-  if (rstl::find(mStaticSlaves.begin(), mStaticSlaves.end(),
-                 SRiders(id, CTransform4f::Identity(), rstl::optional_object< float >())) !=
-      mStaticSlaves.end()) {
-    return true;
-  }
-  return rstl::find(mDynamicSlaves.begin(), mDynamicSlaves.end(),
+  return rstl::find(mStaticSlaves.begin(), mStaticSlaves.end(),
                     SRiders(id, CTransform4f::Identity(), rstl::optional_object< float >())) !=
-         mDynamicSlaves.end();
+             mStaticSlaves.end() ||
+         rstl::find(mDynamicSlaves.begin(), mDynamicSlaves.end(),
+                    SRiders(id, CTransform4f::Identity(), rstl::optional_object< float >())) !=
+             mDynamicSlaves.end();
 }
 
 CQuaternion CScriptPlatform::Move(float dt, CStateManager& mgr) {
@@ -902,12 +911,13 @@ void CScriptPlatform::ResetMotion(float time, CStateManager& mgr) {
   mCurrentRotation = mPreviousRotation;
   if (mSplineController.get()) {
     const float duration = mSplineController->PositionTimeSpline().GetDuration();
-    SetMotionTime(time < 0.f ? 0.f : duration < time ? duration : time, mgr);
+    SetMotionTime(CMath::Clamp(0.f, time, duration), mgr);
   }
 }
 
 void CScriptPlatform::SetTransformIfNoPositionSpline(const CTransform4f& xf) {
-  if (!mSplineController.get() || mSplineController->GetPositionKnotCount() == 0) {
+  if (!mSplineController.get() ||
+      (mSplineController.get() && mSplineController->GetPositionKnotCount() == 0)) {
     CActor::SetTransform(xf);
     mMotionTransformed = true;
   }

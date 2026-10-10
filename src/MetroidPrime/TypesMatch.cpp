@@ -421,7 +421,8 @@ CAST_TO_PTR_IMPL(CHomingBlob, kET_HomingBlob)
 CAST_TO_REF_IMPL(CHUDBillboardEffect, kET_HUDBillboardEffect)
 CAST_TO_PTR_IMPL(CHUDBillboardEffect, kET_HUDBillboardEffect)
 // 29: class not declared yet (IngPuddle REL)
-// 30: class not declared yet (IngSnatchingSwarm REL)
+CAST_TO_REF_IMPL(CIngSnatchingSwarm, kET_IngSnatchingSwarm)
+CAST_TO_PTR_IMPL(CIngSnatchingSwarm, kET_IngSnatchingSwarm)
 CAST_TO_REF_IMPL(CPathCamera, kET_PathCamera)
 CAST_TO_PTR_IMPL(CPathCamera, kET_PathCamera)
 CAST_TO_REF_IMPL(CPlayer, kET_Player)
@@ -712,6 +713,564 @@ CPatterned* TCastToPtr< CPatterned >(CEntity& entity) {
 CBeamProjectile::~CBeamProjectile() {}
 
 CPlasmaProjectile::~CPlasmaProjectile() {}
+
+// Raw decompiler output (mwdec) for TypesMatch/TCastToPtr instances of classes not declared yet.
+
+extern "C" bool fn_8009D63C() {
+    return false;
+}
+
+extern "C" void fn_80097520(int arg0) {
+    rstl::destroy<CImpactVisorEffect::SParticleEffect>((CImpactVisorEffect::SParticleEffect*)arg0);
+}
+
+extern "C" void fn_80097654(int arg0) {
+    TryCast((CEntity*)arg0, 159);
+}
+
+extern "C" void fn_800976FC(int arg0) {
+    TryCast((CEntity*)arg0, 157);
+}
+
+extern "C" void fn_8009784C(int arg0) {
+    TryCast((CEntity*)arg0, 153);
+}
+
+extern "C" void fn_800977F8(int arg0) {
+    TryCast((CEntity*)arg0, 154);
+}
+
+extern "C" void fn_800978F4(int arg0) {
+    TryCast((CEntity*)arg0, 151);
+}
+
+extern "C" void fn_80097A44(int arg0) {
+    TryCast((CEntity*)arg0, 147);
+}
+
+extern "C" void fn_800979F0(int arg0) {
+    TryCast((CEntity*)arg0, 148);
+}
+
+extern "C" void fn_80097A98(int arg0) {
+    TryCast((CEntity*)arg0, 146);
+}
+
+extern "C" void fn_80097AEC(int arg0) {
+    TryCast((CEntity*)arg0, 145);
+}
+
+extern "C" void fn_80097B94(int arg0) {
+    TryCast((CEntity*)arg0, 143);
+}
+
+extern "C" void fn_80097B40(int arg0) {
+    TryCast((CEntity*)arg0, 144);
+}
+
+extern "C" void fn_80097BE8(int arg0) {
+    TryCast((CEntity*)arg0, 142);
+}
+
+extern "C" void fn_80097C3C(int arg0) {
+    TryCast((CEntity*)arg0, 141);
+}
+
+extern "C" void fn_80097D8C(int arg0) {
+    TryCast((CEntity*)arg0, 137);
+}
+
+extern "C" void fn_80097DE0(int arg0) {
+    TryCast((CEntity*)arg0, 136);
+}
+
+extern "C" void fn_80097E34(int arg0) {
+    TryCast((CEntity*)arg0, 135);
+}
+
+extern "C" void fn_80097E88(int arg0) {
+    TryCast((CEntity*)arg0, 134);
+}
+
+extern "C" void fn_8009802C(int arg0) {
+    TryCast((CEntity*)arg0, 129);
+}
+
+extern "C" void fn_800980D4(int arg0) {
+    TryCast((CEntity*)arg0, 127);
+}
+
+extern "C" void fn_8009817C(int arg0) {
+    TryCast((CEntity*)arg0, 125);
+}
+
+extern "C" void fn_80098320(int arg0) {
+    TryCast((CEntity*)arg0, 120);
+}
+
+extern "C" void fn_800983C8(int arg0) {
+    TryCast((CEntity*)arg0, 118);
+}
+
+extern "C" void fn_80098374(int arg0) {
+    TryCast((CEntity*)arg0, 119);
+}
+
+extern "C" void fn_8009841C(int arg0) {
+    TryCast((CEntity*)arg0, 117);
+}
+
+extern "C" void fn_80098518(int arg0) {
+    TryCast((CEntity*)arg0, 114);
+}
+
+extern "C" void fn_80098470(int arg0) {
+    TryCast((CEntity*)arg0, 116);
+}
+
+extern "C" void fn_800984C4(int arg0) {
+    TryCast((CEntity*)arg0, 115);
+}
+
+extern "C" void fn_800985C0(int arg0) {
+    TryCast((CEntity*)arg0, 112);
+}
+
+extern "C" void fn_8009856C(int arg0) {
+    TryCast((CEntity*)arg0, 113);
+}
+
+extern "C" void fn_80098614(int arg0) {
+    TryCast((CEntity*)arg0, 111);
+}
+
+extern "C" void fn_80098710(int arg0) {
+    TryCast((CEntity*)arg0, 108);
+}
+
+extern "C" void fn_80098764(int arg0) {
+    TryCast((CEntity*)arg0, 107);
+}
+
+extern "C" void fn_800987B8(int arg0) {
+    TryCast((CEntity*)arg0, 106);
+}
+
+extern "C" void fn_8009880C(int arg0) {
+    TryCast((CEntity*)arg0, 105);
+}
+
+extern "C" void fn_800991E4(int arg0) {
+    TryCast((CEntity*)arg0, 75);
+}
+
+
+extern "C" void fn_8009A0FC(int arg0) {
+    TryCast((CEntity*)arg0, 29);
+}
+
+extern "C" void fn_8009A39C(int arg0) {
+    TryCast((CEntity*)arg0, 21);
+}
+
+struct __mwdec_vt_0 { virtual void _0(); virtual void _1(int); };
+extern "C" void fn_80097678(int arg0) {
+    ((__mwdec_vt_0*)arg0)->_1(159);
+}
+
+extern "C" void fn_80097720(int arg0) {
+    ((__mwdec_vt_0*)arg0)->_1(157);
+}
+
+extern "C" void fn_8009781C(int arg0) {
+    ((__mwdec_vt_0*)arg0)->_1(154);
+}
+
+extern "C" void fn_80097870(int arg0) {
+    ((__mwdec_vt_0*)arg0)->_1(153);
+}
+
+extern "C" void fn_80097918(int arg0) {
+    ((__mwdec_vt_0*)arg0)->_1(151);
+}
+
+extern "C" void fn_80097A14(int arg0) {
+    ((__mwdec_vt_0*)arg0)->_1(148);
+}
+
+extern "C" void fn_80097A68(int arg0) {
+    ((__mwdec_vt_0*)arg0)->_1(147);
+}
+
+extern "C" void fn_80097ABC(int arg0) {
+    ((__mwdec_vt_0*)arg0)->_1(146);
+}
+
+extern "C" void fn_80097B10(int arg0) {
+    ((__mwdec_vt_0*)arg0)->_1(145);
+}
+
+extern "C" void fn_80097B64(int arg0) {
+    ((__mwdec_vt_0*)arg0)->_1(144);
+}
+
+extern "C" void fn_80097BB8(int arg0) {
+    ((__mwdec_vt_0*)arg0)->_1(143);
+}
+
+extern "C" void fn_80097C60(int arg0) {
+    ((__mwdec_vt_0*)arg0)->_1(141);
+}
+
+extern "C" void fn_80097C0C(int arg0) {
+    ((__mwdec_vt_0*)arg0)->_1(142);
+}
+
+extern "C" void fn_80097DB0(int arg0) {
+    ((__mwdec_vt_0*)arg0)->_1(137);
+}
+
+extern "C" void fn_80097E04(int arg0) {
+    ((__mwdec_vt_0*)arg0)->_1(136);
+}
+
+extern "C" void fn_80097E58(int arg0) {
+    ((__mwdec_vt_0*)arg0)->_1(135);
+}
+
+extern "C" void fn_80097EAC(int arg0) {
+    ((__mwdec_vt_0*)arg0)->_1(134);
+}
+
+extern "C" void fn_80098050(int arg0) {
+    ((__mwdec_vt_0*)arg0)->_1(129);
+}
+
+extern "C" void fn_800980F8(int arg0) {
+    ((__mwdec_vt_0*)arg0)->_1(127);
+}
+
+extern "C" void fn_800981A0(int arg0) {
+    ((__mwdec_vt_0*)arg0)->_1(125);
+}
+
+extern "C" void fn_80098344(int arg0) {
+    ((__mwdec_vt_0*)arg0)->_1(120);
+}
+
+extern "C" void fn_80098398(int arg0) {
+    ((__mwdec_vt_0*)arg0)->_1(119);
+}
+
+extern "C" void fn_800983EC(int arg0) {
+    ((__mwdec_vt_0*)arg0)->_1(118);
+}
+
+extern "C" void fn_80098440(int arg0) {
+    ((__mwdec_vt_0*)arg0)->_1(117);
+}
+
+extern "C" void fn_80098494(int arg0) {
+    ((__mwdec_vt_0*)arg0)->_1(116);
+}
+
+extern "C" void fn_800984E8(int arg0) {
+    ((__mwdec_vt_0*)arg0)->_1(115);
+}
+
+extern "C" void fn_8009853C(int arg0) {
+    ((__mwdec_vt_0*)arg0)->_1(114);
+}
+
+extern "C" void fn_800985E4(int arg0) {
+    ((__mwdec_vt_0*)arg0)->_1(112);
+}
+
+extern "C" void fn_80098590(int arg0) {
+    ((__mwdec_vt_0*)arg0)->_1(113);
+}
+
+extern "C" void fn_80098638(int arg0) {
+    ((__mwdec_vt_0*)arg0)->_1(111);
+}
+
+extern "C" void fn_80098734(int arg0) {
+    ((__mwdec_vt_0*)arg0)->_1(108);
+}
+
+extern "C" void fn_80098788(int arg0) {
+    ((__mwdec_vt_0*)arg0)->_1(107);
+}
+
+extern "C" void fn_800987DC(int arg0) {
+    ((__mwdec_vt_0*)arg0)->_1(106);
+}
+
+extern "C" void fn_80098830(int arg0) {
+    ((__mwdec_vt_0*)arg0)->_1(105);
+}
+
+extern "C" void fn_80099208(int arg0) {
+    ((__mwdec_vt_0*)arg0)->_1(75);
+}
+
+
+extern "C" void fn_8009A120(int arg0) {
+    ((__mwdec_vt_0*)arg0)->_1(29);
+}
+
+extern "C" void fn_8009A3C0(int arg0) {
+    ((__mwdec_vt_0*)arg0)->_1(21);
+}
+
+extern "C" int fn_8009ABEC(int arg0, int arg1) {
+    if (arg1 == 149) {
+        return arg0;
+    }
+    if (arg1 > 149) {
+        return 0;
+    }
+    return (int)((CPatterned*)arg0)->CPatterned::TypesMatch(arg1);
+}
+
+extern "C" int fn_8009AC24(int arg0, int arg1) {
+    if (arg1 == 148) {
+        return arg0;
+    }
+    if (arg1 > 148) {
+        return 0;
+    }
+    return (int)((CPhysicsActor*)arg0)->CPhysicsActor::TypesMatch(arg1);
+}
+
+extern "C" int fn_8009AC5C(int arg0, int arg1) {
+    if (arg1 == 147) {
+        return arg0;
+    }
+    if (arg1 > 147) {
+        return 0;
+    }
+    return (int)((CPatterned*)arg0)->CPatterned::TypesMatch(arg1);
+}
+
+extern "C" int fn_8009AC94(int arg0, int arg1) {
+    if (arg1 == 146) {
+        return arg0;
+    }
+    if (arg1 > 146) {
+        return 0;
+    }
+    return (int)((CPatterned*)arg0)->CPatterned::TypesMatch(arg1);
+}
+
+extern "C" int fn_8009ACCC(int arg0, int arg1) {
+    if (arg1 == 145) {
+        return arg0;
+    }
+    if (arg1 > 145) {
+        return 0;
+    }
+    return (int)((CPatterned*)arg0)->CPatterned::TypesMatch(arg1);
+}
+
+extern "C" int fn_8009AD04(int arg0, int arg1) {
+    if (arg1 == 144) {
+        return arg0;
+    }
+    if (arg1 > 144) {
+        return 0;
+    }
+    return (int)((CPhysicsActor*)arg0)->CPhysicsActor::TypesMatch(arg1);
+}
+
+extern "C" int fn_8009AD3C(int arg0, int arg1) {
+    if (arg1 == 143) {
+        return arg0;
+    }
+    if (arg1 > 143) {
+        return 0;
+    }
+    return (int)((CPatterned*)arg0)->CPatterned::TypesMatch(arg1);
+}
+
+extern "C" int fn_8009AE8C(int arg0, int arg1) {
+    if (arg1 == 137) {
+        return arg0;
+    }
+    if (arg1 > 137) {
+        return 0;
+    }
+    return (int)((CActor*)arg0)->CActor::TypesMatch(arg1);
+}
+
+extern "C" int fn_8009AEFC(int arg0, int arg1) {
+    if (arg1 == 135) {
+        return arg0;
+    }
+    if (arg1 > 135) {
+        return 0;
+    }
+    return (int)((CPatterned*)arg0)->CPatterned::TypesMatch(arg1);
+}
+
+extern "C" int fn_8009AF34(int arg0, int arg1) {
+    if (arg1 == 134) {
+        return arg0;
+    }
+    if (arg1 > 134) {
+        return 0;
+    }
+    return (int)((CPatterned*)arg0)->CPatterned::TypesMatch(arg1);
+}
+
+
+extern "C" int fn_8009B04C(int arg0, int arg1) {
+    if (arg1 == 129) {
+        return arg0;
+    }
+    if (arg1 > 129) {
+        return 0;
+    }
+    return (int)((CPatterned*)arg0)->CPatterned::TypesMatch(arg1);
+}
+
+extern "C" int fn_8009B2EC(int arg0, int arg1) {
+    if (arg1 == 117) {
+        return arg0;
+    }
+    if (arg1 > 117) {
+        return 0;
+    }
+    return (int)((CPatterned*)arg0)->CPatterned::TypesMatch(arg1);
+}
+
+extern "C" int fn_8009B324(int arg0, int arg1) {
+    if (arg1 == 116) {
+        return arg0;
+    }
+    if (arg1 > 116) {
+        return 0;
+    }
+    return (int)((CPatterned*)arg0)->CPatterned::TypesMatch(arg1);
+}
+
+extern "C" int fn_8009B394(int arg0, int arg1) {
+    if (arg1 == 114) {
+        return arg0;
+    }
+    if (arg1 > 114) {
+        return 0;
+    }
+    return (int)((CPatterned*)arg0)->CPatterned::TypesMatch(arg1);
+}
+
+extern "C" int fn_8009B3CC(int arg0, int arg1) {
+    if (arg1 == 113) {
+        return arg0;
+    }
+    if (arg1 > 113) {
+        return 0;
+    }
+    return (int)((CPatterned*)arg0)->CPatterned::TypesMatch(arg1);
+}
+
+extern "C" int fn_8009B634();
+
+extern "C" int fn_8009B404(int arg0, int arg1) {
+    if (arg1 == 112) {
+        return arg0;
+    }
+    if (arg1 > 112) {
+        return 0;
+    }
+    return (int)((CPatterned*)arg0)->CPatterned::TypesMatch(arg1);
+}
+
+extern "C" int fn_8009B58C(int arg0, int arg1) {
+    if (arg1 == 105) {
+        return arg0;
+    }
+    if (arg1 > 105) {
+        return 0;
+    }
+    return (int)((CActor*)arg0)->CActor::TypesMatch(arg1);
+}
+
+extern "C" int fn_8009C7EC(int arg0, int arg1) {
+    if (arg1 == 21) {
+        return arg0;
+    }
+    if (arg1 > 21) {
+        return 0;
+    }
+    return (int)((CWeapon*)arg0)->CWeapon::TypesMatch(arg1);
+}
+
+extern "C" int fn_8009B43C(int arg0, int arg1) {
+    if (arg1 == 111) {
+        return arg0;
+    }
+    if (arg1 > 111) {
+        return 0;
+    }
+    return (int)((CPatterned*)arg0)->CPatterned::TypesMatch(arg1);
+}
+
+extern "C" int fn_8009D4C8(int arg0, int arg1) {
+    if (arg0) {
+        CMemory::Free((const void*)*(int*)(arg0 + 0xc));
+        if ((short)arg1 > 0) {
+            CMemory::Free((const void*)arg0);
+        }
+    }
+    return arg0;
+}
+
+extern "C" int fn_8009D5C8(int arg0, int arg1) {
+    int var_r31;
+    int temp_r3;
+    if (arg0) {
+        var_r31 = *(int*)(arg0 + 0x4);
+        while ((unsigned int)var_r31 != (*(int*)(arg0 + 0x8))) {
+            temp_r3 = var_r31;
+            var_r31 = *(int*)(var_r31 + 0x4);
+            CMemory::Free((const void*)temp_r3);
+        }
+        if ((short)arg1 > 0) {
+            CMemory::Free((const void*)arg0);
+        }
+    }
+    return arg0;
+}
+
+extern unsigned char lbl_803B317C[20];
+extern "C" int fn_8009D580(int arg0, int arg1) {
+    if (arg0) {
+        *(int*)arg0 = (int)lbl_803B317C;
+        if ((short)arg1 > 0) {
+            CMemory::Free((const void*)arg0);
+        }
+    }
+    return arg0;
+}
+
+extern "C" int fn_80097540(int obj) {
+    int result = obj;
+    if (!((*(unsigned char*)((char*)obj + 0x20)) >> 2 & 8)) {
+        result = 0;
+    }
+    return result;
+}
+
+extern "C" int fn_80097554(int obj) {
+    if ((unsigned int)obj != 0) {
+        if ((*(unsigned char*)((char*)obj + 0x20)) >> 2 & 8) {
+            return obj;
+        }
+    }
+    return 0;
+}
+
 
 #undef TYPES_MATCH_IMPL
 #undef CAST_TO_PTR_IMPL

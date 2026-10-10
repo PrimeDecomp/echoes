@@ -507,3 +507,11 @@ CEntity* LoadEffect(CStateManager& mgr, CInputStream& input, CEntityInfo& info) 
       spline, sldrThis.splineMovesParticleEmitterOnly, sldrThis.destroyParticlesOnDeactivate,
       sldrThis.adoptSplineOrientation, CScriptEffect::ERenderOrder(sldrThis.renderOrder));
 }
+
+typedef struct { float f0; float f4; float f8; unsigned char _pc[4]; } __mwdec_g_lbl_803DA900;
+extern __mwdec_g_lbl_803DA900 lbl_803DA900;
+extern "C" void fn_80082ED0() {
+    lbl_803DA900.f0 = 1.0f;
+    lbl_803DA900.f4 = 1.0f;
+    lbl_803DA900.f8 = 1.0f;
+}

@@ -1,5 +1,9 @@
 #include "MetroidPrime/Weapons/CBloggProjectile.hpp"
 
+#include "MetroidPrime/CStateManager.hpp"
+#include "MetroidPrime/Player/CPlayer.hpp"
+#include "MetroidPrime/TCastTo.hpp"
+
 CBloggProjectile::CBloggProjectile(bool active, const TToken< CWeaponDescription >& description,
                                    EWeaponType type, const CTransform4f& xf,
                                    EMaterialTypes excludeMaterial, const CDamageInfo& damage,
@@ -13,6 +17,12 @@ CBloggProjectile::CBloggProjectile(bool active, const TToken< CWeaponDescription
 , x568_(value) {}
 
 void CBloggProjectile::ApplyDamageToOneActor(CStateManager& mgr, const CDamageInfo& damageInfo,
-                                             TUniqueId id, const CVector3f& direction) {}
+                                             TUniqueId id, const CVector3f& direction) {
+  CGameProjectile::ApplyDamageToOneActor(mgr, damageInfo, id, direction);
+  if (CActor* actor = TCastToPtr< CActor >(mgr.ObjectById(id))) {
+    // The native code casts to CPlayer but does nothing with the result.
+    CPlayer* player = TCastToPtr< CPlayer >(actor);
+  }
+}
 
 CBloggProjectile::~CBloggProjectile() {}

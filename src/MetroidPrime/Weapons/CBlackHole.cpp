@@ -136,11 +136,10 @@ void CBlackHole::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
     mOrigDamageInfo.SetRadius(mRadius);
 
     if (mFlags & kF_CreationSound) {
-      static const ushort skCreationSfx[2] = {SFXsam_a_drkcohit_00_oneshot,
-                                              SFXsa2_a_drkcohit_00_oneshot};
-      CSfxManager::AddEmitter(mgr.ReturnFirstIfSingleElseSecond(skCreationSfx[0], skCreationSfx[1]),
-                              GetTranslation(), GetCurrentAreaId().Value(), true, false,
-                              CSfxManager::kMedPriority);
+      static const ushort kCreationSfx[2] = {0x1fda, 0x25aa};
+      CSfxManager::AddEmitter(mgr.ReturnFirstIfSingleElseSecond(kCreationSfx[0], kCreationSfx[1]),
+                             GetTranslation(), GetCurrentAreaId().Value(), true, false,
+                             CSfxManager::kMedPriority);
       mgr.InformListeners(GetTranslation(), kLNT_BombExplode);
     }
     if (!mParticleGen.null() && mParticleGen->SystemHasLight()) {
@@ -157,7 +156,7 @@ void CBlackHole::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
       mgr.DeleteObjectRequest(mLightId);
       mLightId = kInvalidUniqueId;
     }
-    // TODO: clear the unresolved player-effect flag through a supported player accessor.
+    mgr.Player(0)->SetHoldScreenFilterAlpha(false);
     break;
   default:
     break;

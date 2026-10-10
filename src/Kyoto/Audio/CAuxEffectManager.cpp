@@ -134,15 +134,15 @@ void CAuxEffectManager::FadeOut(int bus, ECategory category) {
 }
 
 void CAuxEffectManager::SetHighestPrioritySerialState(int bus, EState state) {
-  int highestPriority = -1;
   int selected = -1;
+  int highestPriority = -1;
   int slot = 0;
-  for (SEffectSlot* effect = mBuses[bus].begin(); effect != mBuses[bus].end(); ++effect, ++slot) {
-    if (effect->GetState() == kES_SerialBypassFadeOut || effect->GetState() == kES_SerialFadeIn ||
-        effect->GetState() == kES_Serial) {
-      if (effect->GetPriority() > highestPriority) {
+  for (TBus::iterator it = mBuses[bus].begin(); it != mBuses[bus].end(); ++it, ++slot) {
+    if (it->GetState() == kES_SerialBypassFadeOut || it->GetState() == kES_SerialFadeIn ||
+        it->GetState() == kES_Serial) {
+      if (it->GetPriority() > highestPriority) {
         selected = slot;
-        highestPriority = effect->GetPriority();
+        highestPriority = it->GetPriority();
       }
     }
   }
@@ -160,9 +160,9 @@ int CAuxEffectManager::AddEffect(int bus, const CAuxEffect& effect, ECategory ca
     if (category == kEC_Parallel) {
       FadeOut(bus, category);
     } else {
-      for (SEffectSlot* slot = effects.begin(); slot != effects.end(); ++slot) {
+      for (TBus::iterator it = effects.begin(); it != effects.end(); ++it) {
         // Native priority comparison examines free slots, not active ones.
-        if (slot->GetState() == kES_Free && slot->GetPriority() > effect.GetPriority())
+        if (it->GetState() == kES_Free && it->GetPriority() > effect.GetPriority())
           primary = false;
       }
       if (primary)
@@ -171,24 +171,25 @@ int CAuxEffectManager::AddEffect(int bus, const CAuxEffect& effect, ECategory ca
   }
   Cleanup();
 
+  // The id doubles as the one-based slot counter until a free slot is claimed.
   int id = 0;
   bool assigned = false;
-  for (SEffectSlot* slot = effects.begin(); slot != effects.end(); ++slot) {
+  for (TBus::iterator it = effects.begin(); it != effects.end(); ++it) {
     ++id;
-    if (slot->GetState() != kES_Free)
+    if (it->GetState() != kES_Free)
       continue;
     {
       CInterruptGuard interrupts;
-      id = (++mNextId << 4) | ((bus << 2) | id);
-      slot->SetId(id);
-      slot->SetFade(0.f);
-      slot->SetEffect(effect);
-      slot->SetState(category == kEC_Parallel ? kES_ParallelFadeIn
-                     : primary                ? kES_SerialFadeIn
-                                              : kES_SerialBypassFadeOut);
-      slot->Prepare();
+      id = (++mNextId << 4) | (id | (bus << 2));
+      it->SetId(id);
+      it->SetFade(0.f);
+      it->SetEffect(effect);
+      it->SetState(category == kEC_Parallel ? kES_ParallelFadeIn
+                   : primary                ? kES_SerialFadeIn
+                                            : kES_SerialBypassFadeOut);
+      it->Prepare();
+      assigned = true;
     }
-    assigned = true;
     break;
   }
   if (!assigned) {

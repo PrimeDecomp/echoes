@@ -168,3 +168,16 @@ void CPowerBomb::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
 
   CActor::AcceptScriptMsg(mgr, msg);
 }
+
+extern "C" void fn_8010010C();
+extern "C" int fn_80100784(int obj, int obj2) {
+    if ((unsigned int)obj == obj2) {
+        return obj;
+    }
+    if (*(unsigned char*)(obj2 + 0x18)) {
+        fn_8010010C();
+    } else {
+        *(unsigned char*)(obj + 0x18) = 0;
+    }
+    return obj;
+}

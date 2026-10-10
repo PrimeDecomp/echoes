@@ -39,12 +39,12 @@ CHomingBlob::CHomingBlob(const TToken< CGenDescription >& particle, TUniqueId ui
 : CWeapon(uid, areaId, active, owner, kWT_Dark, name, xf,
           CMaterialFilter::MakeIncludeExclude(CMaterialList(kMT_Solid),
                                               CMaterialList(kMT_Character, kMT_Player)),
-          CMaterialList(kMT_Projectile), damage, kPA_None, CModelData())
+          CMaterialList(kMT_Projectile), damage, kPA_None, CModelData::CModelDataNull())
 , mCollisionBounds(bounds)
 , mParticleGen(rs_new CElementGen(particle, CElementGen::kMOT_One, CElementGen::kOSF_One))
 , mCollisionCache(rs_new CCollisionCache(mCollisionBounds, 2, 2, uid.Value() & 0x3ff))
 , mLightId(kInvalidUniqueId)
-, mParticleAssetId(CToken(particle).GetTag().GetId())
+, mParticleAssetId(TToken< CGenDescription >(particle).GetTag().GetId())
 , mTargetIds()
 , mNextParticleTarget(0)
 , mParticleUpdatePhase(0)
@@ -92,7 +92,7 @@ void CHomingBlob::PreRender(CStateManager& mgr) {
 
 void CHomingBlob::AddToRenderer(const CStateManager& mgr) const {
   if (!GetPreRenderClipped()) {
-    const CAABox& bounds = GetRenderBoundsCached();
+    const CAABox& bounds = GetOtherBounds();
     EnsureRendered(mgr, bounds.GetCenterPoint(), bounds);
   }
 }
@@ -176,14 +176,15 @@ bool CHomingBlob::FindNearestTriangle(float radius, const CVector3f& position, C
 // Guessed TU-local identity; native calls pass two floats and no blob instance.
 static CVector3f TangentVelocity(float normalDot, float speed, const CVector3f& velocity,
                                  const CVector3f& normal, float& resultSpeed) {
-  const CVector3f tangent = velocity - normal * normalDot;
+  CVector3f tangent = velocity - normal * normalDot;
   const float magnitude = tangent.Magnitude();
   if (magnitude < 0.00011920929f) {
     resultSpeed = 0.f;
     return CVector3f::Zero();
   }
   resultSpeed = speed;
-  return tangent * (speed / magnitude);
+  tangent = tangent * (speed / magnitude);
+  return tangent;
 }
 
 void CHomingBlob::UpdateParticles(CStateManager& mgr) {
@@ -402,8 +403,12 @@ rstl::optional_object< CAABox > CHomingBlob::GetTouchBounds() const {
   return rstl::optional_object_null();
 }
 
-void CHomingBlob::Touch(CActor&, CStateManager&) {
+void CHomingBlob::Touch(CActor& actor, CStateManager& mgr) {
   if (mElapsedTime > x220_) {
+    return;
+  }
+  if (actor.GetUniqueId() == GetOwnerId()) {
+    // Native returns early for the owner; the remaining handling has no effect.
     return;
   }
 }

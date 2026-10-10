@@ -72,3 +72,13 @@ void CAuiMeter::UpdateMeterWorkers() {
     }
   }
 }
+
+extern "C" int fn_8027403C(int obj, int val) {
+    if (obj) {
+        CMemory::Free((const void*)*(int*)(obj + 0xc));
+        if ((short)val > 0) {
+            CMemory::Free((const void*)obj);
+        }
+    }
+    return obj;
+}
