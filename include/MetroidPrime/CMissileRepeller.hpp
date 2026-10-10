@@ -17,6 +17,7 @@ public:
 
   void Update(CStateManager& mgr, const CActor& actor, float dt);
   void Render(const CStateManager& mgr, const CActor& actor) const;
+  void SetActive(bool active) { mActive = active; } // Guessed name
 
 private:
   // Guessed member names.

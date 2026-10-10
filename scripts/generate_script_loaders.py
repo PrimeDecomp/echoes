@@ -338,6 +338,13 @@ NATIVE_INSTANCE_DEFAULTS: dict[str, tuple[tuple[int, ...], ...]] = {
     # LoadTrigger and LoadDock re-store the editor transform scale.
     "SLdrTrigger": ((0x255A4580, 0x5846524D, 0x2),),
     "SLdrDock": ((0x255A4580, 0x5846524D, 0x2),),
+    # SLdrSwampBossStage2::SLdrSwampBossStage2, SwampBossStage2.rel .text 0x830: knockback
+    # resistance, ambient color and visor.
+    "SLdrSwampBossStage2": (
+        (0xB3774750, 0xCF90D15E, 0x3A2D17E4),
+        (0x7E397FED, 0xB028DB0E, 0xA33E5B0E),
+        (0x7E397FED, 0x05AD250E, 0xCA19E8C6),
+    ),
     # LoadRipper, Ripper.rel .text 0x178: knockback resistance, ambient color and visor.
     "SLdrRipper": (
         (0xB3774750, 0xCF90D15E, 0x3A2D17E4),
@@ -350,6 +357,12 @@ NATIVE_INSTANCE_DEFAULTS: dict[str, tuple[tuple[int, ...], ...]] = {
 # object's source (SLdrSteam::SLdrSteam, G2ME01 CScriptSteam): the header only
 # declares it and the hand-written source defines it before LoadX.
 OUTLINE_CONSTRUCTORS = frozenset({"SLdrSteam"})
+
+# Nested records whose constructor and destructor are ordinary (non-inline) functions
+# of the object's source: the target calls them out of line, even the empty
+# destructor (SwampBossStage2.rel .text 0x16D8/0x1714 and 0x1A64/0x1AA0). The reader
+# stays inline.
+NATIVE_OUTLINE_MEMBERS = frozenset({"SLdrSwampBossStage2Phase", "SLdrUnknownStruct38"})
 
 # Records whose native constructor does not store a template default: property ID ->
 # None (a record member still runs its own constructor, without instance re-stores)
@@ -1162,7 +1175,15 @@ class Generator:
                     + "& data, CInputStream& input);",
                 ]
             else:
-                header += [""] + self.render_definitions(member, "inline ")
+                definitions = self.render_definitions(member, "inline ")
+                if member_name in NATIVE_OUTLINE_MEMBERS:
+                    definitions = [
+                        line.removeprefix("inline ")
+                        if line.startswith(f"inline {member_name}::")
+                        else line
+                        for line in definitions
+                    ]
+                header += [""] + definitions
         header += ["", "#endif", ""]
         return "\n".join(header)
 
