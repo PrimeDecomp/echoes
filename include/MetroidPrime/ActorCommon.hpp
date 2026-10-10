@@ -165,10 +165,15 @@ enum EUserEventType {
   kUE_SoundStop = 32,
   kUE_EffectOn = 33,
   kUE_EffectOff = 34,
+  kUE_Unknown35 = 35, // Guessed name
+  kUE_Unknown36 = 36, // Guessed name
   kUE_Unknown37 = 37, // Guessed name
   kUE_Unknown38 = 38, // Guessed name
   kUE_Unknown39 = 39, // Guessed name
+  kUE_Unknown40 = 40, // Guessed name
+  kUE_Unknown41 = 41, // Guessed name
   kUE_Unknown42 = 42, // Guessed name
+  kUE_Unknown43 = 43, // Guessed name
   kUE_Unknown45 = 45, // Guessed name
   kUE_Unknown46 = 46, // Guessed name
 };

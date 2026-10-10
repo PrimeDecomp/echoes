@@ -60,6 +60,7 @@ enum EPatternedAI {
   kPAI_SpankWeed = 0x36,               // Guessed name; SpankWeed REL constructor.
   kPAI_Splinter = 0x37,                // Guessed name; Splinter REL constructor.
   kPAI_StoneToad = 0x3a,               // Guessed name; StoneToad REL constructor.
+  kPAI_SwampBossStage2 = 0x3c,         // Guessed name; SwampBossStage2 REL constructor.
   kPAI_Tryclops = 0x3f,                // Guessed name; Tryclops REL constructor.
   kPAI_WispTentacle = 0x42,            // Guessed name; WispTentacle REL constructor.
   kPAI_GunTurretBase = 0x43,           // Guessed name; GunTurretBase REL constructor.

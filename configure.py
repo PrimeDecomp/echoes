@@ -1848,6 +1848,13 @@ config.libs = [
         extra_cflags=["-pool off"],
     ),
     Rel(
+        "SwampBossStage2",
+        [
+            Object(NonMatching, "MetroidPrime/Enemies/CSwampBossStage2.cpp"),
+        ],
+        extra_cflags=["-pool off"],
+    ),
+    Rel(
         "Kralee",
         [
             Object(NonMatching, "MetroidPrime/Enemies/CKralee.cpp"),

@@ -284,6 +284,12 @@ public:
   bool IsOverrideRadarRadius() const { return mOverrideRadarRadius; }
   float GetRadarXYRadiusOverride() const { return mRadarXYRadiusOverride; }
   float GetRadarZRadiusOverride() const { return mRadarZRadiusOverride; }
+  void OverrideRadarRadius(float xyRadius, float zRadius) { // Guessed name
+    mOverrideRadarRadius = true;
+    mRadarXYRadiusOverride = xyRadius;
+    mRadarZRadiusOverride = zRadius;
+  }
+  void ClearRadarRadiusOverride() { mOverrideRadarRadius = false; } // Guessed name
   float GetEchoPulsePhase() const { return mEchoPulsePhase; }    // Guessed name
   uint GetEchoPulseCounter() const { return mEchoPulseCounter; } // Guessed name
   EPlayerCameraState GetCameraState() const { return mCameraState; }

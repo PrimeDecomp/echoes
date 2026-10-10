@@ -34,7 +34,7 @@ struct SLdrSwampBossStage2Phase {
   int unknown_0x2b0bfd51;      // 0x2b0bfd51
 };
 
-inline SLdrSwampBossStage2Phase::SLdrSwampBossStage2Phase() {
+SLdrSwampBossStage2Phase::SLdrSwampBossStage2Phase() {
   minTimeBetweenAttacks = 3.0f;
   maxTimeBetweenAttacks = 7.0f;
   unknown_0x29e6ead6 = 1.0f;
@@ -52,7 +52,7 @@ inline SLdrSwampBossStage2Phase::SLdrSwampBossStage2Phase() {
   unknown_0x2b0bfd51 = 10;
 }
 
-inline SLdrSwampBossStage2Phase::~SLdrSwampBossStage2Phase() {}
+SLdrSwampBossStage2Phase::~SLdrSwampBossStage2Phase() {}
 
 inline void LoadTypedefSwampBossStage2Phase(SLdrSwampBossStage2Phase& sldrThis,
                                             CInputStream& input) {
@@ -139,15 +139,14 @@ struct SLdrUnknownStruct38 {
   CVector3f repelOffset; // 0xb3252324
 };
 
-inline SLdrUnknownStruct38::SLdrUnknownStruct38() : repelOffset(CVector3f::Zero()) {
+SLdrUnknownStruct38::SLdrUnknownStruct38() : soundEffect(-1), repelOffset(CVector3f::Zero()) {
   range = 20.0f;
   turnRate = 180.0f;
-  soundEffect = 0;
   warpScale = 5.0f;
   repelOffset = CVector3f(0.0f, 1.0f, 5.0f);
 }
 
-inline SLdrUnknownStruct38::~SLdrUnknownStruct38() {}
+SLdrUnknownStruct38::~SLdrUnknownStruct38() {}
 
 inline void LoadTypedefUnknownStruct38(SLdrUnknownStruct38& sldrThis, CInputStream& input) {
   const int propertyCount = input.ReadUint16();
@@ -255,6 +254,7 @@ inline SLdrSwampBossStage2Data::SLdrSwampBossStage2Data()
 , spitProjectile(kInvalidAssetId)
 , spitDamage()
 , spitVisorEffect(kInvalidAssetId)
+, sound_SpitVisor(-1)
 , swoopDamage()
 , splash(kInvalidAssetId)
 , splashShockWave()
@@ -280,7 +280,6 @@ inline SLdrSwampBossStage2Data::SLdrSwampBossStage2Data()
   unknown_0x96ce7897 = 2;
   spitDamage.dI_WeaponType = 11;
   spitDamage.dI_Damage = 5.0f;
-  sound_SpitVisor = 0;
   spitProjectileRadius = 2.0f;
   swoopDamage.dI_WeaponType = 11;
   swoopDamage.dI_Damage = 0.5f;
@@ -570,10 +569,13 @@ inline SLdrSwampBossStage2::SLdrSwampBossStage2()
   patterned.contactDamage.dI_Damage = 10.0f;
   patterned.contactDamage.dI_KnockBackPower = 5.0f;
   patterned.damageWaitTime = 1.0f;
+  patterned.health.hI_KnockBackResistance = 2.0f;
   patterned.collisionRadius = 0.5f;
   patterned.collisionHeight = 1.5f;
   patterned.unknown_0xe287d8dd = 0.0f;
   patterned.creatureSize = 2;
+  actorInformation.lighting.ambientColor = CColor(1.0f, 1.0f, 1.0f, 1.0f);
+  actorInformation.visor.visorFlags = 0x0000000fu;
 }
 
 inline SLdrSwampBossStage2::~SLdrSwampBossStage2() {}
