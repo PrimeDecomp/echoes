@@ -325,10 +325,10 @@ CSpacePirate::CSpacePirate(TUniqueId uid, const rstl::string& name, const CEntit
 , mGettingUp(false)
 , mWarpInRequested(false)
 , mDeleteAfterWarpOut(false)
-, x8fa_28_(false)
-, x8fa_29_(false)
-, x8fa_30_(false)
-, x8fa_31_(false)
+, mWarpTimeCaptured(false)
+, mInJump(false)
+, mCannotShoot(false)
+, mWallDetaching(false)
 , mFrenzyFrames(0)
 , mCoverPoint(kInvalidUniqueId)
 , mPreviousCoverPoint(kInvalidUniqueId)
@@ -349,9 +349,9 @@ CSpacePirate::CSpacePirate(TUniqueId uid, const rstl::string& name, const CEntit
 , mCoverDir(pas::kCD_Invalid)
 , mIntoJumpDist(1.f)
 , mEyeHeight(2.f)
-, xa78_(0.f)
+, mTimeLosClear(0.f)
 , mTimeNoPlayerLos(0.f)
-, xa80_(0.f)
+, mLosCheckTimer(0.f)
 , mAttachedActor(kInvalidUniqueId)
 , mGunSeg(CSegId::Invalid())
 , mElbowSeg(CSegId::Invalid())
@@ -385,7 +385,7 @@ CSpacePirate::CSpacePirate(TUniqueId uid, const rstl::string& name, const CEntit
 , mMaxCloakAlpha(mPirateData.mMaxCloakOpacity)
 , mDodgeDelayTimer(mPirateData.mDodgeDelayTimeMin)
 , mAimDelayTimer(mPirateData.mGunTrackDelay)
-, xb9c_(0.f)
+, mAimReleaseTimer(0.f)
 , mTeamAiMgrId(kInvalidUniqueId)
 , mHeldPosition(CVector2f::Zero())
 , mHoldPositionTime(0.f)
@@ -638,7 +638,7 @@ void CSpacePirate::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
       mBurstFire.SetBurstType(4);
     }
     mJumpVelSet = false;
-    x8fa_29_ = false;
+    mInJump = false;
     if (mShadowPirate && GetVelocityWR().GetZ() < -1.f) {
       mAlphaDelta = 1.f;
       mCloakDelayTimer += -0.05f * GetVelocityWR().GetZ();
@@ -722,7 +722,7 @@ void CSpacePirate::SetEyeParticleActive(CStateManager& mgr, bool active) {}
 bool CSpacePirate::CheckTargetable(CStateManager& mgr) { return GetModelAlphau8(mgr) > 127; }
 
 void CSpacePirate::SetVelocityForJump() {
-  if (!mJumpVelSet && !x8fa_31_) {
+  if (!mJumpVelSet && !mWallDetaching) {
     CVector3f velocity = CVector3f::Zero();
     const CVector3f delta = mPatrolDestPos - GetTranslation();
     const float gravity = GetGravityConstant();
@@ -735,7 +735,7 @@ void CSpacePirate::SetVelocityForJump() {
     velocity.SetY(invTime * delta.GetY());
     SetVelocityWR(velocity);
     mJumpVelSet = true;
-    x8fa_29_ = true;
+    mInJump = true;
   }
 }
 
@@ -850,10 +850,10 @@ bool CSpacePirate::LineOfSightTest(CStateManager& mgr, const CVector3f& eyePos,
 }
 
 void CSpacePirate::UpdateCantSeePlayer(CStateManager& mgr, float dt) {
-  xa80_ += dt;
-  xa78_ += dt;
-  if (xa80_ > 0.1f) {
-    xa80_ = 0.f;
+  mLosCheckTimer += dt;
+  mTimeLosClear += dt;
+  if (mLosCheckTimer > 0.1f) {
+    mLosCheckTimer = 0.f;
     CVector3f eyePos = GetTranslation() + CVector3f(0.f, 0.f, mEyeHeight);
     CPlayer* player = TCastToPtr< CPlayer >(const_cast< CEntity* >(mgr.GetObjectById(mTargetId)));
     if (!player) {
@@ -880,11 +880,11 @@ void CSpacePirate::UpdateCantSeePlayer(CStateManager& mgr, float dt) {
       }
       if (!LineOfSightTest(mgr, eyePos, aimPos,
                            CMaterialList(kMT_Player, kMT_ProjectilePassthrough))) {
-        xa78_ = 0.f;
+        mTimeLosClear = 0.f;
       }
     }
   }
-  mNoPlayerLos = xa78_ < mPirateData.xc4_;
+  mNoPlayerLos = mTimeLosClear < mPirateData.mMinLosClearTime;
 }
 
 void CSpacePirate::UpdateHeldPosition(CStateManager& mgr, float dt) {
@@ -1980,7 +1980,7 @@ void CSpacePirate::PathFind(CStateManager& mgr, EStateMsg msg, float dt) {
             BodyController()->CommandMgr().DeliverCmd(CBCJumpCmd(
                 mDestPos, pas::kJT_Normal, pas::kJS_IntoJump, 0, CBCJumpCmd::kFF_AmbushJump));
           }
-          x8fa_29_ = true;
+          mInJump = true;
         }
       }
     }
@@ -2326,7 +2326,7 @@ void CSpacePirate::WarpIn(CStateManager& mgr, EStateMsg msg, float dt) {
     mColor.SetAlpha(0.f);
     mAlphaDelta = 0.f;
     mWarpPhase = 0;
-    x8fa_28_ = false;
+    mWarpTimeCaptured = false;
     RemoveMaterial(kMT_Character, kMT_Solid, kMT_Target, kMT_Orbit, mgr);
     break;
   case kStateMsg_Update:
@@ -2368,8 +2368,8 @@ void CSpacePirate::WarpIn(CStateManager& mgr, EStateMsg msg, float dt) {
         BodyController()->CommandMgr().DeliverCmd(
             CBCGenerateCmd(pas::kGType_One, CVector3f::Zero()));
       } else if (BodyController()->GetCurrentStateId() == pas::kAS_Generate) {
-        if (!x8fa_28_) {
-          x8fa_28_ = true;
+        if (!mWarpTimeCaptured) {
+          mWarpTimeCaptured = true;
           mWarpTime = BodyController()->GetAnimTimeRemaining();
         } else if (mWarpTime > FLT_EPSILON) {
           float ratio = BodyController()->GetAnimTimeRemaining() / mWarpTime;
@@ -2395,14 +2395,14 @@ void CSpacePirate::WarpOut(CStateManager& mgr, EStateMsg msg, float dt) {
   case kStateMsg_Activate:
     mAnimationState.SetState(CAnimationState::kAS_Ready);
     mWarpPhase = 1;
-    x8fa_28_ = false;
+    mWarpTimeCaptured = false;
     break;
   case kStateMsg_Update:
     if (mAnimationState.CanIssueCommand(*BodyController(), pas::kAS_Generate)) {
       BodyController()->CommandMgr().DeliverCmd(CBCGenerateCmd(pas::kGType_One, CVector3f::Zero()));
     } else if (BodyController()->GetCurrentStateId() == pas::kAS_Generate) {
-      if (!x8fa_28_) {
-        x8fa_28_ = true;
+      if (!mWarpTimeCaptured) {
+        mWarpTimeCaptured = true;
         mWarpTime = BodyController()->GetAnimTimeRemaining();
       } else if (mWarpTime > FLT_EPSILON) {
         float ratio = BodyController()->GetAnimTimeRemaining() / mWarpTime;
@@ -2449,7 +2449,7 @@ void CSpacePirate::WallHang(CStateManager& mgr, EStateMsg msg, float dt) {
     }
     mInAttackState = true;
     mBoneTracking.SetActive(false);
-    x8fa_30_ = true;
+    mCannotShoot = true;
     break;
   case kStateMsg_Update: {
     bool tryWallHang = true;
@@ -2463,7 +2463,7 @@ void CSpacePirate::WallHang(CStateManager& mgr, EStateMsg msg, float dt) {
       BodyController()->CommandMgr().DeliverCmd(CBCWallHangCmd(mDestObj));
     }
     if (BodyController()->GetCurrentStateId() == pas::kAS_WallHang) {
-      x8fa_30_ = !BodyController()->GetBodyStateInfo().GetCurrentState()->CanShoot();
+      mCannotShoot = !BodyController()->GetBodyStateInfo().GetCurrentState()->CanShoot();
     }
     mBurstFire.SetBurstType(1);
     break;
@@ -2473,7 +2473,7 @@ void CSpacePirate::WallHang(CStateManager& mgr, EStateMsg msg, float dt) {
     mAnimationState.SetState(CAnimationState::kAS_NotReady);
     mInAttackState = false;
     mBoneTracking.SetActive(true);
-    x8fa_30_ = false;
+    mCannotShoot = false;
     break;
   }
 }
@@ -2482,16 +2482,16 @@ void CSpacePirate::WallDetach(CStateManager& mgr, EStateMsg msg, float dt) {
   switch (msg) {
   case kStateMsg_Activate:
     mInWallHang = true;
-    x8fa_30_ = true;
-    x8fa_31_ = true;
+    mCannotShoot = true;
+    mWallDetaching = true;
     break;
   case kStateMsg_Update:
     BodyController()->CommandMgr().DeliverCmd(CBodyStateCmd(kBSC_ExitState));
     break;
   case kStateMsg_Deactivate:
     mInWallHang = false;
-    x8fa_30_ = false;
-    x8fa_31_ = false;
+    mCannotShoot = false;
+    mWallDetaching = false;
     break;
   }
 }
@@ -3286,8 +3286,8 @@ void CSpacePirate::UpdateAttacks(float dt, CStateManager& mgr) {
         FireProjectile(dt, mgr);
         mBurstFire.SetAvoidAccuracy(false);
         if (IsIngPossessed()) {
-          const float variation = mPirateData.x98_;
-          const float average = mPirateData.x94_;
+          const float variation = mPirateData.mIngNextShotTimeVariation;
+          const float average = mPirateData.mIngAverageNextShotTime;
           mBurstFire.SetTimeToNextShot(variation * (mgr.Random()->Float() - 0.5f) + average);
         } else {
           const float variation = mPirateData.mNextShotTimeVariation;
@@ -3312,7 +3312,7 @@ void CSpacePirate::UpdateAttacks(float dt, CStateManager& mgr) {
 void CSpacePirate::UpdateAimBodyState(float dt, CStateManager& mgr) {
   if (mAlive && mEnableAim && !BodyController()->IsFrozen() &&
       !BodyController()->IsElectrocuting() && !mMelee && mRagDoll.get() == nullptr &&
-      (!mSeated || mSatUp) && !x8fa_30_) {
+      (!mSeated || mSatUp) && !mCannotShoot) {
     mAimDelayTimer = CMath::Max(0.f, mAimDelayTimer - dt);
     if (mAimDelayTimer <= 0.f) {
       BodyController()->CommandMgr().DeliverCmd(CBCAdditiveAimCmd(mInWallHang != 0));
@@ -3326,12 +3326,12 @@ void CSpacePirate::UpdateAimBodyState(float dt, CStateManager& mgr) {
         direction = CVector3f(-direction.GetX(), -direction.GetY(), direction.GetZ());
       }
       BodyController()->CommandMgr().DeliverAdditiveTargetVector(direction);
-      xb9c_ = 0.5f;
+      mAimReleaseTimer = 0.5f;
     }
-  } else if (xb9c_ > 0.f) {
-    xb9c_ -= dt;
+  } else if (mAimReleaseTimer > 0.f) {
+    mAimReleaseTimer -= dt;
     BodyController()->CommandMgr().DeliverAdditiveTargetVector(GetTransform().GetForward());
-    if (xb9c_ <= 0.f) {
+    if (mAimReleaseTimer <= 0.f) {
       BodyController()->CommandMgr().DeliverCmd(CBodyStateCmd(kBSC_AdditiveIdle));
     }
   }

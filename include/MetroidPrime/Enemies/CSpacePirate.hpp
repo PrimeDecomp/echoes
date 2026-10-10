@@ -30,13 +30,13 @@ public:
   class CSpacePirateWeaponData {
   public:
     CSpacePirateWeaponData(int equippedWeapon, CAssetId grenadeLauncher,
-                           const CBouncyGrenadeData& grenade, int unknown_0xa95a025b,
+                           const CBouncyGrenadeData& grenade, int grenadeCount,
                            float grenadeMinLaunchSpeed, float grenadeMaxLaunchSpeed,
                            float grenadeMinAttackDist, float grenadeMaxAttackDist)
     : mEquippedWeapon(equippedWeapon)
     , mGrenadeLauncher(grenadeLauncher)
     , mGrenade(grenade)
-    , mGrenadeCount(unknown_0xa95a025b)
+    , mGrenadeCount(grenadeCount)
     , mGrenadeMinLaunchSpeed(grenadeMinLaunchSpeed)
     , mGrenadeMaxLaunchSpeed(grenadeMaxLaunchSpeed)
     , mGrenadeMinAttackDist(grenadeMinAttackDist)
@@ -57,15 +57,15 @@ public:
   public:
     CSpacePirateData(float aggressionCheck, float coverCheck, float searchRadius,
                      float fallBackCheck, float fallBackRadius, float hearingRadius, uint flags,
-                     bool unknown_0xce670970, CAssetId projectile, CDamageInfo projectileDamage,
+                     bool x1c, CAssetId projectile, CDamageInfo projectileDamage,
                      ushort sound_Projectile, CDamageInfo bladeDamage, float kneelAttackChance,
                      CAssetId kneelAttackShot, CDamageInfo kneelAttackDamage, float dodgeCheck,
                      ushort sound_Impact, float intraBurstShotTime, float intraBurstShotVariation,
-                     float unknown_0x5080162a, float unknown_0xc78b40e0, ushort sound_Alert,
-                     float gunTrackDelay, int firstBurstCount, float cloakOpacity,
-                     float maxCloakOpacity, float breakDodgeMinTime, float breakDodgeMaxTime,
-                     ushort sound_Hurled, ushort sound_Death, float unknown_0x8708b7d3,
-                     float avoidDistance, float unknown_0xc4,
+                     float ingAverageNextShotTime, float ingNextShotTimeVariation,
+                     ushort sound_Alert, float gunTrackDelay, int firstBurstCount,
+                     float cloakOpacity, float maxCloakOpacity, float breakDodgeMinTime,
+                     float breakDodgeMaxTime, ushort sound_Hurled, ushort sound_Death, float xbc,
+                     float avoidDistance, float minLosClearTime,
                      const CSpacePirateWeaponData& weaponData)
     : mAggressionCheck(aggressionCheck)
     , mCoverCheck(coverCheck)
@@ -74,7 +74,7 @@ public:
     , mFallBackRadius(fallBackRadius)
     , mHearingRadius(hearingRadius)
     , mFlags(flags)
-    , x1c_(unknown_0xce670970)
+    , x1c_(x1c)
     , mProjectile(projectile)
     , mProjectileDamage(projectileDamage)
     , mSound_Projectile(sound_Projectile)
@@ -86,8 +86,8 @@ public:
     , mSound_Impact(sound_Impact)
     , mAverageNextShotTime(intraBurstShotTime)
     , mNextShotTimeVariation(intraBurstShotVariation)
-    , x94_(unknown_0x5080162a)
-    , x98_(unknown_0xc78b40e0)
+    , mIngAverageNextShotTime(ingAverageNextShotTime)
+    , mIngNextShotTimeVariation(ingNextShotTimeVariation)
     , mSound_Alert(sound_Alert)
     , mGunTrackDelay(gunTrackDelay)
     , mFirstBurstCount(firstBurstCount)
@@ -97,9 +97,9 @@ public:
     , mDodgeDelayTimeMax(breakDodgeMaxTime)
     , mSound_Hurled(sound_Hurled)
     , mSound_Death(sound_Death)
-    , xbc_(unknown_0x8708b7d3)
+    , xbc_(xbc)
     , mAvoidDistance(avoidDistance)
-    , xc4_(unknown_0xc4)
+    , mMinLosClearTime(minLosClearTime)
     , mWeaponData(weaponData) {}
 
     /*
@@ -128,7 +128,7 @@ public:
     float mFallBackRadius;
     float mHearingRadius;
     uint mFlags;
-    bool x1c_;
+    bool x1c_; // Unknown; read by no code in the REL (the Prime equivalent is also unused).
     CAssetId mProjectile;
     CDamageInfo mProjectileDamage;
     ushort mSound_Projectile;
@@ -140,8 +140,8 @@ public:
     ushort mSound_Impact;
     float mAverageNextShotTime;
     float mNextShotTimeVariation;
-    float x94_;
-    float x98_;
+    float mIngAverageNextShotTime;   // Guessed name; shot time used while ing-possessed.
+    float mIngNextShotTimeVariation; // Guessed name; variation used while ing-possessed.
     ushort mSound_Alert;
     float mGunTrackDelay;
     int mFirstBurstCount;
@@ -151,9 +151,9 @@ public:
     float mDodgeDelayTimeMax;
     ushort mSound_Hurled;
     ushort mSound_Death;
-    float xbc_;
+    float xbc_; // Unknown; read by no code in the REL (loader default 0.2).
     float mAvoidDistance;
-    float xc4_;
+    float mMinLosClearTime; // Guessed name; the loader always passes 0.5.
     CSpacePirateWeaponData mWeaponData;
   };
 
@@ -359,7 +359,7 @@ private:
   bool mMelee : 1;
   bool mNoShuffleCloseCheck : 1;
   bool mOnlyAttackInRange : 1;
-  bool x8f4_30_ : 1;
+  bool x8f4_30_ : 1; // Mirrors flag 0x40; read by no code.
   bool mNoKnockbackImpulseReset : 1;
   bool mNoMeleeAttack : 1;
   bool mBreakAttack : 1;
@@ -372,8 +372,8 @@ private:
   bool mTrooper : 1;
   mutable bool mHearNoise : 1;
   bool mEnableMeleeAttack : 1;
-  bool x8f6_27_ : 1;
-  bool x8f6_28_ : 1;
+  bool x8f6_27_ : 1; // Always false and read by no code.
+  bool x8f6_28_ : 1; // Always false and read by no code.
   bool mEnableRetreat : 1;
   bool mShuffleClose : 1;
   bool mInAttackState : 1;
@@ -393,7 +393,7 @@ private:
   bool mNoPlayerDodge : 1;
   bool mAllEnergyDrained : 1; // Guessed Prime name; read by the Metroid energy drain.
   mutable bool mMayStartAttack : 1;
-  bool x8f9_24_ : 1;
+  bool x8f9_24_ : 1; // Always false and read by no code.
   bool mUseJumpBackJump : 1;
   bool mStarted : 1;
   bool mInRange : 1;
@@ -405,10 +405,10 @@ private:
   bool mGettingUp : 1;          // Guessed name; set during the GetUp state.
   bool mWarpInRequested : 1;    // Guessed name; ShouldWarpIn waits for it.
   bool mDeleteAfterWarpOut : 1; // Guessed name; PostWarpOut removes the pirate from the world.
-  bool x8fa_28_ : 1;
-  bool x8fa_29_ : 1;
-  bool x8fa_30_ : 1;
-  bool x8fa_31_ : 1;
+  bool mWarpTimeCaptured : 1;   // Guessed name; mWarpTime was taken from the generate animation.
+  bool mInJump : 1;        // Guessed name; set when a jump starts, cleared on landing; never read.
+  bool mCannotShoot : 1;   // Guessed name; blocks the additive aim (wall hang cannot shoot).
+  bool mWallDetaching : 1; // Guessed name; set while in WallDetach, blocks velocity for jump.
 
   int mFrenzyFrames;
   TUniqueId mCoverPoint;
@@ -419,20 +419,20 @@ private:
   CPathFindSearch mPathFindSearch;
   float mUnkTimer; // Guessed Prime name; the constructor leaves it uninitialized.
   float mSteeringDelayTimer;
-  uint xa14_;
+  uint xa14_; // Unknown; only zero-initialized (x74c_ in Prime).
   float mInitialHP;
   float mCoverRange;
   CSegId mHeadSeg;
-  uint xa24_;
+  uint xa24_; // Unknown; set to Random % 6 on create and never read (x75c_ in Prime).
   pas::ETauntType mTaunt;
   CBoneTracking mBoneTracking;
   pas::ECoverDirection mCoverDir;
-  uchar xa6c_[4];
+  uchar xa6c_[4]; // Unknown; uninitialized and never accessed (padding before mIntoJumpDist).
   float mIntoJumpDist;
   float mEyeHeight;
-  float xa78_;
+  float mTimeLosClear; // Guessed name; time since the last blocked line-of-sight check.
   float mTimeNoPlayerLos;
-  float xa80_;
+  float mLosCheckTimer;     // Guessed name; 0.1s interval of the line-of-sight check.
   TUniqueId mAttachedActor; // Guessed member name.
   CSegId mGunSeg;
   CSegId mElbowSeg;
@@ -466,7 +466,7 @@ private:
   float mMaxCloakAlpha;
   float mDodgeDelayTimer;
   float mAimDelayTimer;
-  float xb9c_;
+  float mAimReleaseTimer; // Guessed name; 0.5s of holding the additive aim forward.
   TUniqueId mTeamAiMgrId;
   CVector2f mHeldPosition;
   float mHoldPositionTime;
