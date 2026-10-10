@@ -24,6 +24,7 @@ public:
   // Guessed name; Patrol resumes from this waypoint.
   void SetLastDestination(TUniqueId id) { mLastDestination = id; }
   void SetDestination(TUniqueId id) { mDestination = id; }     // Guessed name.
+  void SetFaceVector(const CVector3f& vec) { mFaceVector = vec; } // Guessed name.
   float GetMoveSpeed() const { return mMoveSpeed; }            // Guessed name.
   void SetMoveSpeed(float speed) { mMoveSpeed = speed; }       // Guessed name.
   bool IsMoving() const { return mPatrolState == kPS_Moving; } // Guessed name.

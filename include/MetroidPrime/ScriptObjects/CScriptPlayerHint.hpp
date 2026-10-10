@@ -16,6 +16,7 @@ public:
 
   uint GetOverrideFlags() const { return mOverrideFlags; }
   TUniqueId GetActorId() const { return mActorId; }
+  void SetActorId(TUniqueId id) { mActorId = id; } // Guessed name
   float GetControlInterpDur() const { return mControlInterpDur; }
 
 private:

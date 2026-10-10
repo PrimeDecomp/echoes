@@ -1855,6 +1855,15 @@ config.libs = [
         extra_cflags=["-pool off"],
     ),
     Rel(
+        "Splitter",
+        [
+            Object(NonMatching, "MetroidPrime/Enemies/CSplitterCommandModule.cpp"),
+            Object(NonMatching, "MetroidPrime/Enemies/CSplitterMainChassis.cpp"),
+            Object(NonMatching, "MetroidPrime/Enemies/CSplitterBeamEffect.cpp"),
+        ],
+        extra_cflags=["-pool off"],
+    ),
+    Rel(
         "WallCrawler",
         [
             Object(NonMatching, "MetroidPrime/Enemies/CWallCrawler.cpp"),
