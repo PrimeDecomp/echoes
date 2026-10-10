@@ -163,7 +163,7 @@ void CBouncyGrenade::Render(const CStateManager& mgr) const {
                              CModelFlags(CModelFlags::kT_Opaque, 1.f));
     }
     bool darkVisor = false;
-    if ((mFlags & 2) != 0 && mgr.GetPlayerState()->GetActiveVisor(mgr) == CPlayerState::kPV_Dark) {
+    if ((mFlags & 2) != 0 && mgr.GetCurrentRenderPlayerState()->GetActiveVisor(mgr) == CPlayerState::kPV_Dark) {
       darkVisor = true;
     }
     if (darkVisor) {
@@ -185,7 +185,7 @@ void CBouncyGrenade::Render(const CStateManager& mgr) const {
 
 void CBouncyGrenade::AddToRenderer(const CStateManager& mgr) const {
   CActor::AddToRenderer(mgr);
-  if (mExploded && mgr.GetPlayerState()->GetActiveVisor(mgr) != CPlayerState::kPV_Echo) {
+  if (mExploded && mgr.GetCurrentRenderPlayerState()->GetActiveVisor(mgr) != CPlayerState::kPV_Echo) {
     gpRender->AddParticleGen(*mElementGenExplodeCombat);
   }
   if (mHasRenderBounds && mgr.IsActorVisible(*this)) {

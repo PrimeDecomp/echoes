@@ -315,7 +315,7 @@ void CShrieker::AddToRenderer(const CStateManager& mgr) const {
 
 void CShrieker::Render(const CStateManager& mgr) const {
   if (mColor.GetAlpha() != 0.f ||
-      mgr.GetPlayerState()->GetActiveVisor(mgr) == CPlayerState::kPV_Echo) {
+      mgr.GetPlayerState(0)->GetActiveVisor(mgr) == CPlayerState::kPV_Echo) {
     CPatterned::Render(mgr);
   }
   if (mDeflectedIds.size() != 0) {
@@ -756,7 +756,7 @@ void CShrieker::UpdateValidTarget(CStateManager& mgr) {
   if (valid) {
     valid = mColor.GetAlpha() > 0.5f;
     if (!valid) {
-      valid = mgr.GetPlayerState()->GetActiveVisor(mgr) == CPlayerState::kPV_Echo;
+      valid = mgr.GetPlayerState(0)->GetActiveVisor(mgr) == CPlayerState::kPV_Echo;
     }
   }
   if (static_cast< uint >(valid) != (GetValidTargetPlayers() & 1)) {

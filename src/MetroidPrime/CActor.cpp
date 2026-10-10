@@ -382,7 +382,7 @@ void CActor::AddToRenderer(const CStateManager& mgr) const {
       }
     }
 
-    if (mgr.GetPlayerState()->GetActiveVisor(mgr) != CPlayerState::kPV_Echo) {
+    if (mgr.GetCurrentRenderPlayerState()->GetActiveVisor(mgr) != CPlayerState::kPV_Echo) {
       if (ShouldDrawShadow(mgr)) {
         if (GetShadow()->Valid() &&
             mgr.GetFrustumPlanes().BoxInFrustumPlanes(GetShadow()->GetBounds())) {

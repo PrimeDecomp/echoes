@@ -1185,7 +1185,7 @@ CVector3f CPatterned::GetOrbitPosition(const CStateManager& mgr) const {
 }
 
 void CPatterned::PreRender(CStateManager& mgr) {
-  if (mgr.GetPlayerState()->GetActiveVisor(mgr) == CPlayerState::kPV_Echo) {
+  if (mgr.GetCurrentRenderPlayerState()->GetActiveVisor(mgr) == CPlayerState::kPV_Echo) {
     SetCalculateLighting(false);
     ActorLights()->BuildConstantAmbientLighting(CColor::White());
   } else {

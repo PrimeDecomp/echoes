@@ -1160,7 +1160,7 @@ void CPlayerGun::TouchModel(const CStateManager& mgr) const {
 }
 
 void CPlayerGun::PreRender(CStateManager& mgr, const CVector3f& cameraPosition) {
-  const CPlayerState* state = mgr.GetPlayerState();
+  const CPlayerState* state = mgr.GetCurrentRenderPlayerState();
   const CPlayer* player = GetPlayer(mgr);
   if (state->GetCurrentVisor() == CPlayerState::kPV_Scan) {
     return;
@@ -2958,13 +2958,13 @@ CVector3f CPlayerGun::ConvertToScreenSpace(const CVector3f& position,
 }
 
 void CPlayerGun::BeginDarkVisorRender(const CStateManager& mgr) const {
-  if (mgr.GetPlayerState()->GetActiveVisor(mgr) == CPlayerState::kPV_Dark) {
+  if (mgr.GetCurrentRenderPlayerState()->GetActiveVisor(mgr) == CPlayerState::kPV_Dark) {
     gpRender->SetDestinationAlpha(0);
   }
 }
 
 void CPlayerGun::EndDarkVisorRender(const CStateManager& mgr) const {
-  if (mgr.GetPlayerState()->GetActiveVisor(mgr) == CPlayerState::kPV_Dark) {
+  if (mgr.GetCurrentRenderPlayerState()->GetActiveVisor(mgr) == CPlayerState::kPV_Dark) {
     gpRender->DisableDestinationAlpha();
   }
 }

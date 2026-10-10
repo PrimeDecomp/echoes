@@ -345,7 +345,7 @@ void CEnergyProjectile::AddToRenderer(const CStateManager& mgr) const {
 
 void CEnergyProjectile::Render(const CStateManager& mgr) const {
   if (mProjectile.GetWeaponDescription()->mRWPE) {
-    if (mgr.GetPlayerState()->GetActiveVisor(mgr) == CPlayerState::kPV_Combat) {
+    if (mgr.GetCurrentRenderPlayerState()->GetActiveVisor(mgr) == CPlayerState::kPV_Combat) {
       const float warpTime = 1.f - float(mProjectile.GameTime());
       if (warpTime > 0.f) {
         mgr.DrawSpaceWarp(GetTranslation(), 0.75f * warpTime);

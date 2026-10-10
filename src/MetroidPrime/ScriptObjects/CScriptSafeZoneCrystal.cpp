@@ -176,7 +176,7 @@ void CScriptSafeZoneCrystal::AddEffectToRenderer(CElementGen* gen) {
 }
 
 void CScriptSafeZoneCrystal::AddToRenderer(const CStateManager& mgr) const {
-  if (!mIsLight || mgr.GetPlayerState()->GetActiveVisor(mgr) == CPlayerState::kPV_Scan) {
+  if (!mIsLight || mgr.GetCurrentRenderPlayerState()->GetActiveVisor(mgr) == CPlayerState::kPV_Scan) {
     CActor::AddToRenderer(mgr);
   }
   AddEffectToRenderer(mCollapsedEffect.get());

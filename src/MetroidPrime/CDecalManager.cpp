@@ -237,7 +237,7 @@ void CDecalManager::Update(float dt, CStateManager& mgr) {
 }
 
 void CDecalManager::AddToRenderer(const CStateManager& mgr) {
-  if (mgr.GetPlayerState()->GetActiveVisor(mgr) == CPlayerState::kPV_Echo) {
+  if (mgr.GetCurrentRenderPlayerState()->GetActiveVisor(mgr) == CPlayerState::kPV_Echo) {
     return;
   }
   const rstl::reserved_vector< int, 64 >::const_iterator end = mActiveIndexList.end();

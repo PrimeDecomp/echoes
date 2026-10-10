@@ -201,8 +201,8 @@ void CShadowDecoy::Think(float dt, CStateManager& mgr) {
 void CShadowDecoy::AddToRenderer(const CStateManager& mgr) const {
   CActor::AddToRenderer(mgr);
   if (mEffect.get()) {
-    if (mgr.GetPlayerState()->GetActiveVisor(mgr) != CPlayerState::kPV_Dark &&
-        mgr.GetPlayerState()->GetActiveVisor(mgr) != CPlayerState::kPV_Echo) {
+    if (mgr.GetCurrentRenderPlayerState()->GetActiveVisor(mgr) != CPlayerState::kPV_Dark &&
+        mgr.GetCurrentRenderPlayerState()->GetActiveVisor(mgr) != CPlayerState::kPV_Echo) {
       gpRender->AddParticleGen(*mEffect);
     }
   }
@@ -528,7 +528,7 @@ void CDarkCommando::PreRender(CStateManager& mgr) {
 
   if (!mFadeToDeath) {
     if (!mWarpingIn && !mWarpingOut &&
-        mgr.GetPlayerState()->GetActiveVisor(mgr) == CPlayerState::kPV_Dark) {
+        mgr.GetCurrentRenderPlayerState()->GetActiveVisor(mgr) == CPlayerState::kPV_Dark) {
       mColor.SetAlpha(1.f);
     } else {
       mColor.SetAlpha(mCloakAlpha);

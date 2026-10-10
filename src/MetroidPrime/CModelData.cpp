@@ -520,7 +520,7 @@ CModelData::EWhichModel CModelData::GetRenderingModel(const CStateManager& mgr,
 }
 
 CModelData::EWhichModel CModelData::GetRenderingModel(const CStateManager& mgr) {
-  return GetRenderingModel(mgr, *mgr.GetPlayerState());
+  return GetRenderingModel(mgr, *mgr.GetCurrentRenderPlayerState());
 }
 
 void CModelData::Render(const CStateManager& mgr, const CTransform4f& xf,

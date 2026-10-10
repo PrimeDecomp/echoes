@@ -66,7 +66,7 @@ rstl::optional_object< CAABox > CDamageEffect::GetTouchBounds() const {
 void CDamageEffect::AddToRenderer(const CStateManager& mgr) const {
   bool drawParticles = true;
   if (!mShowAlways) {
-    switch (mgr.GetPlayerState()->GetActiveVisor(mgr)) {
+    switch (mgr.GetCurrentRenderPlayerState()->GetActiveVisor(mgr)) {
     case CPlayerState::kPV_Combat:
     case CPlayerState::kPV_Scan:
       drawParticles = mShowInCombat;
