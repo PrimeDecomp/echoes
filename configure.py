@@ -1862,6 +1862,13 @@ config.libs = [
         extra_cflags=["-pool off"],
     ),
     Rel(
+        "SnakeWeedSwarm",
+        [
+            Object(NonMatching, "MetroidPrime/Enemies/CSnakeWeedSwarm.cpp"),
+        ],
+        extra_cflags=["-pool off"],
+    ),
+    Rel(
         "OctapedeSegment",
         [
             Object(NonMatching, "MetroidPrime/Enemies/COctapedeSegment.cpp"),
