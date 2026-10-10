@@ -1,6 +1,7 @@
 #include "MetroidPrime/CFilteredObjectList.hpp"
 
 #include "MetroidPrime/CEntity.hpp"
+#include "MetroidPrime/Enemies/CParasite.hpp"
 #include "MetroidPrime/TCastTo.hpp"
 
 #include "rstl/algorithm.hpp"
@@ -23,7 +24,7 @@ bool CFilteredObjectList::Contains(const CEntity& entity) const {
 
 void CFilteredObjectList::AddObject(CEntity& entity) {
   if (IsQualified(entity)) {
-    mObjects.push_front(&entity);
+    mObjects.push_back(&entity);
   }
 }
 
@@ -55,10 +56,10 @@ bool CFilteredDockList::IsQualified(const CEntity& entity) const {
   return TCastToConstPtr< CScriptDock >(entity) != nullptr;
 }
 
-CFilteredType124List::CFilteredType124List() : CFilteredObjectList(false) {}
+CFilteredParasiteList::CFilteredParasiteList() : CFilteredObjectList(false) {}
 
-bool CFilteredType124List::IsQualified(const CEntity& entity) const {
-  return entity.TypesMatch(124) != nullptr;
+bool CFilteredParasiteList::IsQualified(const CEntity& entity) const {
+  return TCastToConstPtr< CParasite >(entity) != nullptr;
 }
 
 CFilteredForgottenObjectList::CFilteredForgottenObjectList() : CFilteredObjectList(false) {}

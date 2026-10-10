@@ -59,16 +59,15 @@ public:
 };
 CHECK_SIZEOF(CFilteredForgottenObjectList, 0x20)
 
-// The class selected by native entity type 124 remains unidentified.
-class CFilteredType124List : public CFilteredObjectList {
+class CFilteredParasiteList : public CFilteredObjectList {
 public:
-  CFilteredType124List();
+  CFilteredParasiteList();
 
   // CFilteredObjectList
-  ~CFilteredType124List() override {}
+  ~CFilteredParasiteList() override {}
   bool IsQualified(const CEntity& entity) const override;
 };
-CHECK_SIZEOF(CFilteredType124List, 0x20)
+CHECK_SIZEOF(CFilteredParasiteList, 0x20)
 
 class CFilteredDockList : public CFilteredObjectList {
 public:
