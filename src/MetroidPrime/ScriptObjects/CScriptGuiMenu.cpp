@@ -10,13 +10,14 @@
 #include "rstl/math.hpp"
 
 CScriptGuiMenu::CScriptGuiMenu(TUniqueId uid, const rstl::string& name, const CEntityInfo& info,
-                               bool wrap, bool vertical, int controller, const rstl::string& label,
-                               bool locked, ushort selectionChangedSfx)
+                               const bool wrap, bool vertical, int controller,
+                               const rstl::string& label, bool locked, ushort selectionChangedSfx)
 : CScriptGuiWidget(uid, name, info, controller, label, locked)
 , mSelection(0)
 , mWrapSelection(wrap)
-, mVertical(vertical)
-, mSelectionChangedSfx(selectionChangedSfx) {}
+, mVertical(vertical) {
+  mSelectionChangedSfx = selectionChangedSfx;
+}
 
 void CScriptGuiMenu::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
   CScriptGuiWidget::AcceptScriptMsg(mgr, msg);

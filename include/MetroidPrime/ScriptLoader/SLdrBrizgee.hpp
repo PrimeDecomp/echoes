@@ -44,7 +44,13 @@ inline SLdrBrizgee::SLdrBrizgee()
 , noShellSkin(kInvalidAssetId)
 , shellVulnerability()
 , shellContactDamage()
-, poisonDamage() {
+, poisonDamage()
+, shellBreakSound(-1)
+, poisonHitSound(-1)
+, playerPoisonSound(-1) {
+  patterned.health.hI_KnockBackResistance = 2.0f;
+  actorInformation.lighting.ambientColor = CColor(1.0f, 1.0f, 1.0f, 1.0f);
+  actorInformation.visor.visorFlags = 0x0000000fu;
   waypointApproachDistance = 2.5f;
   wallTurnSpeed = 360.0f;
   floorTurnSpeed = 720.0f;
@@ -54,9 +60,6 @@ inline SLdrBrizgee::SLdrBrizgee()
   shellHealth = 2.0f;
   shellOffSpeedMultiplier = 1.5f;
   poisonTime = 2.0f;
-  shellBreakSound = 0;
-  poisonHitSound = 0;
-  playerPoisonSound = 0;
 }
 
 inline SLdrBrizgee::~SLdrBrizgee() {}

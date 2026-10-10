@@ -394,3 +394,58 @@ CEntity* LoadSporbNeedle(CStateManager& mgr, CInputStream& input, CEntityInfo& i
       sldrThis.collisionSound, sldrThis.explosionSound, LdrToDamageInfo(sldrThis.attackDamage),
       sldrThis.initialSpeed, sldrThis.mass, sldrThis.fuseTime);
 }
+
+// ---- Raw matching-decompiler output from a local tree (reference only, not cleaned up) ----
+
+extern "C" int fn_76_11C20(int arg0, int arg1) {
+  void fn_76_11C78(int, int);
+  if (arg0) {
+    fn_76_11C78(arg0 + 8, -1);
+    if ((short)arg1 > 0) {
+      CMemory::Free((const void*)arg0);
+    }
+  }
+  return arg0;
+}
+
+extern "C" int fn_76_123C0(int arg0, int arg1) {
+  int var_r31;
+  int temp_r3;
+  if (arg0) {
+    var_r31 = *(int*)(arg0 + 0x4);
+    while (var_r31 != (unsigned int)*(int*)(arg0 + 0x8)) {
+      temp_r3 = var_r31;
+      var_r31 = *(int*)(var_r31 + 0x4);
+      CMemory::Free((const void*)temp_r3);
+    }
+    if ((short)arg1 > 0) {
+      CMemory::Free((const void*)arg0);
+    }
+  }
+  return arg0;
+}
+
+extern "C" int fn_76_11C78(int arg0, int arg1) {
+  if (arg0) {
+    CMemory::Free((const void*)*(int*)(arg0 + 0xc));
+    if ((short)arg1 > 0) {
+      CMemory::Free((const void*)arg0);
+    }
+  }
+  return arg0;
+}
+
+extern "C" int fn_76_11BB0(int arg0, int arg1) {
+  void fn_76_11C20(int, int);
+  if (arg0) {
+    fn_76_11C20(arg0 + 160, -1);
+    fn_76_11C20(arg0 + 92, -1);
+    fn_76_11C20(arg0 + 24, -1);
+    if ((short)arg1 > 0) {
+      CMemory::Free((const void*)arg0);
+    }
+  }
+  return arg0;
+}
+
+// ---- End of raw matching-decompiler output ----

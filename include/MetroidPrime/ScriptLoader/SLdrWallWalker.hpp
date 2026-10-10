@@ -49,11 +49,16 @@ inline SLdrWallWalker::SLdrWallWalker()
 , grenadeExplosion(kInvalidAssetId)
 , grenadeEffect(kInvalidAssetId)
 , grenadeTrail(kInvalidAssetId)
+, grenadeSoundBounce(-1)
+, grenadeSoundExplode(-1)
 , projectile(kInvalidAssetId)
 , projectileDamage()
 , projectileExplosionSpash(kInvalidAssetId)
 , projectileExplosionShaker() {
+  patterned.health.hI_KnockBackResistance = 2.0f;
   patterned.creatureSize = 1;
+  actorInformation.lighting.ambientColor = CColor(1.0f, 1.0f, 1.0f, 1.0f);
+  actorInformation.visor.visorFlags = 0x0000000fu;
   waypointApproachDistance = 2.5f;
   floorTurnSpeed = 1080.0f;
   stickyReach = 0.40000001f;
@@ -61,8 +66,6 @@ inline SLdrWallWalker::SLdrWallWalker()
   grenadeMass = 4.0f;
   unknown_0xed086ce0 = 0.5f;
   grenadeNumBounces = 5;
-  grenadeSoundBounce = 0;
-  grenadeSoundExplode = 0;
   projectileInterval = 2.0f;
   projectileStopHomingRange = 5.0f;
 }

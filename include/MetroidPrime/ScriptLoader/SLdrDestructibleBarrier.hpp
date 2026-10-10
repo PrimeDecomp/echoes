@@ -60,9 +60,15 @@ inline SLdrDestructibleBarrier::SLdrDestructibleBarrier()
 , unknown_0x982d7fa8(kInvalidAssetId)
 , unknown_0x5371ac0d(kInvalidAssetId)
 , unknown_0x4e749cb5(kInvalidAssetId)
+, soundEffectOnChunkGenerated(-1)
+, soundEffectOnChunkDestroyed(-1)
+, soundEffectOnMoveDown(-1)
+, soundEffectOnMoveUp(-1)
+, soundEffectOnStop(-1)
 , health()
 , vulnerability()
 , actorInformation() {
+  editorProperties.unknown_0x5d298a43 = 0x00000003u;
   numChunksWidth = 2;
   numChunksHeight = 5;
   numChunksDepth = 1;
@@ -71,15 +77,12 @@ inline SLdrDestructibleBarrier::SLdrDestructibleBarrier()
   unknown_0x2e11003d = 4;
   unknown_0x409d1b7c = 1;
   unknown_0x92485dfa = 1;
-  soundEffectOnChunkGenerated = 0;
-  soundEffectOnChunkDestroyed = 0;
-  soundEffectOnMoveDown = 0;
-  soundEffectOnMoveUp = 0;
-  soundEffectOnStop = 0;
   unknown_0x605847b9 = 50.0f;
   unknown_0xcd9c67fe = 10.0f;
   unknown_0x0af428b4 = 10.0f;
   barrierStartsDown = false;
+  actorInformation.lighting.ambientColor = CColor(1.0f, 1.0f, 1.0f, 1.0f);
+  actorInformation.visor.visorFlags = 0x0000000fu;
 }
 
 inline SLdrDestructibleBarrier::~SLdrDestructibleBarrier() {}

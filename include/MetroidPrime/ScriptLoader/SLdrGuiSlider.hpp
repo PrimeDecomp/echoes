@@ -20,13 +20,13 @@ struct SLdrGuiSlider {
   int slideSoundVolume;                     // 0x20ddb661
 };
 
-inline SLdrGuiSlider::SLdrGuiSlider() : editorProperties(), widgetProperties() {
+inline SLdrGuiSlider::SLdrGuiSlider() : editorProperties(), widgetProperties(), slideSound(-1) {
   editorProperties.active = false;
+  editorProperties.unknown_0x5d298a43 = 0x00000003u;
   minValue = 0.0f;
   maxValue = 255.0f;
   increment = 1.0f;
   slideSpeed = 1.0f;
-  slideSound = 0;
   slideSoundVolume = 127;
 }
 

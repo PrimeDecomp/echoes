@@ -630,18 +630,23 @@ void CScriptSafeZone::InhabitantExited(CActor& actor, CStateManager& mgr) {
 }
 
 void CScriptSafeZone::UpdatePlayerInside(CActor& actor, bool inside, CStateManager& mgr) {
-  if (TCastToPtr< CGameCamera >(actor) &&
-      TCastToPtr< CGameCamera >(actor)->GetCameraManager(mgr).GetCurrentCameraId(true) ==
-          actor.GetUniqueId()) {
-    mCameraInside = inside;
-    if (!mIgnoreCinematicCamera || !TCastToPtr< CCinematicCamera >(actor)) {
-      if (mCameraInside) {
-        PlaySound(mgr, mCurrentInfo->x6_, 0x40000000);
+  unsigned short value2;
+  CGameCamera* gameCamera;
+  if (TCastToPtr< CGameCamera >(*(&actor))) {
+    gameCamera = TCastToPtr< CGameCamera >(*(&actor));
+    value2 = actor.GetUniqueId().value;
+    TUniqueId currentCameraId = gameCamera->CameraManager(mgr).GetCurrentCameraId(true);
+    if (currentCameraId.value == value2) {
+      mCameraInside = inside;
+      if (!mIgnoreCinematicCamera || !TCastToPtr< CCinematicCamera >(*(&actor))) {
+        if (mCameraInside) {
+          PlaySound(mgr, mCurrentInfo->x6_, 0x40000000);
+        } else {
+          PlaySound(mgr, mCurrentInfo->x8_, 0x40000000);
+        }
       } else {
-        PlaySound(mgr, mCurrentInfo->x8_, 0x40000000);
+        mFogDirty = true;
       }
-    } else {
-      mFogDirty = true;
     }
   }
 }
@@ -876,4 +881,6 @@ void SetRelLoaderFunctionToLoader() {
 extern "C" void RELMain() { SetRelLoaderFunctionToLoader(); }
 
 extern "C" void RELExit() { SetSSafeZone_FuncPtrs(nullptr); }
+
+extern "C" int fn_66_2CB8(int val) { return val + 248; }
 #endif

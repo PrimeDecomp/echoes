@@ -34,6 +34,7 @@ inline SLdrMetaree::SLdrMetaree()
 , radiusDamage()
 , collisionOffset0(CVector3f::Zero())
 , turnSound() {
+  editorProperties.unknown_0x5d298a43 = 0x00000003u;
   patterned.detectionRange = 10.0f;
   patterned.maxAttackRange = 30.0f;
   patterned.contactDamage.dI_WeaponType = 11;
@@ -42,6 +43,9 @@ inline SLdrMetaree::SLdrMetaree()
   patterned.health.health = 2.0f;
   patterned.health.hI_KnockBackResistance = 2.0f;
   patterned.unknown_0xe287d8dd = 0.0f;
+  patterned.echoParameters.isEchoEmitter = true;
+  actorInformation.lighting.ambientColor = CColor(1.0f, 1.0f, 1.0f, 1.0f);
+  actorInformation.visor.visorFlags = 0x0000000fu;
   radiusDamage.dI_WeaponType = 11;
   radiusDamage.dI_Damage = 5.0f;
   radiusDamage.dI_KnockBackPower = 5.0f;

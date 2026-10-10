@@ -187,8 +187,7 @@ void CScriptRubiksPuzzle::Start(CStateManager& mgr, int msg, float dt) {
   for (rstl::vector< SConnection >::const_iterator it = connections.begin();
        it != connections.end(); ++it) {
     const EScriptObjectState state = it->state;
-    if (state != kSS_InternalState0 && state != kSS_InternalState1 &&
-        state != kSS_InternalState2) {
+    if (state != kSS_InternalState0 && state != kSS_InternalState1 && state != kSS_InternalState2) {
       continue;
     }
     CStateManager::TIdListResult ids = mgr.GetIdListForScript(it->objId);
@@ -360,8 +359,8 @@ void CScriptRubiksPuzzle::UpdateIndicators(CStateManager& mgr) {
   if (mRotating && !topRowTurning) {
     bottomRowTurning = true;
   }
-  const bool topRow = UpdateRow(mgr, topRowTurning, 0, kSS_InternalState6, kSS_InternalState7,
-                                kSS_InternalState12);
+  const bool topRow =
+      UpdateRow(mgr, topRowTurning, 0, kSS_InternalState6, kSS_InternalState7, kSS_InternalState12);
   const bool middleRow =
       UpdateRow(mgr, mRotating, 1, kSS_InternalState8, kSS_InternalState9, kSS_InternalState13);
   const bool bottomRow = UpdateRow(mgr, bottomRowTurning, 2, kSS_InternalState10,
@@ -421,3 +420,19 @@ extern "C" void RELExit() { SetSScriptRubiksPuzzle_FuncPtrs(nullptr); }
 #endif
 
 CScriptRubiksPuzzle::~CScriptRubiksPuzzle() {}
+
+// ---- Raw matching-decompiler output from a local tree (reference only, not cleaned up) ----
+
+extern "C" int fn_4_20AC(int arg0, int arg1) {
+  if (arg0 && (short)arg1 > 0) {
+    CMemory::Free((const void*)arg0);
+  }
+  return arg0;
+}
+
+extern "C" void fn_4_874(int arg0) {
+  *(int*)(arg0 + 0x4) = -1;
+  *(float*)arg0 = 90.0f;
+}
+
+// ---- End of raw matching-decompiler output ----

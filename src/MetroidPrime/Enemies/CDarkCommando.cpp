@@ -1548,3 +1548,106 @@ extern "C" void RELMain() { SetFuncPtrs(); }
 
 extern "C" void RELExit() { SetSDarkCommando_FuncPtrs(nullptr); }
 #endif
+
+// ---- Raw matching-decompiler output from a local tree (reference only, not cleaned up) ----
+
+extern "C" void fn_3_80DC();
+
+extern "C" bool fn_3_0() { return true; }
+
+extern "C" void fn_3_80BC() { fn_3_80DC(); }
+
+extern "C" int fn_3_81EC(int arg0, int arg1) {
+  if (arg0) {
+    CMemory::Free((const void*)*(int*)(arg0 + 0xc));
+    if ((short)arg1 > 0) {
+      CMemory::Free((const void*)arg0);
+    }
+  }
+  return arg0;
+}
+
+extern "C" int fn_3_8124(int arg0, int arg1) {
+  void fn_3_8194(int, int);
+  if (arg0) {
+    fn_3_8194(arg0 + 160, -1);
+    fn_3_8194(arg0 + 92, -1);
+    fn_3_8194(arg0 + 24, -1);
+    if ((short)arg1 > 0) {
+      CMemory::Free((const void*)arg0);
+    }
+  }
+  return arg0;
+}
+
+extern "C" int fn_3_99A8(int arg0, int arg1) {
+  int var_r31;
+  int temp_r3;
+  if (arg0) {
+    var_r31 = *(int*)(arg0 + 0x4);
+    while (var_r31 != (unsigned int)*(int*)(arg0 + 0x8)) {
+      temp_r3 = var_r31;
+      var_r31 = *(int*)(var_r31 + 0x4);
+      CMemory::Free((const void*)temp_r3);
+    }
+    if ((short)arg1 > 0) {
+      CMemory::Free((const void*)arg0);
+    }
+  }
+  return arg0;
+}
+
+extern "C" int fn_3_800C(int arg0, int arg1) {
+  void fn_3_8060(int, int);
+  if (arg0) {
+    fn_3_8060(arg0, -1);
+    if ((short)arg1 > 0) {
+      CMemory::Free((const void*)arg0);
+    }
+  }
+  return arg0;
+}
+
+extern "C" int fn_3_8194(int arg0, int arg1) {
+  void fn_3_81EC(int, int);
+  if (arg0) {
+    fn_3_81EC(arg0 + 8, -1);
+    if ((short)arg1 > 0) {
+      CMemory::Free((const void*)arg0);
+    }
+  }
+  return arg0;
+}
+
+extern "C" int fn_3_8060(int arg0, int arg1) {
+  void fn_3_80BC();
+  if (arg0) {
+    if ((*(unsigned char*)(arg0 + 0x14))) {
+      fn_3_80BC();
+    }
+    if ((short)arg1 > 0) {
+      CMemory::Free((const void*)arg0);
+    }
+  }
+  return arg0;
+}
+
+extern "C" int fn_3_A80(int arg0, int arg1) {
+  void fn_3_1078(int, int);
+  void fn_3_1460(int, int);
+  void fn_3_DB4(int, int);
+  if (arg0) {
+    fn_3_DB4(arg0 + 228, -1);
+    fn_3_1078(arg0 + 152, -1);
+    fn_3_1460(arg0 + 80, -1);
+    ((SLdrAudioPlaybackParms*)(arg0 + 56))->~SLdrAudioPlaybackParms();
+    ((SLdrAudioPlaybackParms*)(arg0 + 32))->~SLdrAudioPlaybackParms();
+    ((SLdrDamageInfo*)(arg0 + 16))->~SLdrDamageInfo();
+    if ((short)arg1 > 0) {
+      CMemory::Free((const void*)arg0);
+    }
+  }
+  return arg0;
+}
+
+// ---- End of raw matching-decompiler output ----

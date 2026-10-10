@@ -1597,4 +1597,6 @@ void SetRelLoaderFunctionToLoader() {
 extern "C" void RELMain() { SetRelLoaderFunctionToLoader(); }
 
 extern "C" void RELExit() { SetSMetroid_FuncPtrs(nullptr); }
+
+extern "C" bool fn_40_3044() { return false; }
 #endif

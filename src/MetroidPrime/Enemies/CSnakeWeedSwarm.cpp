@@ -543,3 +543,39 @@ extern "C" void RELMain() { SetFuncPtrs(); }
 
 extern "C" void RELExit() { SetSSnakeWeedSwarm_FuncPtrs(nullptr); }
 #endif
+
+// ---- Raw matching-decompiler output from a local tree (reference only, not cleaned up) ----
+
+struct __mwdec_vt_0 {
+  virtual void _0();
+  virtual void _1();
+  virtual void _2();
+  virtual void _3();
+  virtual void _4();
+  virtual void _5();
+  virtual void _6();
+  virtual void _7();
+  virtual void _8();
+  virtual void _9();
+  virtual void _10();
+  virtual void _11();
+  virtual void _12();
+};
+extern "C" void fn_71_FCC(int, int);
+
+extern "C" void fn_71_0(int arg0) { ((__mwdec_vt_0*)arg0)->_12(); }
+
+extern "C" int fn_71_F84(int arg0, int arg1) {
+  fn_71_FCC(*(int*)arg0, 1);
+  *(int*)arg0 = arg1;
+  return arg0;
+}
+
+extern "C" int fn_71_1050(int arg0, int arg1) {
+  void fn_71_1098(int, int);
+  fn_71_1098(*(int*)arg0, 1);
+  *(int*)arg0 = arg1;
+  return arg0;
+}
+
+// ---- End of raw matching-decompiler output ----

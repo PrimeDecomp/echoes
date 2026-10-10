@@ -1248,3 +1248,424 @@ extern "C" void RELMain() { SetFuncPtrs(); }
 
 extern "C" void RELExit() { SetSShrieker_FuncPtrs(nullptr); }
 #endif
+
+// ---- Raw matching-decompiler output from a local tree (reference only, not cleaned up) ----
+
+extern "C" void fn_69_3814();
+extern "C" void fn_69_296C(int, int, int);
+extern "C" int fn_69_57EC(int, int, int);
+extern "C" void fn_69_6BEC(int);
+extern "C" void fn_69_4200(unsigned char*, int, int*, int*);
+extern "C" void fn_69_38A4(int, unsigned char*, unsigned char*, unsigned char*);
+extern unsigned char lbl_69_data_49C[12];
+extern "C" void fn_69_623C();
+extern unsigned char lbl_69_data_490[12];
+extern unsigned char lbl_69_data_484[12];
+extern unsigned char lbl_69_data_478[12];
+extern unsigned char lbl_69_data_46C[12];
+extern "C" void fn_69_39E0();
+extern "C" void fn_69_E10();
+struct __mwdec_vt_0_fn_69_B4 {
+  virtual void _0();
+  virtual void _1();
+  virtual void _2();
+  virtual void _3();
+  virtual void _4();
+  virtual void _5();
+  virtual void _6();
+  virtual void _7();
+  virtual void _8();
+  virtual void _9();
+  virtual void _10();
+  virtual void _11();
+  virtual void _12();
+};
+struct __mwdec_vt_0_fn_69_3678 {
+  virtual void _0(int);
+};
+struct __mwdec_vt_0_fn_69_6B04 {
+  virtual void _0(int);
+};
+
+extern "C" int fn_69_2A38(int arg0) { return arg0 + 224; }
+
+extern "C" int fn_69_2A40(int arg0) { return arg0 + 248; }
+
+extern "C" int fn_69_5C(int arg0) { return *(unsigned char*)(arg0 + 0x44f); }
+
+extern "C" bool fn_69_64() { return false; }
+
+extern "C" bool fn_69_6C() { return false; }
+
+extern "C" int fn_69_9C(int arg0) { return arg0 + 1876; }
+
+extern "C" bool fn_69_A4() { return true; }
+
+extern "C" bool fn_69_AC() { return false; }
+
+extern "C" bool fn_69_84(int arg0) { return *(unsigned char*)(arg0 + 0x34c) >> 3 & 1; }
+
+extern "C" float fn_69_90() { return kDefaultGravityAccel; }
+
+extern "C" void fn_69_74(int arg0) { *(unsigned short*)arg0 = kInvalidUniqueId.value; }
+
+extern "C" void fn_69_4C(int arg0) { *(float*)(arg0 + 0x448) = CPatterned::skDamageHitTime; }
+
+extern "C" void fn_69_37F4() { fn_69_3814(); }
+
+extern "C" void fn_69_3998() {
+  void fn_69_39B8();
+  fn_69_39B8();
+}
+
+extern "C" void fn_69_DC8() {
+  void fn_69_DE8();
+  fn_69_DE8();
+}
+
+extern "C" void fn_69_2944(int arg0, int arg1) { fn_69_296C(arg0, *(int*)(arg0 + 0x8), arg1); }
+
+extern "C" int fn_69_57C0(int arg0, int arg1) {
+  if (!fn_69_57EC(arg0, arg1, -1)) {
+    return 1;
+  }
+  return 0;
+}
+
+extern "C" int fn_69_6BB4(int arg0, int arg1) {
+  *(int*)arg0 = arg1;
+  fn_69_6BEC(arg0 + 4);
+  return arg0;
+}
+
+extern "C" int fn_69_2194(int arg0, int arg1) {
+  if (arg0 && (short)arg1 > 0) {
+    CMemory::Free((const void*)arg0);
+  }
+  return arg0;
+}
+
+extern "C" int fn_69_21D0(int arg0, int arg1) {
+  if (arg0 && (short)arg1 > 0) {
+    CMemory::Free((const void*)arg0);
+  }
+  return arg0;
+}
+
+extern "C" int fn_69_29FC(int arg0, int arg1) {
+  if (arg0 && (short)arg1 > 0) {
+    CMemory::Free((const void*)arg0);
+  }
+  return arg0;
+}
+
+extern "C" int fn_69_3ACC(int arg0, int arg1) {
+  if (arg0 && (short)arg1 > 0) {
+    CMemory::Free((const void*)arg0);
+  }
+  return arg0;
+}
+
+extern "C" int fn_69_3B08(int arg0, int arg1) {
+  if (arg0 && (short)arg1 > 0) {
+    CMemory::Free((const void*)arg0);
+  }
+  return arg0;
+}
+
+extern "C" int fn_69_682C(int arg0, int arg1) {
+  if (arg0 && (short)arg1 > 0) {
+    CMemory::Free((const void*)arg0);
+  }
+  return arg0;
+}
+
+extern "C" int fn_69_69EC(int arg0, int arg1) {
+  if (arg0 && (short)arg1 > 0) {
+    CMemory::Free((const void*)arg0);
+  }
+  return arg0;
+}
+
+extern "C" int fn_69_6C70(int arg0, int arg1) {
+  if (arg0 && (short)arg1 > 0) {
+    CMemory::Free((const void*)arg0);
+  }
+  return arg0;
+}
+
+extern "C" void fn_69_2154(int arg0, int arg1, int arg2) {
+  float temp_f3;
+  float temp_f4;
+  float temp_f5;
+  float temp_f6;
+  temp_f5 = *(float*)(arg1 + 0x8);
+  float temp_f7 = *(float*)(arg2 + 0x4);
+  temp_f3 = *(float*)arg1;
+  float temp_f2 = *(float*)(arg2 + 0x8);
+  temp_f4 = *(float*)(arg1 + 0x4);
+  temp_f6 = *(float*)arg2;
+  *(float*)arg0 = temp_f4 * temp_f2 - temp_f7 * temp_f5;
+  *(float*)(arg0 + 0x4) = temp_f5 * temp_f6 - temp_f2 * temp_f3;
+  *(float*)(arg0 + 0x8) = temp_f3 * temp_f7 - temp_f6 * temp_f4;
+}
+
+extern "C" void fn_69_41C0(int arg0) {
+  unsigned char stack_10[16];
+  int stack_c;
+  int stack_8;
+  *(int*)&stack_8 = *(int*)(arg0 + 0x8);
+  *(int*)&stack_c = *(int*)(arg0 + 0x4);
+  fn_69_4200(stack_10, arg0, &stack_c, &stack_8);
+}
+
+extern "C" void fn_69_385C(int arg0) {
+  void fn_69_3798(unsigned char*, int);
+  unsigned char stack_24[28];
+  unsigned char stack_14[16];
+  unsigned char stack_8[12];
+  *(unsigned char*)(stack_24 + 0x14) = 0;
+  *(unsigned char*)(stack_14 + 0xc) = 0;
+  *(unsigned char*)(stack_8 + 0x8) = 0;
+  fn_69_38A4(arg0, stack_24, stack_14, stack_8);
+  fn_69_3798(stack_24, -1);
+}
+
+extern "C" int fn_69_3EBC(int arg0, int arg1) {
+  if (arg0) {
+    *(int*)arg0 = (int)lbl_69_data_49C;
+    if ((short)arg1 > 0) {
+      CMemory::Free((const void*)arg0);
+    }
+  }
+  return arg0;
+}
+
+extern "C" int fn_69_61EC(int arg0, int arg1) {
+  if (arg0) {
+    fn_69_623C();
+    if ((short)arg1 > 0) {
+      CMemory::Free((const void*)arg0);
+    }
+  }
+  return arg0;
+}
+
+extern "C" int fn_69_C04(int arg0, int arg1) {
+  if (arg0) {
+    CMemory::Free((const void*)*(int*)(arg0 + 0xc));
+    if ((short)arg1 > 0) {
+      CMemory::Free((const void*)arg0);
+    }
+  }
+  return arg0;
+}
+
+extern "C" int fn_69_92C(int arg0, int arg1) {
+  if (arg0) {
+    ((CDamageVulnerability*)(arg0 + 128))->~CDamageVulnerability();
+    if ((short)arg1 > 0) {
+      CMemory::Free((const void*)arg0);
+    }
+  }
+  return arg0;
+}
+
+extern "C" int fn_69_3E60(int arg0, int arg1) {
+  if (arg0) {
+    *(int*)arg0 = (int)lbl_69_data_490;
+    if (arg0) {
+      *(int*)arg0 = (int)lbl_69_data_49C;
+    }
+    if ((short)arg1 > 0) {
+      CMemory::Free((const void*)arg0);
+    }
+  }
+  return arg0;
+}
+
+extern "C" int fn_69_3FDC(int arg0, int arg1) {
+  if (arg0) {
+    *(int*)arg0 = (int)lbl_69_data_484;
+    if (arg0) {
+      *(int*)arg0 = (int)lbl_69_data_49C;
+    }
+    if ((short)arg1 > 0) {
+      CMemory::Free((const void*)arg0);
+    }
+  }
+  return arg0;
+}
+
+extern "C" int fn_69_4264(int arg0, int arg1) {
+  if (arg0) {
+    *(int*)arg0 = (int)lbl_69_data_478;
+    if (arg0) {
+      *(int*)arg0 = (int)lbl_69_data_49C;
+    }
+    if ((short)arg1 > 0) {
+      CMemory::Free((const void*)arg0);
+    }
+  }
+  return arg0;
+}
+
+extern "C" int fn_69_4600(int arg0, int arg1) {
+  if (arg0) {
+    *(int*)arg0 = (int)lbl_69_data_46C;
+    if (arg0) {
+      *(int*)arg0 = (int)lbl_69_data_49C;
+    }
+    if ((short)arg1 > 0) {
+      CMemory::Free((const void*)arg0);
+    }
+  }
+  return arg0;
+}
+
+extern "C" int fn_69_1070(int arg0, int arg1) {
+  if (arg0) {
+    if (*(unsigned char*)(arg0 + 0x4c)) {
+      ((CModelData*)arg0)->~CModelData();
+    }
+    if ((short)arg1 > 0) {
+      CMemory::Free((const void*)arg0);
+    }
+  }
+  return arg0;
+}
+
+extern "C" int fn_69_703C(int arg0, int arg1) {
+  int temp_r31 = *(int*)(arg1 + 0x4);
+  if ((unsigned int)arg1 == (*(int*)(arg0 + 0x4))) {
+    *(int*)(arg0 + 0x4) = temp_r31;
+  }
+  *(int*)((*(int*)arg1) + 0x4) = *(int*)(arg1 + 0x4);
+  *(int*)*(int*)(arg1 + 0x4) = *(int*)arg1;
+  CMemory::Free((const void*)arg1);
+  *(int*)(arg0 + 0x14) = *(int*)(arg0 + 0x14) - 1;
+  return temp_r31;
+}
+
+extern "C" int fn_69_100C(int arg0, int arg1) {
+  if (arg0) {
+    if ((*(unsigned char*)arg0)) {
+      delete (CAnimData*)*(int*)(arg0 + 0x4);
+    }
+    if ((short)arg1 > 0) {
+      CMemory::Free((const void*)arg0);
+    }
+  }
+  return arg0;
+}
+
+extern "C" int fn_69_70B0(int arg0, int arg1) {
+  int var_r31;
+  int temp_r3;
+  if (arg0) {
+    var_r31 = *(int*)(arg0 + 0x4);
+    while (var_r31 != (unsigned int)*(int*)(arg0 + 0x8)) {
+      temp_r3 = var_r31;
+      var_r31 = *(int*)(var_r31 + 0x4);
+      CMemory::Free((const void*)temp_r3);
+    }
+    if ((short)arg1 > 0) {
+      CMemory::Free((const void*)arg0);
+    }
+  }
+  return arg0;
+}
+
+extern "C" void fn_69_39B8(int arg0) {
+  if ((unsigned int)arg0 != 0) {
+    fn_69_39E0();
+  }
+}
+
+extern "C" void fn_69_DE8(int arg0) {
+  if ((unsigned int)arg0 != 0) {
+    fn_69_E10();
+  }
+}
+
+extern "C" void fn_69_B4(int arg0) { ((__mwdec_vt_0_fn_69_B4*)arg0)->_12(); }
+
+extern "C" int fn_69_3744(int arg0, int arg1) {
+  void fn_69_3798(int, int);
+  if (arg0) {
+    fn_69_3798(arg0, -1);
+    if ((short)arg1 > 0) {
+      CMemory::Free((const void*)arg0);
+    }
+  }
+  return arg0;
+}
+
+extern "C" int fn_69_3798(int arg0, int arg1) {
+  void fn_69_37F4();
+  if (arg0) {
+    if (*(unsigned char*)(arg0 + 0x14)) {
+      fn_69_37F4();
+    }
+    if ((short)arg1 > 0) {
+      CMemory::Free((const void*)arg0);
+    }
+  }
+  return arg0;
+}
+
+extern "C" int fn_69_3678(int arg0, int arg1) {
+  int temp_r3;
+  if (arg0) {
+    if ((*(unsigned char*)arg0)) {
+      temp_r3 = *(int*)(arg0 + 0x4);
+      if ((unsigned int)temp_r3 != 0) {
+        ((__mwdec_vt_0_fn_69_3678*)temp_r3)->_0(1);
+      }
+    }
+    if ((short)arg1 > 0) {
+      CMemory::Free((const void*)arg0);
+    }
+  }
+  return arg0;
+}
+
+extern "C" int fn_69_10D0(int arg0, int arg1) {
+  if (arg0) {
+    ((SLdrDamageInfo*)(arg0 + 1160))->~SLdrDamageInfo();
+    ((SLdrDamageInfo*)(arg0 + 1132))->~SLdrDamageInfo();
+    ((SLdrDamageInfo*)(arg0 + 1112))->~SLdrDamageInfo();
+    ((SLdrDamageVulnerability*)(arg0 + 760))->~SLdrDamageVulnerability();
+    ((SLdrActorParameters*)(arg0 + 640))->~SLdrActorParameters();
+    ((SLdrPatternedAITypedef*)(arg0 + 60))->~SLdrPatternedAITypedef();
+    ((SLdrEditorProperties*)arg0)->~SLdrEditorProperties();
+    if ((short)arg1 > 0) {
+      CMemory::Free((const void*)arg0);
+    }
+  }
+  return arg0;
+}
+
+extern "C" int fn_69_6B04(int arg0, int arg1) {
+  int var_r31;
+  int var_r30;
+  int temp_r3;
+  if (arg0) {
+    var_r30 = arg0 + 4;
+    for (var_r31 = 0; var_r31 < (*(int*)arg0); var_r31 = var_r31 + 1) {
+      if ((unsigned int)var_r30 != 0 && (*(unsigned char*)var_r30)) {
+        temp_r3 = *(int*)((char*)var_r30 + 0x4);
+        if ((unsigned int)temp_r3 != 0) {
+          ((__mwdec_vt_0_fn_69_6B04*)temp_r3)->_0(1);
+        }
+      }
+      var_r30 = var_r30 + 8;
+    }
+    if ((short)arg1 > 0) {
+      CMemory::Free((const void*)arg0);
+    }
+  }
+  return arg0;
+}
+
+// ---- End of raw matching-decompiler output ----

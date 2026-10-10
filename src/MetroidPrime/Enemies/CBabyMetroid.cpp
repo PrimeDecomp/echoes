@@ -130,9 +130,11 @@ bool CBabyMetroid::InEnergySourcePosition(CStateManager&, const CTriggerData&) c
 void CBabyMetroid::Generate(CStateManager& mgr, EStateMsg msg, float dt) {
   switch (msg) {
   case kStateMsg_Activate:
-    mState = kAiState_Over;
-    break;
+    mState = CMetroid::kAiState_Over;
+    return;
   default:
+  case kStateMsg_Update:
+  case kStateMsg_Deactivate:
     break;
   }
 }
@@ -158,10 +160,19 @@ void CBabyMetroid::TryJoinHive(CStateManager& mgr) {
 }
 
 void CBabyMetroid::Dodge(CStateManager& mgr, EStateMsg msg, float dt) {
+  int val;
   switch (msg) {
   case kStateMsg_Activate:
-    mDodgeDirection = mgr.Random()->Float() < 0.5f ? pas::kSD_Left : pas::kSD_Right;
+    if (mgr.mRandom.Float() < 0.5f) {
+      val = 2;
+    } else {
+      val = 3;
+    }
+    mDodgeDirection = (pas::EStepDirection)val;
     mShouldDodge = false;
+    break;
+  case kStateMsg_Update:
+  case kStateMsg_Deactivate:
     break;
   }
   CMetroid::Dodge(mgr, msg, dt);

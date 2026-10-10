@@ -76,7 +76,7 @@ void CScriptCannonBall::Think(float dt, CStateManager& mgr) {
   }
 }
 
-CScriptCannonBall::TrackedShot::TrackedShot(TUniqueId id, bool b)
+CScriptCannonBall::TrackedShot::TrackedShot(TUniqueId id, const bool b)
 : m_scriptObject(id), m_f(1.0), m_updateFrameIdx(0), m_b(b) {}
 
 void CScriptCannonBall::TrackedShot::Think(float dt, CStateManager& mgr, int index) {
@@ -172,4 +172,25 @@ void SetRelLoaderFunctionToLoader() {
 extern "C" void RELMain() { SetRelLoaderFunctionToLoader(); }
 
 extern "C" void RELExit() { SetSCannonBall_FuncPtrs(nullptr); }
+
+extern "C" CModelData fn_57_1260(int val) { return CModelData(); }
+
+extern "C" int fn_57_BA0(int obj, int val) {
+  if (obj) {
+    CMemory::Free((const void*)*(int*)(obj + 0xc));
+    if ((short)val > 0) {
+      CMemory::Free((const void*)obj);
+    }
+  }
+  return obj;
+}
+
+extern "C" void fn_57_CB0();
+extern "C" int fn_57_C48(int obj, int val, int val2, int val3, float f) {
+  fn_57_CB0();
+  *(int*)(obj + 0x44) = val2;
+  *(float*)(obj + 0x48) = f;
+  *(unsigned char*)(obj + 0x4c) = (val3 << 7 & 128) | (*(unsigned char*)(obj + 0x4c) & 0xffffff7f);
+  return obj;
+}
 #endif

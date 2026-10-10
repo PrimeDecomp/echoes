@@ -546,3 +546,11 @@ static void SetFuncPtrs() {
 extern "C" void RELMain() { SetFuncPtrs(); }
 
 extern "C" void RELExit() { SetSPlayerTurret_FuncPtrs(nullptr); }
+
+// ---- Raw matching-decompiler output from a local tree (reference only, not cleaned up) ----
+
+extern "C" void fn_63_ED0();
+
+extern "C" void fn_63_EB0() { fn_63_ED0(); }
+
+// ---- End of raw matching-decompiler output ----

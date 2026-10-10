@@ -804,3 +804,15 @@ extern "C" void RELMain() { SetFuncPtrs(); }
 
 extern "C" void RELExit() { SetSIngSnatchingSwarm_FuncPtrs(nullptr); }
 #endif
+
+// ---- Raw matching-decompiler output from a local tree (reference only, not cleaned up) ----
+
+extern float lbl_33_rodata_30;
+
+extern "C" void fn_33_4F28(int arg0, int arg1) { *(int*)(arg0 + 0x1c) = arg1; }
+
+extern "C" int fn_33_4F3C(int arg0) { return *(int*)(arg0 + 0x1c); }
+
+extern "C" float fn_33_4F30() { return lbl_33_rodata_30; }
+
+// ---- End of raw matching-decompiler output ----

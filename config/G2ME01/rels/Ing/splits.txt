@@ -6,6 +6,12 @@ Sections:
 	.data       type:data align:8
 	.bss        type:bss align:8
 
+Harvest/Ing/text_00000.cpp:
+	.text       start:0x00000000 end:0x0000F2C8
+
+Harvest/Ing/text_0FF88.cpp:
+	.text       start:0x0000FF88 end:0x000121F4
+
 REL/global_destructor_chain.c:
 	.text       start:0x00012250 end:0x000122C4
 	.dtors      start:0x00000000 end:0x00000004 rename:.dtors$10
