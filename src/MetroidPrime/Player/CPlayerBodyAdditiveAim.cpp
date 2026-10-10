@@ -19,8 +19,8 @@ CPlayerBodyController::SAdditiveAimState::SAdditiveAimState(CActor& actor)
 , mPitchVelocity(0.f) {
   memset(mAvailableAnimations, 0, sizeof(mAvailableAnimations));
   const CPASDatabase& database = actor.AnimationData()->GetPASDatabase();
-  for (int direction = 0; direction < 4; ++direction) {
-    for (int category = 0; category < 3; ++category) {
+  for (int direction = kD_NegativeYaw; direction <= kD_NegativePitch; ++direction) {
+    for (int category = kC_Default; category <= kC_LocomotionMode5; ++category) {
       const CPASAnimParmData parms(static_cast< pas::EAnimationState >(kPAS_AdditiveAim),
                                    CPASAnimParm::FromEnum(direction),
                                    CPASAnimParm::FromEnum(category));
@@ -31,11 +31,7 @@ CPlayerBodyController::SAdditiveAimState::SAdditiveAimState(CActor& actor)
       }
     }
 
-    if (direction < 2) {
-      mYawLimits[direction] = CRelAngle::FromDegrees(85.f).AsRadians();
-    } else {
-      mPitchLimits[direction - 2] = CRelAngle::FromDegrees(85.f).AsRadians();
-    }
+    mAngleLimits[direction] = CRelAngle::FromDegrees(85.f).AsRadians();
   }
 }
 
@@ -106,10 +102,10 @@ void CPlayerBodyController::SAdditiveAimState::UpdatePitch(float dt, const CVect
                                                            CPlayerBodyController& controller) {
   CAnimData& animation = *controller.GetPlayer().AnimationData();
   const float pitch =
-      CMath::Clamp(-mPitchLimits[1],
+      CMath::Clamp(-mAngleLimits[kD_NegativePitch],
                    atan2f(direction.GetZ(), CMath::SqrtF(direction.GetY() * direction.GetY() +
                                                          direction.GetX() * direction.GetX())),
-                   mPitchLimits[0]);
+                   mAngleLimits[kD_PositivePitch]);
   const float velocity =
       CMath::Clamp(-3.f, 0.25f * ((2.f / M_PIF) * pitch - mPitchWeight) / dt, 3.f);
   const float acceleration = CMath::Clamp(-10.f, (velocity - mPitchVelocity) / dt, 10.f);

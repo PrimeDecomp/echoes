@@ -8,6 +8,7 @@ class CInputStream;
 class CHalfTransition {
 public:
   explicit CHalfTransition(CInputStream& in);
+  ~CHalfTransition() {}
   uint GetPrimitiveIndex() const { return mId; }
   const rstl::rc_ptr< IMetaTrans >& GetMetaTrans() const { return mTrans; }
 

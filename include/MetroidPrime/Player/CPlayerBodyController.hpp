@@ -218,8 +218,7 @@ private:
 
     uint mAvailableAnimations[3];
     int mAnimationIds[3][4];
-    float mYawLimits[2];
-    float mPitchLimits[2];
+    float mAngleLimits[4];
     ECategory mCategory;
     float mYawWeight;
     float mYawVelocity;

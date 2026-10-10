@@ -190,10 +190,12 @@ void CPlayerGunBase::HolsterGun(CStateManager& mgr) {
 }
 
 void CPlayerGunBase::DrawGun(CStateManager& mgr) {
-  if (mGunHolsterState == kGHS_Holstered && !GetPlayer(mgr)->InGrappleJumpCooldown()) {
-    mGunHolsterState = kGHS_Drawing;
-    mGunHolsterRemTime = 0.45f;
+  if (mGunHolsterState != kGHS_Holstered || GetPlayer(mgr)->InGrappleJumpCooldown()) {
+    return;
   }
+
+  mGunHolsterState = kGHS_Drawing;
+  mGunHolsterRemTime = 0.45f;
 }
 
 void CPlayerGunBase::UpdateGunHolster(const CFinalInput& input, CStateManager& mgr) {

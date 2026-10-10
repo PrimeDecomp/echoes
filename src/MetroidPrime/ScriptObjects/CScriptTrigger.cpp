@@ -10,8 +10,8 @@
 #include "MetroidPrime/CStateManager.hpp"
 #include "MetroidPrime/CWorld.hpp"
 #include "MetroidPrime/Cameras/CGameCamera.hpp"
+#include "MetroidPrime/Enemies/CAi.hpp"
 #include "MetroidPrime/Enemies/CBouncyGrenade.hpp"
-#include "MetroidPrime/Enemies/CPatterned.hpp"
 #include "MetroidPrime/Player/CMorphBall.hpp"
 #include "MetroidPrime/Player/CPlayer.hpp"
 #include "MetroidPrime/Player/CPlayerState.hpp"
@@ -490,12 +490,14 @@ bool CScriptTrigger::ShouldSendScriptMsgs(CActor& actor, CStateManager& mgr) con
 bool CScriptTrigger::GetPlayerInside(int playerIndex) const { return mPlayerInside[playerIndex]; }
 
 bool CScriptTrigger::IsAI(CStateManager& mgr, CActor& actor) const {
-  if (TCastToPtr< CPatterned >(&actor)) {
+  if (TCastToPtr< CAi >(actor)) {
     return true;
   }
-  if (CCollisionActor* collisionActor = TCastToPtr< CCollisionActor >(&actor)) {
-    return TCastToConstPtr< CPatterned >(mgr.GetObjectById(collisionActor->GetOwnerId())) !=
-           nullptr;
+
+  if (CCollisionActor* collisionActor = TCastToPtr< CCollisionActor >(actor)) {
+    if (TCastToConstPtr< CAi >(mgr.GetObjectById(collisionActor->GetOwnerId()))) {
+      return true;
+    }
   }
   return false;
 }

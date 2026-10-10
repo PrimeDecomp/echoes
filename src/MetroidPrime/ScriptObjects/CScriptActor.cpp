@@ -221,17 +221,19 @@ CAABox CScriptActor::GetSortingBounds(const CStateManager& mgr) const {
 
 void CScriptActor::DoUserAnimEvent(CStateManager& mgr, const CInt32POINode& node,
                                    EUserEventType type, float dt) {
-  unsigned char skipAnimEvent = 0;
-
-  if (type == kUE_Projectile) {
+  bool handled = false;
+  switch (type) {
+  case kUE_Projectile:
     if (mProjectileInfo.valid()) {
       FireProjectile(mgr, node.GetLocatorName());
     }
-
-    skipAnimEvent = 1;
+    handled = true;
+    break;
+  default:
+    break;
   }
 
-  if (skipAnimEvent == 0) {
+  if (!handled) {
     CActor::DoUserAnimEvent(mgr, node, type, dt);
   }
 }

@@ -48,7 +48,7 @@ float CStaticInterference::GetTotalInterference() const {
     if (it->GetSourceId() == kInvalidUniqueId) {
       invalidAccum += v;
     }
-    if (it->GetSourceId() != kInvalidUniqueId) {
+    if ((*it).GetSourceId() != kInvalidUniqueId) {
       validAccum += v;
     }
   }

@@ -130,7 +130,7 @@ void CRainSplashGenerator::Update(float dt, CStateManager& mgr) {
     const CEnvFxManager& envFx = *mgr.GetEnvFxManager();
     if (neededFx != kEFX_None && envFx.IsSplashActive()) {
       const float rainMag = envFx.GetRainMagnitude();
-      if (rainMag != 0.f) {
+      if (rainMag) {
         switch (neededFx) {
         case kEFX_Rain:
           raining = true;

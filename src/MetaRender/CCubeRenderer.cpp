@@ -582,7 +582,8 @@ void CCubeRenderer::SetModelMatrix(const CTransform4f& xf) { CGraphics::SetModel
 
 void CCubeRenderer::SetWorldViewpoint(const CTransform4f& xf) {
   CGraphics::SetViewPointMatrix(xf);
-  mViewPlane = CPlane(xf.GetTranslation(), CUnitVector3f(xf.GetForward(), CUnitVector3f::kN_No));
+  const CVector3f normal = xf.GetForward();
+  mViewPlane.SetFrom(CVector3f::Dot(normal, xf.GetTranslation()), normal);
 }
 
 void CCubeRenderer::BeginScene() {
@@ -1244,10 +1245,12 @@ void CCubeRenderer::SetWorldFog(ERglFogMode mode, float start, float end, const 
 
 int CCubeRenderer::GetStaticWorldDataSize() {
   int size = 0;
-  for (rstl::list< CAreaListItem >::const_iterator area = mAreaListItems.begin();
-       area != mAreaListItems.end(); ++area) {
-    if (area->mTextures.get() != nullptr) {
-      size += area->mTextures->size() * sizeof(TCachedToken< CTexture >);
+  rstl::list< CAreaListItem >::const_iterator it = mAreaListItems.begin();
+  rstl::list< CAreaListItem >::const_iterator end = mAreaListItems.end();
+  for (; it != end; ++it) {
+    const rstl::vector< TCachedToken< CTexture > >* const textures = it->mTextures.get();
+    if (textures) {
+      size += textures->size() * sizeof(TCachedToken< CTexture >);
     }
   }
   return size;
