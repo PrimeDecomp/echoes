@@ -58,6 +58,7 @@ inline SLdrFishCloud::SLdrFishCloud()
 , deathEffect1(kInvalidAssetId)
 , deathEffect2(kInvalidAssetId)
 , deathEffect3(kInvalidAssetId) {
+  editorProperties.unknown_0x5d298a43 = 0x00000003u;
   active = true;
   fishCount = 20.0f;
   speed = 3.0f;

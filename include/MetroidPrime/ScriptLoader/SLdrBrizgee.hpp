@@ -45,6 +45,9 @@ inline SLdrBrizgee::SLdrBrizgee()
 , shellVulnerability()
 , shellContactDamage()
 , poisonDamage() {
+  patterned.health.hI_KnockBackResistance = 2.0f;
+  actorInformation.lighting.ambientColor = CColor(1.0f, 1.0f, 1.0f, 1.0f);
+  actorInformation.visor.visorFlags = 0x0000000fu;
   waypointApproachDistance = 2.5f;
   wallTurnSpeed = 360.0f;
   floorTurnSpeed = 720.0f;

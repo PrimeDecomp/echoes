@@ -54,6 +54,7 @@ inline SLdrFrontEndDataNetwork::SLdrFrontEndDataNetwork()
 , transitionMoveSpline()
 , transitionExpandSpline()
 , transitionMoveInSpline() {
+  editorProperties.unknown_0x5d298a43 = 0x00000003u;
   isRoot = false;
   unknown_0x77f59f4a = false;
   unknown_0x29c0cb7f = true;

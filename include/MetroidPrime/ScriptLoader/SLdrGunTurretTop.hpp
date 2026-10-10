@@ -41,6 +41,9 @@ inline SLdrGunTurretTop::SLdrGunTurretTop()
   lightColor = CColor(1.0f, 1.0f, 1.0f, 0.0f);
   sound = 0;
   sound_0x5d9ed447 = 0;
+  patterned.health.hI_KnockBackResistance = 2.0f;
+  actorInformation.lighting.ambientColor = CColor(1.0f, 1.0f, 1.0f, 1.0f);
+  actorInformation.visor.visorFlags = 0x0000000fu;
 }
 
 inline SLdrGunTurretTop::~SLdrGunTurretTop() {}

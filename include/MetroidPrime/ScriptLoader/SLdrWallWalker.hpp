@@ -53,7 +53,10 @@ inline SLdrWallWalker::SLdrWallWalker()
 , projectileDamage()
 , projectileExplosionSpash(kInvalidAssetId)
 , projectileExplosionShaker() {
+  patterned.health.hI_KnockBackResistance = 2.0f;
   patterned.creatureSize = 1;
+  actorInformation.lighting.ambientColor = CColor(1.0f, 1.0f, 1.0f, 1.0f);
+  actorInformation.visor.visorFlags = 0x0000000fu;
   waypointApproachDistance = 2.5f;
   floorTurnSpeed = 1080.0f;
   stickyReach = 0.40000001f;

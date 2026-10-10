@@ -63,6 +63,7 @@ inline SLdrDestructibleBarrier::SLdrDestructibleBarrier()
 , health()
 , vulnerability()
 , actorInformation() {
+  editorProperties.unknown_0x5d298a43 = 0x00000003u;
   numChunksWidth = 2;
   numChunksHeight = 5;
   numChunksDepth = 1;
@@ -80,6 +81,8 @@ inline SLdrDestructibleBarrier::SLdrDestructibleBarrier()
   unknown_0xcd9c67fe = 10.0f;
   unknown_0x0af428b4 = 10.0f;
   barrierStartsDown = false;
+  actorInformation.lighting.ambientColor = CColor(1.0f, 1.0f, 1.0f, 1.0f);
+  actorInformation.visor.visorFlags = 0x0000000fu;
 }
 
 inline SLdrDestructibleBarrier::~SLdrDestructibleBarrier() {}

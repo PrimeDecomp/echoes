@@ -139,9 +139,10 @@ struct SLdrUnknownStruct38 {
   CVector3f repelOffset; // 0xb3252324
 };
 
-SLdrUnknownStruct38::SLdrUnknownStruct38() : soundEffect(-1), repelOffset(CVector3f::Zero()) {
+SLdrUnknownStruct38::SLdrUnknownStruct38() : repelOffset(CVector3f::Zero()) {
   range = 20.0f;
   turnRate = 180.0f;
+  soundEffect = 0;
   warpScale = 5.0f;
   repelOffset = CVector3f(0.0f, 1.0f, 5.0f);
 }
@@ -254,7 +255,6 @@ inline SLdrSwampBossStage2Data::SLdrSwampBossStage2Data()
 , spitProjectile(kInvalidAssetId)
 , spitDamage()
 , spitVisorEffect(kInvalidAssetId)
-, sound_SpitVisor(-1)
 , swoopDamage()
 , splash(kInvalidAssetId)
 , splashShockWave()
@@ -280,6 +280,7 @@ inline SLdrSwampBossStage2Data::SLdrSwampBossStage2Data()
   unknown_0x96ce7897 = 2;
   spitDamage.dI_WeaponType = 11;
   spitDamage.dI_Damage = 5.0f;
+  sound_SpitVisor = 0;
   spitProjectileRadius = 2.0f;
   swoopDamage.dI_WeaponType = 11;
   swoopDamage.dI_Damage = 0.5f;

@@ -47,9 +47,12 @@ inline SLdrPuffer::SLdrPuffer()
   patterned.contactDamage.dI_Damage = 10.0f;
   patterned.contactDamage.dI_KnockBackPower = 5.0f;
   patterned.damageWaitTime = 1.0f;
+  patterned.health.hI_KnockBackResistance = 2.0f;
   patterned.collisionRadius = 0.5f;
   patterned.collisionHeight = 1.5f;
   patterned.unknown_0xe287d8dd = 0.0f;
+  actorInformation.lighting.ambientColor = CColor(1.0f, 1.0f, 1.0f, 1.0f);
+  actorInformation.visor.visorFlags = 0x0000000fu;
   hoverSpeed = 3.0f;
   cloudSteamAlpha = 0.5f;
   cloudInCombatOrScan = true;
