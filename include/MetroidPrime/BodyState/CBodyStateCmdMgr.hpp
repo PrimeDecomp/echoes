@@ -612,11 +612,6 @@ public:
     mScripted = cmd;
   }
 
-  void DeliverCmd(const CBCCoverCmd& cmd) {
-    DeliverCmd(cmd.GetCommandId());
-    mCover = cmd;
-  }
-
   void BlendSteeringCmds();
   void ClearLocomotionCmds();
   void SetSteeringSpeedRange(float minimum, float maximum);
