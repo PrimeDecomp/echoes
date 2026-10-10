@@ -55,6 +55,8 @@
 #include "MetroidPrime/Enemies/CSnakeWeedSwarm.hpp"
 #include "MetroidPrime/Enemies/CSpacePirate.hpp"
 #include "MetroidPrime/Enemies/CSpankWeed.hpp"
+#include "MetroidPrime/Enemies/CSplitterCommandModule.hpp"
+#include "MetroidPrime/Enemies/CSplitterMainChassis.hpp"
 #include "MetroidPrime/Enemies/CSporbBase.hpp"
 #include "MetroidPrime/Enemies/CSporbNeedle.hpp"
 #include "MetroidPrime/Enemies/CSporbProjectile.hpp"
@@ -340,8 +342,8 @@ TYPES_MATCH_IMPL(CSandworm, CPatterned, kET_Sandworm)
 TYPES_MATCH_IMPL(CSandwormEye, CActor, kET_SandwormEye)
 TYPES_MATCH_IMPL(CSpacePirate, CPatterned, kET_SpacePirate)
 TYPES_MATCH_IMPL(CSpankWeed, CPatterned, kET_SpankWeed)
-// 134: class not declared yet (Splitter REL); parent CPatterned
-// 135: class not declared yet (Splitter REL); parent CPatterned
+TYPES_MATCH_IMPL(CSplitterMainChassis, CPatterned, kET_SplitterMainChassis)
+TYPES_MATCH_IMPL(CSplitterCommandModule, CPatterned, kET_SplitterCommandModule)
 TYPES_MATCH_IMPL(CWispTentacle, CPatterned, kET_WispTentacle)
 // 137: class not declared yet (no vtable found); parent CActor
 TYPES_MATCH_IMPL(CScriptPlayerTurret, CActor, kET_ScriptPlayerTurret)
@@ -617,8 +619,10 @@ CAST_TO_REF_IMPL(CSpacePirate, kET_SpacePirate)
 CAST_TO_PTR_IMPL(CSpacePirate, kET_SpacePirate)
 CAST_TO_REF_IMPL(CSpankWeed, kET_SpankWeed)
 CAST_TO_PTR_IMPL(CSpankWeed, kET_SpankWeed)
-// 134: class not declared yet (Splitter REL)
-// 135: class not declared yet (Splitter REL)
+CAST_TO_REF_IMPL(CSplitterMainChassis, kET_SplitterMainChassis)
+CAST_TO_PTR_IMPL(CSplitterMainChassis, kET_SplitterMainChassis)
+CAST_TO_REF_IMPL(CSplitterCommandModule, kET_SplitterCommandModule)
+CAST_TO_PTR_IMPL(CSplitterCommandModule, kET_SplitterCommandModule)
 // 136: class not declared yet (WispTentacle REL)
 // 137: class not declared yet (no vtable found)
 CAST_TO_REF_IMPL(CScriptPlayerTurret, kET_ScriptPlayerTurret)

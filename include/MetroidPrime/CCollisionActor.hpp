@@ -61,6 +61,8 @@ public:
   void ResetNonUniformVulnerability();
   TUniqueId GetLastTouchedObject() const;
   void SetResponseType(EWeaponCollisionResponseTypes type) { mResponseType = type; } // Guessed name
+  // Guessed name; widens the touch bounds returned by GetTouchBounds.
+  void SetExtendedTouchBounds(const CVector3f& bounds) { mExtendedTouchBounds = bounds; }
   TUniqueId GetOwnerId() const { return mOwner; }
   float GetSphereRadius() const;
   void SetSphereRadius(float radius);

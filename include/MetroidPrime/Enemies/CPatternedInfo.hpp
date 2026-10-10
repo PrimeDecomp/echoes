@@ -33,6 +33,7 @@ public:
   float GetDetectionRange() const { return mDetectionRange; }
   float GetDetectionHeightRange() const { return mDetectionHeightRange; }
   float GetSpeed() const { return mSpeed; }
+  float GetTurnSpeed() const { return mTurnSpeed; }
   float GetMinAttackRange() const { return mMinAttackRange; }
   float GetMaxAttackRange() const { return mMaxAttackRange; }
 

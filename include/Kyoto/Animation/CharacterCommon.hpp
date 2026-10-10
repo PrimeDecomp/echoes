@@ -151,7 +151,8 @@ enum EGenerateType {
   kGType_Five,
   kGType_Six,
   kGType_Seven,
-  kGType_Eight
+  kGType_Eight,
+  kGType_Nine // Guessed name
 };
 
 enum ESlideType { kSlide_Invalid = -1, kSlide_Zero = 0 };
