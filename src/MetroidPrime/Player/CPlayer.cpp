@@ -3757,13 +3757,19 @@ void CPlayer::FluidFXThink(EFluidState state, CScriptWater& water, CStateManager
 }
 
 bool CPlayer::ObjectInScanningRange(TUniqueId id, const CStateManager& mgr) {
-  if (const CActor* actor = TCastToConstPtr< CActor >(mgr.GetObjectById(id))) {
-    CVector3f delta = actor->GetTranslation() - GetTranslation();
-    if (delta.CanBeNormalized() && delta.Magnitude() < GetTweakPlayer()->GetScanningRange()) {
-      return true;
+    float scanningRange;
+    const __typeof__(TCastToPtr<CActor>((CEntity*)mgr.GetObjectById(id))) & temp_1 = TCastToPtr<CActor>((CEntity*)mgr.GetObjectById(id));
+    CActor* actor = temp_1;
+    if (actor) {
+        __typeof__(actor->GetTranslation() - GetTranslation()) temp_0 = actor->GetTranslation() - GetTranslation();
+        if (temp_0.CanBeNormalized()) {
+            scanningRange = GetTweakPlayer()->GetScanningRange();
+            if (temp_0.Magnitude() < scanningRange) {
+                return bool(1);
+            }
+        }
     }
-  }
-  return false;
+    return false;
 }
 
 CVector3f CPlayer::GetAimPosition(const CStateManager& mgr, float dt) const {
@@ -4686,8 +4692,11 @@ void CPlayer::RenderMultiplayerBeamParticles(const CStateManager& mgr) const {
 }
 
 CPlayerState::EBeamId CPlayer::GetCurrentBeam() const {
-  return mUseAlternateBeam ? static_cast< CPlayerState::EBeamId >(4)
-                           : mPlayerState->GetCurrentBeam();
+    if (mUseAlternateBeam) {
+        return (CPlayerState::EBeamId)4;
+    } else {
+        return (CPlayerState::EBeamId)*(unsigned int*)((char*)mPlayerState + 0x590);
+    }
 }
 
 void CPlayer::StopSounds() {
@@ -4736,3 +4745,13 @@ void CPlayer::SetSurfaceRestraint(ESurfaceRestraints restraint) { mSurfaceRestra
 CPlayer::ESurfaceRestraints CPlayer::GetSurfaceRestraint() const { return mSurfaceRestraint; }
 
 bool CPlayer::UnkVtable98() const { return mAlpha < 1.f; }
+
+extern "C" void fn_8001C928(int obj, int val, int val2, const char* ptr) {
+    *(int*)obj = val;
+    *(int*)((char*)obj + 0x4) = val2;
+    *(float*)((char*)obj + 0x8) = (*(float*)ptr);
+    *(float*)((char*)obj + 0xc) = (*(float*)(ptr + 0x4));
+    *(float*)((char*)obj + 0x10) = (*(float*)(ptr + 0x8));
+    *(unsigned char*)((char*)obj + 0x14) = 1;
+    *(int*)((char*)obj + 0x18) = -1;
+}

@@ -308,11 +308,12 @@ void CSortedListManager::BuildNearList(rstl::reserved_vector< TUniqueId, 1024 >&
 void CSortedListManager::BuildNearList(rstl::reserved_vector< TUniqueId, 1024 >& nearListOut,
                                        const CVector3f& pos, const CVector3f& dir, float magnitude,
                                        const CMaterialFilter& filter, const CActor* actor) const {
-  const float length = magnitude != 0.f ? magnitude : 8000.f;
-  const CVector3f end = pos + dir * length;
-  const CAABox box(rstl::min_val(pos.GetX(), end.GetX()), rstl::min_val(pos.GetY(), end.GetY()),
-                   rstl::min_val(pos.GetZ(), end.GetZ()), rstl::max_val(pos.GetX(), end.GetX()),
-                   rstl::max_val(pos.GetY(), end.GetY()), rstl::max_val(pos.GetZ(), end.GetZ()));
-  BuildNearList(nearListOut, box, filter, actor);
+  const float length = magnitude ? magnitude : 8000.f;
+  const CVector3f end = pos + length * dir;
+  BuildNearList(nearListOut,
+                CAABox(rstl::min_val(pos.GetX(), end.GetX()), rstl::min_val(pos.GetY(), end.GetY()),
+                       rstl::min_val(pos.GetZ(), end.GetZ()), rstl::max_val(pos.GetX(), end.GetX()),
+                       rstl::max_val(pos.GetY(), end.GetY()), rstl::max_val(pos.GetZ(), end.GetZ())),
+                filter, actor);
 }
 } // namespace SL

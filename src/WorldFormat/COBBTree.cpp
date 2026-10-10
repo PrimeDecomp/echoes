@@ -54,7 +54,11 @@ COBBTree::COBBTree(CInputStream& in)
 }
 
 COBBTree::~COBBTree() {
-  CNode::SetAllocator(mAllocator.GetPoolMemSize() ? &mAllocator : nullptr);
+  if (mAllocator.GetPoolMemSize() != 0) {
+    CNode::SetAllocator(&mAllocator);
+  } else {
+    CNode::SetAllocator(nullptr);
+  }
   delete mRoot;
 }
 
@@ -128,10 +132,11 @@ uint COBBTree::CNode::GetMemoryUsage() const {
 void COBBTree::CNode::SetAllocator(CSimpleAllocator* allocator) { spAllocator = allocator; }
 
 void* COBBTree::CNode::operator new(size_t size, const char* file, int line) {
-  if (spAllocator) {
+  if (spAllocator == nullptr) {
+    return rs_new char[size];
+  } else {
     return spAllocator->Alloc(size);
   }
-  return rs_new char[size];
 }
 
 void COBBTree::CNode::operator delete(void* ptr, size_t size) {

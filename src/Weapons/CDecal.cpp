@@ -456,3 +456,14 @@ void CDecal::BuildClippedGeometry(CQuadDecal& quad, const CDecalDescription::SQu
     quad.mPolygons.push_back(CDecalPolygon(projected));
   }
 }
+
+extern "C" void fn_80261098(int obj) {
+    *(int*)(obj + 0x4) = 0;
+}
+
+extern "C" void fn_80261174(int obj, int val) {
+    int val2 = *(int*)((char*)obj + 0x4);
+    int val3 = *(int*)((char*)obj + 0xc);
+    *(int*)((char*)obj + 0x4) = val2 + 1;
+    rstl::construct< CDecal::CDecalPolygon >((void*)(val3 + (val2 << 4)), *(const CDecal::CDecalPolygon*)val);
+}

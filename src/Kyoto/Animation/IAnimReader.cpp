@@ -34,6 +34,11 @@ uint IAnimReader::GetSoundPOIList(const CCharAnimTime& time, CSoundPOINode* list
 
 bool IAnimReader::IsCAnimTreeNode() const { return false; }
 
+extern "C" void fn_802B27C0();
+extern "C" void fn_802B27A0() {
+    fn_802B27C0();
+}
+
 void IAnimReader::VGetJointData_Linear(const CCharLayoutInfo&, CJointData_LinearStorage&,
                                        const CCharAnimTime&) const {}
 

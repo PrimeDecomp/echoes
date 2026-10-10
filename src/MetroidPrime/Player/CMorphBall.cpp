@@ -746,7 +746,8 @@ CModelData* CMorphBall::GetMorphBallModel(const rstl::string& name, float radius
         CStaticRes(tag.id, CVector3f(2.f * radius, 2.f * radius, 2.f * radius)));
   }
   return rs_new CModelData(CAnimRes(tag.id, CAnimRes::kDefaultCharIdx,
-                                    CVector3f(2.f * radius, 2.f * radius, 2.f * radius), 0, false));
+                                    CVector3f(2.f * radius, 2.f * radius, 2.f * radius), 0,
+                                    false));
 }
 
 void CMorphBall::LoadMorphBallModel() {
@@ -3673,4 +3674,39 @@ void CMorphBall::CreateBallShadow() {
   if (!mShadow.get()) {
     mShadow = rs_new CMorphBallShadow(64, 64, gpSimplePool->GetObj("TXTR_BallFade"));
   }
+}
+
+extern "C" void fn_800C5070(int obj, const void* ptr, int val) {
+    float f;
+    float f2;
+    if (val >= (*(int*)ptr)) {
+        *(unsigned char*)((char*)obj + 0xc) = 0;
+    } else {
+        int val2 = (int)ptr + val * 12;
+        *(unsigned char*)((char*)obj + 0xc) = 1;
+        f2 = *(float*)((char*)val2 + 0x8);
+        *(float*)obj = *(float*)((char*)val2 + 0x4);
+        f = *(float*)((char*)val2 + 0xc);
+        *(float*)((char*)obj + 0x4) = f2;
+        *(float*)((char*)obj + 0x8) = f;
+    }
+}
+
+extern "C" void fn_800C5024(int obj, const void* ptr, int val) {
+    int val2;
+    int val3;
+    int val4;
+    if (val >= (*(int*)ptr)) {
+        *(unsigned char*)((char*)obj + 0x10) = 0;
+    } else {
+        int val5 = (int)ptr + (val << 4);
+        *(unsigned char*)((char*)obj + 0x10) = 1;
+        val2 = *(int*)((char*)val5 + 0x8);
+        *(float*)obj = *(float*)((char*)val5 + 0x4);
+        val4 = *(int*)((char*)val5 + 0xc);
+        *(int*)((char*)obj + 0x4) = val2;
+        val3 = *(int*)((char*)val5 + 0x10);
+        *(int*)((char*)obj + 0x8) = val4;
+        *(int*)((char*)obj + 0xc) = val3;
+    }
 }

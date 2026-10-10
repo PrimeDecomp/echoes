@@ -512,3 +512,11 @@ void CRagDoll::PreRenderAllViewports(CActor& actor, float extent) {
   actor.SetOtherBounds(expanded);
   actor.SetRenderBounds(expanded);
 }
+
+void CHierarchyPoseBuilder::Insert(const CSegId& id, const CQuaternion& rot) {
+    CHierarchyPoseBuilder::CTreeNode* treeNode = &(*(CHierarchyPoseBuilder::CTreeNode**)((char*)this + 0x108))[(*(unsigned char (*)[200])((char*)this + 0x40))[id.val() * 2 + 1]];
+    *(float*)((char*)treeNode + 0x4) = rot.GetScalar();
+    *(int*)((char*)treeNode + 0x8) = *(int*)((char*)&rot + 0x4);
+    *(int*)((char*)treeNode + 0xc) = *(int*)((char*)&rot + 0x8);
+    *(int*)((char*)treeNode + 0x10) = *(int*)((char*)&rot + 0xc);
+}

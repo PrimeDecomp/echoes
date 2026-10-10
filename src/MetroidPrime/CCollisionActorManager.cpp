@@ -355,3 +355,11 @@ void CCollisionActorManager::SetPhysicsActive(CStateManager& mgr, bool active) {
     }
   }
 }
+
+extern "C" void fn_801363D4(const char* ptr, int obj) {
+    for (int i = *(int*)ptr; (unsigned int)i != (*(int*)obj); i += 104) {
+        if ((unsigned int)i != 0) {
+            ((rstl::basic_string<char, rstl::char_traits<char>, rstl::rmemory_allocator>*)(i + 44))->~basic_string();
+        }
+    }
+}

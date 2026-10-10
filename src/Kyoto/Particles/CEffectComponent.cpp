@@ -12,7 +12,8 @@ CEffectComponent::CEffectComponent(CInputStream& in)
 , mFlags(in.Get< uint >()) {}
 
 SObjectTag CEffectComponent::GetSObjectTagFromStream(CInputStream& in) {
-  const FourCC type = in.Get< FourCC >();
-  const CAssetId id = in.Get< CAssetId >();
-  return SObjectTag(type, id);
+    unsigned char* ptr = *(unsigned char**)((char*)&in + 0x8);
+    in.ReadInt32();
+    int val = *(int*)ptr;
+    return SObjectTag(val, in.ReadInt32());
 }

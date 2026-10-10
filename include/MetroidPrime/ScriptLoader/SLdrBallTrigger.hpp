@@ -18,7 +18,9 @@ struct SLdrBallTrigger {
   float attractionDistance;              // 0xbb38d077
   CVector3f attractionDirection;         // 0xea511d83
   bool noBallMovement;                   // 0xb613f4e4
-  float boundsSizeMultiplier;            // 0x2766636a
+#if VERSION != VERSION_G2ME01
+  float boundsSizeMultiplier; // 0x2766636a
+#endif
 };
 
 inline SLdrBallTrigger::SLdrBallTrigger()
@@ -29,7 +31,9 @@ inline SLdrBallTrigger::SLdrBallTrigger()
   attractionDistance = 20.0f;
   attractionDirection = CVector3f(1.0f, 0.0f, 0.0f);
   noBallMovement = false;
+#if VERSION != VERSION_G2ME01
   boundsSizeMultiplier = 1.0f;
+#endif
 }
 
 inline SLdrBallTrigger::~SLdrBallTrigger() {}

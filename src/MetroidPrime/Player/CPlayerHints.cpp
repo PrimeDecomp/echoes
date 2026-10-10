@@ -355,3 +355,10 @@ TUniqueId CPlayer::DisableControls(CStateManager& mgr, uint controls, TUniqueId 
   }
   return kInvalidUniqueId;
 }
+
+struct __mwdec_pm_class { };
+extern "C" void fn_8022B64C(int obj, int obj2, int val, int val2) {
+    unsigned char dst[24];
+    memcpy(dst, (const void*)obj2, 12);
+    (((__mwdec_pm_class*)obj)->*(*(void (__mwdec_pm_class::**)(int, int))dst))(val, val2);
+}

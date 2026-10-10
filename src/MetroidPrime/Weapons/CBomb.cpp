@@ -1,5 +1,6 @@
 #include "MetroidPrime/Weapons/CBomb.hpp"
 
+#include "Collision/COBBox.hpp"
 #include "Collision/CRayCastResult.hpp"
 #include "Collision/CollisionUtil.hpp"
 #include "Kyoto/Audio/CSfxManager.hpp"
@@ -219,4 +220,9 @@ void CBomb::UpdateLight(float dt, CStateManager& mgr) {
     light->SetLight(mParticle2->GetLight());
     light->SetTransform(GetTransform());
   }
+}
+
+void DebugDrawOBB(const COBBox& box, float r, float g, float b, float a) {}
+
+extern "C" void fn_80083FDC() {
 }

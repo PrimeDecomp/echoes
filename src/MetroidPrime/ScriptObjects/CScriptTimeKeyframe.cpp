@@ -44,7 +44,7 @@ void CScriptTimeKeyframe::ApplyTime(TUniqueId id, CStateManager& mgr) {
       timer->SetCurrentTime(mTime, mgr);
     }
     if (CScriptColorModulate* color = TCastToPtr< CScriptColorModulate >(target)) {
-      color->SetExternalTime(mTime);
+      color->SetExternalTime(mTime, mgr);
     }
     if (CScriptActorRotate* rotate = TCastToPtr< CScriptActorRotate >(target)) {
       rotate->SetCurrentTime(mTime, mgr);

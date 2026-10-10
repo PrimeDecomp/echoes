@@ -647,6 +647,36 @@ CTransform4f CAnimData::GetLocatorTransform(CSegId id, const CCharAnimTime* time
 
 CQuaternion CQuaternion::BuildInverted() const { return CQuaternion(w, -imaginary); }
 
+struct __mwdec_vt_0 { virtual void _0(int); };
+extern "C" void fn_8002A9F8(int obj, int obj2) {
+    if (!(*(unsigned char*)(obj + 0x8))) {
+        if ((unsigned int)obj != 0) {
+            *(unsigned char*)obj = *(unsigned char*)obj2;
+            *(int*)(obj + 0x4) = *(int*)(obj2 + 0x4);
+            *(unsigned char*)obj2 = 0;
+        }
+        *(unsigned char*)(obj + 0x8) = 1;
+    } else if (obj2 != (unsigned int)obj) {
+        if (*(unsigned char*)obj) {
+            unsigned int val = *(int*)(obj + 0x4);
+            if (val != 0) {
+                ((__mwdec_vt_0*)val)->_0(1);
+            }
+        }
+        *(unsigned char*)obj = *(unsigned char*)obj2;
+        *(int*)(obj + 0x4) = *(int*)(obj2 + 0x4);
+        *(unsigned char*)obj2 = 0;
+    }
+}
+
+extern "C" void fn_8002C7A4(const char* ptr, int obj) {
+    for (int i = *(int*)ptr; i != (unsigned int)*(int*)obj; i += 20) {
+        if ((unsigned int)i != 0) {
+            ((rstl::basic_string<char, rstl::char_traits<char>, rstl::rmemory_allocator>*)(i + 4))->~basic_string();
+        }
+    }
+}
+
 CMatrix3f CMatrix3f::Inverse() const {
   const float detScale = 1.f / Determinant();
   return CMatrix3f((m11 * m22 - m12 * m21) * detScale, (-(m01 * m22 - m02 * m21)) * detScale,
@@ -1247,4 +1277,22 @@ void CAnimData::SetModelScale(const CVector3f& scale) {
 void CAnimData::AddAnimatedScale() {
   mAnimatedScale = true;
   mPose.AllocateScale();
+}
+
+extern "C" void fn_80025E0C() {
+}
+
+extern "C" void fn_80025E08() {
+}
+
+extern "C" void fn_8002C964(int obj) {
+    rstl::destroy_impl<CPASAnimState>((CPASAnimState*)obj);
+}
+
+extern "C" void fn_8002750C(int obj) {
+    rstl::destroy_impl<rstl::pair<rstl::basic_string<char, rstl::char_traits<char>, rstl::rmemory_allocator>, rstl::vector<CEffectComponent, rstl::rmemory_allocator> > >((rstl::pair<rstl::basic_string<char, rstl::char_traits<char>, rstl::rmemory_allocator>, rstl::vector<CEffectComponent, rstl::rmemory_allocator> >*)obj);
+}
+
+extern "C" void fn_8002E4B8(int obj, int obj2) {
+    rstl::construction_policy<CPASAnimState, 0>::construct((void*)obj, *(const CPASAnimState*)obj2);
 }

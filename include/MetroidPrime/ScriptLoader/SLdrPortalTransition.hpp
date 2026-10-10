@@ -30,13 +30,14 @@ inline SLdrPortalTransition::SLdrPortalTransition()
 , animationInformation()
 , playerScale(CVector3f::Zero())
 , portalSoundGroupCommon(kInvalidAssetId)
-, portalSoundGroupDirectional(kInvalidAssetId) {
+, portalSoundGroupDirectional(kInvalidAssetId)
+, startPortal(-1)
+, inPortal1(-1)
+, inPortal2(-1) {
+  editorProperties.unknown_0x5d298a43 = 0x00000003u;
   playerScale = CVector3f(1.0f, 1.0f, 1.0f);
   volume = 127;
   pan = 64;
-  startPortal = 0;
-  inPortal1 = 0;
-  inPortal2 = 0;
   direction = 0;
 }
 

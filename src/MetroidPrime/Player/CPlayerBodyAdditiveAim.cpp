@@ -11,32 +11,36 @@
 #include <float.h>
 #include <string.h>
 
-CPlayerBodyController::SAdditiveAimState::SAdditiveAimState(CActor& actor)
-: mCategory(kC_Default)
-, mYawWeight(0.f)
-, mYawVelocity(0.f)
-, mPitchWeight(0.f)
-, mPitchVelocity(0.f) {
-  memset(mAvailableAnimations, 0, sizeof(mAvailableAnimations));
-  const CPASDatabase& database = actor.AnimationData()->GetPASDatabase();
-  for (int direction = 0; direction < 4; ++direction) {
-    for (int category = 0; category < 3; ++category) {
-      const CPASAnimParmData parms(static_cast< pas::EAnimationState >(kPAS_AdditiveAim),
-                                   CPASAnimParm::FromEnum(direction),
-                                   CPASAnimParm::FromEnum(category));
-      const rstl::pair< float, int > best = database.FindBestAnimation(parms, -1);
-      mAnimationIds[category][direction] = best.second;
-      if (best.first > FLT_EPSILON) {
-        ++mAvailableAnimations[category];
-      }
-    }
-
-    if (direction < 2) {
-      mYawLimits[direction] = CRelAngle::FromDegrees(85.f).AsRadians();
-    } else {
-      mPitchLimits[direction - 2] = CRelAngle::FromDegrees(85.f).AsRadians();
-    }
-  }
+CPlayerBodyController::SAdditiveAimState::SAdditiveAimState(CActor& actor) : mCategory(CPlayerBodyController::SAdditiveAimState::kC_Default), mYawWeight(0.0f), mYawVelocity(0.0f), mPitchWeight(0.0f), mPitchVelocity(0.0f) {
+    void* ptr;
+    CPlayerBodyController::SAdditiveAimState* additiveAimState;
+    CPlayerBodyController::SAdditiveAimState* additiveAimState2;
+    int i;
+    float f;
+    memset(this, 0, 12);
+    CPlayerBodyController::SAdditiveAimState* additiveAimState3 = this;
+    i = 0;
+    ptr = (char*)*(CAnimData**)((char*)*(CModelData**)((char*)&actor + 0x60) + 0x10) + 0x3c;
+    do {
+        additiveAimState = additiveAimState3;
+        additiveAimState2 = this;
+        int i2 = 0;
+        do {
+            CPASAnimParmData cpasAnimParmData(pas::kAS_Death, CPASAnimParm::FromEnum(i), CPASAnimParm::FromEnum(i2), CPASAnimParm::NoParameter(), CPASAnimParm::NoParameter(), CPASAnimParm::NoParameter(), CPASAnimParm::NoParameter(), CPASAnimParm::NoParameter(), CPASAnimParm::NoParameter());
+            rstl::pair<float, int> bestAnimation = ((CPASDatabase*)ptr)->FindBestAnimation(cpasAnimParmData, -1);
+            f = bestAnimation.first;
+            *(int*)((char*)additiveAimState + 0xc) = bestAnimation.second;
+            if (f > 1.1920929e-7f) {
+                additiveAimState2->mAvailableAnimations[0] += 1;
+            }
+            i2++;
+            additiveAimState = (CPlayerBodyController::SAdditiveAimState*)((char*)additiveAimState + 0x10);
+            additiveAimState2 = (CPlayerBodyController::SAdditiveAimState*)(&additiveAimState2->mAvailableAnimations[1]);
+        } while (i2 <= 2);
+        i++;
+        additiveAimState3->mYawLimits[0] = 1.4835298f;
+        additiveAimState3 = (CPlayerBodyController::SAdditiveAimState*)(&additiveAimState3->mAvailableAnimations[1]);
+    } while (i <= 3);
 }
 
 void CPlayerBodyController::SAdditiveAimState::Start(CStateManager& mgr,

@@ -401,7 +401,7 @@ void CScriptPickup::Touch(CActor& act, CStateManager& mgr) {
 }
 
 rstl::optional_object< CAABox > CScriptPickup::GetTouchBounds() const {
-  const CVector3f& off = GetTranslation();
+  const CVector3f off = GetTranslation();
   return CAABox(mTouchBounds.GetMinPoint() + off, mTouchBounds.GetMaxPoint() + off);
 }
 
@@ -440,8 +440,8 @@ void CScriptPickup::SetWasGenerated(CStateManager& mgr) {
   mSuppressBobbing = true;
 }
 
-CVector3f CScriptPickup::GetOrbitPosition(const CStateManager& mgr) const {
-  return GetTransform().Rotate(mOrbitOffset) + GetTranslation();
+CVector3f CScriptPickup::GetOrbitPosition(const CStateManager&) const {
+  return GetTranslation() + GetTransform().Rotate(mOrbitOffset);
 }
 
 void CScriptPickup::ShowAllKeysCollectedAlert(CStateManager& mgr, CPlayerState* playerState,

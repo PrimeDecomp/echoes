@@ -39,24 +39,25 @@ void CStaticInterference::RemoveSource(const TUniqueId id) {
 }
 
 float CStaticInterference::GetTotalInterference() const {
-  float validAccum = 0.f;
-  float invalidAccum = 0.f;
-
-  rstl::vector< CStaticInterferenceSource >::const_iterator it = sources.begin();
-  for (; it != sources.end(); ++it) {
-    float v = it->GetIntensity();
-    if (it->GetSourceId() == kInvalidUniqueId) {
-      invalidAccum += v;
+    const CStaticInterferenceSource* staticInterferenceSource;
+    float f = 0.0f;
+    CStaticInterferenceSource* items = sources.mItems;
+    float a = f;
+    staticInterferenceSource = &items[sources.mCount];
+    while (items != staticInterferenceSource) {
+        float intensity = items->GetIntensity();
+        if (items->GetSourceId() == kInvalidUniqueId) {
+            a += intensity;
+        }
+        if (((const __typeof__(*items)*)items)->GetSourceId() != kInvalidUniqueId) {
+            f += intensity;
+        }
+        items++;
     }
-    if (it->GetSourceId() != kInvalidUniqueId) {
-      validAccum += v;
+    if (f > 0.8f) {
+        f = 0.8f;
     }
-  }
-  if (validAccum > 0.8f) {
-    validAccum = 0.8f;
-  }
-
-  return rstl::min_val(validAccum + invalidAccum, 1.f);
+    return rstl::min_val(f + a, 1.0f);
 }
 
 void CStaticInterference::Update(const CStateManager&, float dt) {

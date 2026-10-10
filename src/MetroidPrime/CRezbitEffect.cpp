@@ -226,3 +226,14 @@ CIOWin::EMessageReturn CRezbitEffectIOWin::OnMessage(const CArchitectureMessage&
 }
 
 CRezbitEffectIOWin::~CRezbitEffectIOWin() {}
+
+struct __mwdec_vt_0 { virtual void _0(int); };
+extern "C" void fn_8022E0A4(int obj) {
+    if (--*(int*)(*(int*)(obj + 0x4)) <= 0) {
+        unsigned int val = *(int*)obj;
+        if (val != 0) {
+            ((__mwdec_vt_0*)val)->_0(1);
+        }
+        CMemory::Free((const void*)*(int*)(obj + 0x4));
+    }
+}

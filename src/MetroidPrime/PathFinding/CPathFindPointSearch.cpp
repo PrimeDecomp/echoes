@@ -116,38 +116,44 @@ CPathFindPointSearchFilter::CPathFindPointSearchFilter(float maxDistance, uint f
 
 CPathFindPointSearch::CPathFindPointSearch(CPFArea* area) : mArea(area) {}
 
-CPathFindPointSearch::EClosestPointResult
-CPathFindPointSearch::FindClosestPhysicalPoint(const CVector3f& position, int& point,
-                                               const CPathFindPointSearchFilter& filter) const {
-  CPFArea* area = mArea;
-  if (area) {
-    float closestDistanceSq = kMaxPointDistanceSq;
-    bool found = false;
-    const uint flags = filter.GetFlags();
-    for (int i = 0; i < area->GetNumPoints(); ++i) {
-      const CPFPoint& candidate = area->GetPoint(i);
-      if (flags && !(flags & candidate.GetFlags())) {
-        continue;
-      }
-      if (filter.GetConnectedPoint() != -1 &&
-          !area->PointPathExists(i, filter.GetConnectedPoint())) {
-        continue;
-      }
-      const CVector3f delta = candidate.GetPosition() - position;
-      const float distanceSq = CVector3f::Dot(delta, delta);
-      if (distanceSq < closestDistanceSq) {
-        closestDistanceSq = distanceSq;
-        point = i;
-        found = true;
-      }
+CPathFindPointSearch::EClosestPointResult CPathFindPointSearch::FindClosestPhysicalPoint(const CVector3f& position, int& point, const CPathFindPointSearchFilter& filter) const {
+    unsigned char* ptr;
+    int val;
+    CPFArea* area;
+    u32 flags;
+    float f5;
+    area = mArea;
+    if (area) {
+        float f = 3.4028235e38f;
+        bool flag = false;
+        flags = filter.GetFlags();
+        int i = 0;
+        val = 0;
+        while (i < *(int*)((char*)area + 0x18c)) {
+            ptr = (unsigned char*)*(CPFPoint**)((char*)area + 0x190) + val;
+            if (!flags || (flags & *(int*)(ptr + 0xc))) {
+                int connectedPoint = filter.GetConnectedPoint();
+                if (connectedPoint == -1 || area->PointPathExists(i, connectedPoint)) {
+                    
+                    float f4 = *(float*)ptr - position.GetX();
+                    float f3 = *(float*)(ptr + 0x8) - position.GetZ();
+                    float f2 = f3 * f3 + (f4 * f4 + (*(float*)(ptr + 0x4) - position.GetY()) * (*(float*)(ptr + 0x4) - position.GetY()));
+                    if (f2 < f) {
+                        f = f2;
+                        point = i;
+                        flag = true;
+                    }
+                }
+            }
+            val += 28;
+            i++;
+        }
+        if (flag) {
+            float maxDistance = filter.GetMaxDistance();
+            return (f < maxDistance * maxDistance) ? CPathFindPointSearch::kCPR_Success : 1;
+        }
     }
-    if (found) {
-      return closestDistanceSq < filter.GetMaxDistance() * filter.GetMaxDistance()
-                 ? kCPR_Success
-                 : kCPR_OutOfRange;
-    }
-  }
-  return kCPR_NoPoint;
+    return CPathFindPointSearch::kCPR_NoPoint;
 }
 
 CPathFindPointSearch::EResult CPathFindPointSearch::Search(const CPFPoint& source,

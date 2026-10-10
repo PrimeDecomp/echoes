@@ -269,25 +269,26 @@ CVector3f CPFArea::FindClosestReachablePoint(rstl::reserved_vector< CPFRegion*, 
   return result;
 }
 
-bool CPFArea::PathExists(const CPFRegion* source, const CPFRegion* destination, uint flags) const {
-  if (source == destination || (flags & 0x14)) {
-    return true;
-  }
-  int numRegions = GetNumRegions();
-  int sourceIndex = source->GetIndex();
-  const int destIndex = destination->GetIndex();
-  int destinationIndex = destIndex;
-  const rstl::prereserved_vector< uint >& connections =
-      (flags & 2) ? mConnectionsFlyers : mConnectionsGround;
-  int lowIndex = sourceIndex;
-  if (sourceIndex > destinationIndex) {
-    lowIndex = destinationIndex;
-    destinationIndex = sourceIndex;
-  }
-  int totalConnections = numRegions * (numRegions - 1) / 2;
-  int remainingConnections = (numRegions - lowIndex - 1) * (numRegions - lowIndex) / 2;
-  uint bit = totalConnections - remainingConnections + destinationIndex - (lowIndex + 1);
-  return (connections[bit / 32] >> (bit % 32)) & 1;
+bool CPFArea::PathExists(const CPFRegion* source, const CPFRegion* destination, unsigned int flags) const {
+    int val;
+    unsigned int index2;
+    const void* ptr;
+    if (source == destination || (flags & 20)) {
+        return 1;
+    } else {
+        int val3 = mRegions.size();
+        int index = source->GetIndex();
+        index2 = destination->GetIndex();
+        ptr = ((flags & 2) != 0) ? &mConnectionsFlyers : &mConnectionsGround;
+        val = index;
+        if (index > (int)index2) {
+            val = index2;
+            index2 = index;
+        }
+        int val4 = val3 - val;
+        int val2 = index2 + (val3 * (val3 - 1) / 2 - (val4 - 1) * val4 / 2) - (val + 1);
+        return (unsigned int)*(int*)((val2 >> 3 & 0x1ffffffc) + (char*)(*(int*)((char*)ptr + 0x4))) >> (val2 & 31) & 1;
+    }
 }
 
 void CPFArea::SetTransform(const CTransform4f& transform) {

@@ -96,9 +96,8 @@ void CPlayerKnockBackMgr::KnockBack(CStateManager& mgr, CActor& actor, const CKn
     return;
   }
 
-  const bool ball = player->GetMorphballTransitionState() == CPlayer::kMS_Morphed ||
-                    player->GetMorphballTransitionState() == CPlayer::kMS_Morphing;
-  mWasBall = ball;
+  mWasBall = player->GetMorphballTransitionState() == CPlayer::kMS_Morphed ||
+             player->GetMorphballTransitionState() == CPlayer::kMS_Morphing;
   mWasFrozen = player->GetFrozenState();
   mWasOnGround = player->GetPlayerMovementState() == NPlayer::kMS_OnGround;
   CKnockBackMgr::KnockBack(mgr, actor, info);
@@ -127,7 +126,7 @@ void CPlayerKnockBackMgr::ResetEffects(CStateManager& mgr, CPlayer& player) {
 }
 
 float CPlayerKnockBackMgr::GetBurnDeathAlpha() const {
-  return mBurnDeath ? 0.5f * mBurnDeathRemainingTime : 1.f;
+  return mBurnDeath ? mBurnDeathRemainingTime / 2.f : 1.f;
 }
 
 bool CPlayerKnockBackMgr::IsAlive(const CActor& actor) const {
@@ -382,7 +381,8 @@ void CPlayerKnockBackMgr::UpdateElectrocution(float dt, CStateManager& mgr, CPla
 
 void CPlayerKnockBackMgr::ApplyPlayerKnockBackForce(CPlayer& player, const CVector3f& direction,
                                                     float power, float unused) {
-  float force = power * 500.f;
+  float force = power;
+  force *= 500.f;
   if (player.GetMorphballTransitionState() != CPlayer::kMS_Morphed &&
       player.GetSurfaceRestraint() == CPlayer::kSR_Air) {
     force /= 3.5f;
@@ -397,18 +397,20 @@ void CPlayerKnockBackMgr::ApplyPlayerKnockBackForce(CPlayer& player, const CVect
   const CVector3f velocity = player.GetVelocityWR();
   const float speed = velocity.Magnitude();
   const float limitedSpeed = rstl::min_val(speed, maximumSpeed);
+  float adjustedSpeed = limitedSpeed;
   if (!CMath::IsEpsilon(limitedSpeed, 0.f, 0.00001f)) {
     const CVector3f velocityDirection = (1.f / speed) * velocity;
-    float adjustedSpeed = limitedSpeed;
     if (player.GetMorphballTransitionState() != CPlayer::kMS_Morphed) {
-      if (player.GetSurfaceRestraint() == CPlayer::kSR_Air) {
-        const CVector3f axis = player.GetTransform().GetRight();
-        adjustedSpeed *=
-            0.65f + (1.f - 0.65f) * CMath::AbsF(CVector3f::Dot(axis, velocityDirection));
+      if (player.GetSurfaceRestraint() != CPlayer::kSR_Air) {
+        adjustedSpeed =
+            limitedSpeed *
+            (0.65f + 0.35f * CMath::AbsF(CVector3f::Dot(player.GetTransform().GetForward(),
+                                                       velocityDirection)));
       } else {
-        const CVector3f axis = player.GetTransform().GetForward();
-        adjustedSpeed *=
-            0.65f + (1.f - 0.65f) * CMath::AbsF(CVector3f::Dot(axis, velocityDirection));
+        adjustedSpeed =
+            limitedSpeed *
+            (0.65f + 0.35f * CMath::AbsF(CVector3f::Dot(player.GetTransform().GetRight(),
+                                                       velocityDirection)));
       }
     }
     player.SetVelocityWR(adjustedSpeed * velocityDirection);
@@ -432,7 +434,7 @@ bool CPlayerKnockBackMgr::CanApplyKnockBackForce(CStateManager& mgr, CPlayer& pl
       return false;
     }
   }
-  return !(mActiveParameters.mFlags & kRF_DisablePhysics);
+  return (mActiveParameters.mFlags & kRF_DisablePhysics) ? false : true;
 }
 
 void CPlayerKnockBackMgr::ApplyFollowUp(CActor& actor, CStateManager& mgr, TUniqueId source,

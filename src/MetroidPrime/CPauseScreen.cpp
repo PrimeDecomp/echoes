@@ -2156,3 +2156,16 @@ CScanTreeCategory::~CScanTreeCategory() {}
 CScanTreeNode::~CScanTreeNode() {}
 
 CScanTree::~CScanTree() {}
+
+extern "C" void fn_8020D0B4(int, int);
+extern "C" void fn_8020D054(const char* ptr, int obj) {
+    CPauseScreen::SNodeDraw nodeDraw(*(const CPauseScreen::SNodeDraw*)*(int*)ptr);
+    fn_8020D0B4(*(int*)ptr, *(int*)obj);
+    fn_8020D0B4(*(int*)obj, (int)&nodeDraw);
+}
+
+extern "C" void fn_8020D978(int obj, int val) {
+    CPauseScreen::SNodeDraw nodeDraw(*(const CPauseScreen::SNodeDraw*)obj);
+    fn_8020D0B4(obj, val);
+    fn_8020D0B4(val, (int)&nodeDraw);
+}

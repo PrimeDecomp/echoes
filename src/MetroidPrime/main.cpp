@@ -148,6 +148,30 @@ bool CMain::IsMaxSpeed() { return mIsMaxSpeed; }
 
 extern "C" void __sys_free(const void* ptr) { CMemory::Free(ptr); }
 
+extern "C" int fn_80007AC8(int obj, int obj2, int val);
+extern "C" int fn_80007AC8(int obj, int obj2, int val);
+extern "C" void fn_80007AA0(int obj, int val) {
+    fn_80007AC8(obj, *(int*)(obj + 0x8), val);
+}
+
+extern "C" void fn_8000489C(const char* ptr, int obj) {
+    for (int i = *(int*)ptr; i != (unsigned int)*(int*)obj; i += 12) {
+        ((TCachedToken<CTexture>*)i)->~TCachedToken<CTexture>();
+    }
+}
+
+extern "C" int fn_80007B38(int, int, int, int);
+extern "C" int fn_80007AC8(int obj, int obj2, int val) {
+    int result = fn_80007B38(obj, *(int*)obj2, obj2, val);
+    if ((unsigned int)obj2 == (*(int*)((char*)obj + 0x4))) {
+        *(int*)((char*)obj + 0x4) = result;
+    }
+    *(int*)((char*)*(int*)result + 0x4) = result;
+    *(int*)*(int*)((char*)result + 0x4) = result;
+    *(int*)((char*)obj + 0x14) = *(int*)((char*)obj + 0x14) + 1;
+    return result;
+}
+
 void CMain::SetMaxSpeed(const bool enabled) {
   if (enabled && !mIsMaxSpeed) {
     CFrameDelayedKiller::StallAndFlushAllAllocations();
@@ -900,3 +924,9 @@ int CMain::GetLanguage() const {
 }
 
 void CMain::UpdateStreamedAudio() { CStreamAudioManager::Update(1.f / 60.f); }
+
+extern int lbl_8041EE00;
+extern int lbl_8041EE00;
+extern "C" void fn_80009864() {
+    gARAMAllocationSize = lbl_8041EE00 * 28 / 8 << 2;
+}

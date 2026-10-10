@@ -58,10 +58,13 @@ public:
   }
   inline float MagSquared() const { return GetX() * GetX() + GetY() * GetY() + GetZ() * GetZ(); }
   static CVector3f Cross(const CVector3f& lhs, const CVector3f& rhs) {
-    const float x = (lhs.GetY() * rhs.GetZ()) - (rhs.GetY() * lhs.GetZ());
-    const float y = (lhs.GetZ() * rhs.GetX()) - (rhs.GetZ() * lhs.GetX());
-    const float z = (lhs.GetX() * rhs.GetY()) - (rhs.GetX() * lhs.GetY());
-    return CVector3f(x, y, z);
+    const float lx = lhs.GetX();
+    const float ly = lhs.GetY();
+    const float lz = lhs.GetZ();
+    const float rx = rhs.GetX();
+    const float ry = rhs.GetY();
+    const float rz = rhs.GetZ();
+    return CVector3f(ly * rz - ry * lz, lz * rx - rz * lx, lx * ry - rx * ly);
   }
 
   float& operator[](EDimX dim) { return mX; }

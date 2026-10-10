@@ -653,3 +653,7 @@ void CGameProjectile::ResolveCollisionWithActor(const CRayCastResult& result, CA
 }
 
 CGameProjectile::~CGameProjectile() {}
+
+extern "C" void fn_80032D68(int obj) {
+    rstl::destroy<CImpactVisorEffect::SParticleEffect>((CImpactVisorEffect::SParticleEffect*)obj);
+}

@@ -66,6 +66,7 @@ struct SLdrRoomAcoustics {
 };
 
 inline SLdrRoomAcoustics::SLdrRoomAcoustics() : editorProperties() {
+  editorProperties.unknown_0x5d298a43 = 0x00000003u;
   roomVolume = 117;
   priority = 1;
   reverbHiEnabled = false;

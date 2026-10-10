@@ -17,6 +17,7 @@ struct SLdrTrigger {
 };
 
 inline SLdrTrigger::SLdrTrigger() : editorProperties(), trigger() {
+  editorProperties.transform.scale = CVector3f(1.0f, 1.0f, 1.0f);
   deactivateOnEnter = false;
   deactivateOnExit = false;
 }
