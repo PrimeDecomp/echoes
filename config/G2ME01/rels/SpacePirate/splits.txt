@@ -6,6 +6,12 @@ Sections:
 	.data       type:data align:8
 	.bss        type:bss align:8
 
+Harvest/SpacePirate/text_00000.cpp:
+	.text       start:0x00000000 end:0x00010E50
+
+Harvest/SpacePirate/text_119BC.cpp:
+	.text       start:0x000119BC end:0x00011A30
+
 REL/global_destructor_chain.c:
 	.text       start:0x00011A30 end:0x00011AA4
 	.dtors      start:0x00000000 end:0x00000004 rename:.dtors$10

@@ -341,6 +341,18 @@ def Rel(
         "objects": objects,
     }
 
+# Synthetic REL units holding raw matching-decompiler output (reference only). They
+# define RELMain/RELExit without MONOLITHIC guards, so keep them out of MONOLITHIC links.
+def SyntheticRel(lib_name: str, objects: List[Object]) -> Dict[str, Any]:
+    return {
+        "lib": lib_name,
+        "mw_version": retro_mw_version,
+        "cflags": cflags_rel + ["-pool off"],
+        "progress_category": "game",
+        "host": True,
+        "objects": objects,
+    }
+
 # MusyX flags
 cflags_musyx = [
     "-proc gekko",
@@ -2054,6 +2066,85 @@ config.libs = [
             Object(NonMatching, "MetroidPrime/Enemies/CSplinter.cpp"),
         ],
         extra_cflags=["-pool off"],
+    ),
+    # Synthetic units for RELs without a source file yet: raw matching-decompiler output, for reference.
+    SyntheticRel(
+        "DarkSamus",
+        [
+            Object(NonMatching, "Harvest/DarkSamus/text_00000.cpp"),
+            Object(NonMatching, "Harvest/DarkSamus/text_0452C.cpp"),
+            Object(NonMatching, "Harvest/DarkSamus/text_0CE4C.cpp"),
+        ],
+    ),
+    SyntheticRel(
+        "DigitalGuardian",
+        [
+            Object(NonMatching, "Harvest/DigitalGuardian/text_00000.cpp"),
+            Object(NonMatching, "Harvest/DigitalGuardian/text_0DF6C.cpp"),
+        ],
+    ),
+    SyntheticRel(
+        "SandBoss",
+        [
+            Object(NonMatching, "Harvest/SandBoss/text_00000.cpp"),
+        ],
+    ),
+    SyntheticRel(
+        "Sandworm",
+        [
+            Object(NonMatching, "Harvest/Sandworm/text_00000.cpp"),
+        ],
+    ),
+    SyntheticRel(
+        "EmperorIngStage1",
+        [
+            Object(NonMatching, "Harvest/EmperorIngStage1/text_00000.cpp"),
+        ],
+    ),
+    SyntheticRel(
+        "EmperorIngStage3",
+        [
+            Object(NonMatching, "Harvest/EmperorIngStage3/text_00000.cpp"),
+        ],
+    ),
+    SyntheticRel(
+        "IngBoostBallGuardian",
+        [
+            Object(NonMatching, "Harvest/IngBoostBallGuardian/text_00000.cpp"),
+            Object(NonMatching, "Harvest/IngBoostBallGuardian/text_11CD8.cpp"),
+        ],
+    ),
+    SyntheticRel(
+        "SwampBossStage1",
+        [
+            Object(NonMatching, "Harvest/SwampBossStage1/text_00000.cpp"),
+        ],
+    ),
+    SyntheticRel(
+        "SpacePirate",
+        [
+            Object(NonMatching, "Harvest/SpacePirate/text_00000.cpp"),
+            Object(NonMatching, "Harvest/SpacePirate/text_119BC.cpp"),
+        ],
+    ),
+    SyntheticRel(
+        "CommandoPirate",
+        [
+            Object(NonMatching, "Harvest/CommandoPirate/text_00000.cpp"),
+        ],
+    ),
+    SyntheticRel(
+        "Ing",
+        [
+            Object(NonMatching, "Harvest/Ing/text_00000.cpp"),
+            Object(NonMatching, "Harvest/Ing/text_0FF88.cpp"),
+        ],
+    ),
+    SyntheticRel(
+        "ElitePirate",
+        [
+            Object(NonMatching, "Harvest/ElitePirate/text_00000.cpp"),
+        ],
     ),
 ]
 

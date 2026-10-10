@@ -1429,3 +1429,11 @@ CEntity* REL_LoadSplitterCommandModule(CStateManager& mgr, CInputStream& input, 
       LdrToPatternedInfo(sldrThis.patterned, &sldrThis.commandModuleProperties.ingPossessionData),
       data);
 }
+
+// ---- Raw matching-decompiler output from a local tree (reference only, not cleaned up) ----
+
+extern "C" void fn_75_1F08();
+
+extern "C" void fn_75_1EE8() { fn_75_1F08(); }
+
+// ---- End of raw matching-decompiler output ----

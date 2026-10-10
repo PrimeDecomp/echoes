@@ -11,6 +11,7 @@
 #include "MetroidPrime/ScriptLoader.hpp"
 #include "MetroidPrime/ScriptLoader/SLdrMinorIng.hpp"
 #include "MetroidPrime/ScriptLoaderRel.hpp"
+#include "MetroidPrime/ScriptObjects/CScriptAIHint.hpp"
 #include "REL/REL_Setup.h"
 
 static CPatterned::StateMachine::STriggerFunction skTriggers[] = {
@@ -460,3 +461,509 @@ static void SetFuncPtrs() {
 extern "C" void RELMain() { SetFuncPtrs(); }
 
 extern "C" void RELExit() { SetSMinorIng_FuncPtrs(nullptr); }
+
+// ---- Raw matching-decompiler output from a local tree (reference only, not cleaned up) ----
+
+extern float lbl_44_rodata_7C;
+extern "C" void fn_44_657C();
+extern "C" void fn_44_5D70(int, int, int);
+extern "C" void fn_44_2F24();
+extern "C" int fn_44_2598(int, int, long long*);
+extern "C" void fn_44_660C(int, unsigned char*, unsigned char*, unsigned char*);
+extern int lbl_44_data_79C;
+extern "C" void fn_44_3B0C(int, int, int);
+extern "C" void fn_44_9CC0(int, int);
+extern int lbl_44_data_790;
+extern int lbl_44_data_784;
+extern int lbl_44_data_778;
+extern "C" void fn_44_115C();
+extern "C" void fn_44_6748();
+extern "C" void fn_44_34B0(unsigned char*, int, int);
+extern "C" unsigned char fn_44_60C4(int, int, int);
+extern "C" void fn_44_8BF4(CVector3f*, int, int);
+
+extern "C" void fn_44_6A3C() {}
+
+extern "C" int fn_44_6F98(int arg0) { return *(int*)(arg0 + 0x254); }
+
+extern "C" bool fn_44_3430(int arg0) { return *(unsigned char*)(arg0 + 0xd3d) >> 4 & 1; }
+
+extern "C" bool fn_44_4A68(int arg0) { return *(unsigned char*)(arg0 + 0xd3d) >> 5 & 1; }
+
+extern "C" bool fn_44_5CF0(int arg0) { return *(unsigned char*)(arg0 + 0x916) >> 3 & 1; }
+
+extern "C" bool fn_44_5CFC(int arg0) { return *(unsigned char*)(arg0 + 0x916) >> 4 & 1; }
+
+extern "C" bool fn_44_5D28(int arg0) { return *(unsigned char*)(arg0 + 0xd3e) >> 1 & 1; }
+
+extern "C" bool fn_44_5D34(int arg0) { return *(unsigned char*)(arg0 + 0xd3e) >> 3 & 1; }
+
+extern "C" bool fn_44_5D58(int arg0) { return *(unsigned char*)(arg0 + 0xd3e) >> 6 & 1; }
+
+extern "C" bool fn_44_5D64(int arg0) { return *(unsigned char*)(arg0 + 0xd3e) >> 7 & 1; }
+
+extern "C" bool fn_44_6178(int arg0) { return *(unsigned char*)(arg0 + 0xd3d) >> 7 & 1; }
+
+extern "C" bool fn_44_6210(int arg0) { return *(unsigned char*)(arg0 + 0xd3d) >> 1 & 1; }
+
+extern "C" bool fn_44_621C(int arg0) { return *(unsigned char*)(arg0 + 0xd3e) >> 2 & 1; }
+
+extern "C" bool fn_44_6228(int arg0) { return *(unsigned char*)(arg0 + 0xd3d) >> 3 & 1; }
+
+extern "C" bool fn_44_6234(int arg0) { return *(unsigned char*)(arg0 + 0x916) >> 6 & 1; }
+
+extern "C" int fn_44_2038(int arg0) { return (*(int*)(arg0 + 0x6b4) == 3) ? 1 : 0; }
+
+extern "C" int fn_44_5D40(int arg0) {
+  return (6 == *(int*)(0x37c + (*(int*)(arg0 + 0x48c)))) ? 1 : 0;
+}
+
+extern "C" void fn_44_1114() {
+  void fn_44_1134();
+  fn_44_1134();
+}
+
+extern "C" bool fn_44_3E00(int arg0) { return *(float*)(arg0 + 0xd0c) <= lbl_44_rodata_7C; }
+
+extern "C" void fn_44_655C() { fn_44_657C(); }
+
+extern "C" void fn_44_6700() {
+  void fn_44_6720();
+  fn_44_6720();
+}
+
+extern "C" CModelData fn_44_76AC(int arg0) { return CModelData(); }
+
+extern "C" void fn_44_5E70(int arg0, int arg1) { fn_44_5D70(arg0, arg1, arg0 + 84); }
+
+extern "C" void fn_44_4A40(int arg0) {
+  ((CIngSpotPathFindNavigation*)(arg0 + 3120))->HasPath(*(const CPatterned*)arg0);
+}
+
+extern "C" int fn_44_6240(int arg0) {
+  s32 var_r4 = false;
+  if ((*(unsigned char*)(arg0 + 0xd3d) & 1) || (*(unsigned char*)(arg0 + 0x916) >> 7 & 1)) {
+    var_r4 = true;
+  }
+  return var_r4;
+}
+
+extern "C" int fn_44_2EF4(int arg0) {
+  fn_44_2F24();
+  return arg0;
+}
+
+extern "C" int fn_44_6144(int arg0) {
+  int var_r6 = false;
+  if ((*(unsigned short*)(arg0 + 0xcce)) == kInvalidUniqueId.value ||
+      *(float*)(arg0 + 0xd08) > *(float*)(arg0 + 0x3f4)) {
+    var_r6 = true;
+  }
+  return var_r6;
+}
+
+extern "C" bool fn_44_4D4C(int arg0, int arg1) {
+  long long stack_8;
+  *(unsigned short*)&stack_8 = *(unsigned short*)(arg0 + 0xcd0);
+  return fn_44_2598(arg0, arg1, &stack_8) != 0;
+}
+
+extern "C" int fn_44_2C9C(int arg0, int arg1) {
+  if (arg0 && (short)arg1 > 0) {
+    CMemory::Free((const void*)arg0);
+  }
+  return arg0;
+}
+
+extern "C" int fn_44_6888(int arg0, int arg1) {
+  if (arg0 && (short)arg1 > 0) {
+    CMemory::Free((const void*)arg0);
+  }
+  return arg0;
+}
+
+extern "C" int fn_44_68C4(int arg0, int arg1) {
+  if (arg0 && (short)arg1 > 0) {
+    CMemory::Free((const void*)arg0);
+  }
+  return arg0;
+}
+
+extern "C" int fn_44_8AFC(int arg0, int arg1) {
+  if (arg0 && (short)arg1 > 0) {
+    CMemory::Free((const void*)arg0);
+  }
+  return arg0;
+}
+
+extern "C" int fn_44_A644(int arg0, int arg1) {
+  if (arg0 && (short)arg1 > 0) {
+    CMemory::Free((const void*)arg0);
+  }
+  return arg0;
+}
+
+extern "C" int fn_44_A804(int arg0, int arg1) {
+  if (arg0 && (short)arg1 > 0) {
+    CMemory::Free((const void*)arg0);
+  }
+  return arg0;
+}
+
+extern "C" int fn_44_A8CC(int arg0, int arg1) {
+  if (arg0 && (short)arg1 > 0) {
+    CMemory::Free((const void*)arg0);
+  }
+  return arg0;
+}
+
+extern "C" int fn_44_A908(int arg0, int arg1) {
+  if (arg0 && (short)arg1 > 0) {
+    CMemory::Free((const void*)arg0);
+  }
+  return arg0;
+}
+
+extern "C" void fn_44_7740(int arg0, int arg1, int arg2, float arg3) {
+  switch (arg2) {
+  case 0:
+    *(unsigned short*)(arg0 + 0xcce) = kInvalidUniqueId.value;
+    break;
+  case 1:
+  case 2:
+    break;
+  }
+  ((CPatterned*)arg0)->Patrol(*(CStateManager*)arg1, (EStateMsg)arg2, arg3);
+}
+
+extern "C" int fn_44_A944(int arg0, int arg1) {
+  if (arg0 && (short)arg1 > 0) {
+    CMemory::Free((const void*)arg0);
+  }
+  return arg0;
+}
+
+extern "C" void fn_44_2550(int arg0, int arg1, int arg2) {
+  ((CScriptAIHint*)arg1)->SetInUse(true);
+  *(unsigned short*)arg2 = *(unsigned short*)(arg1 + 0x8);
+}
+
+extern "C" void fn_44_65C4(int arg0) {
+  void fn_44_6500(unsigned char*, int);
+  unsigned char stack_24[28];
+  unsigned char stack_14[16];
+  unsigned char stack_8[12];
+  *(unsigned char*)(stack_24 + 0x14) = 0;
+  *(unsigned char*)(stack_14 + 0xc) = 0;
+  *(unsigned char*)(stack_8 + 0x8) = 0;
+  fn_44_660C(arg0, stack_24, stack_14, stack_8);
+  fn_44_6500(stack_24, -1);
+}
+
+extern "C" int fn_44_7918(int arg0, int arg1) {
+  if (arg0) {
+    *(int*)arg0 = (int)&lbl_44_data_79C;
+    if ((short)arg1 > 0) {
+      CMemory::Free((const void*)arg0);
+    }
+  }
+  return arg0;
+}
+
+extern "C" int fn_44_2930(int arg0, int arg1) {
+  if (arg0) {
+    CMemory::Free((const void*)*(int*)(arg0 + 0xc));
+    if ((short)arg1 > 0) {
+      CMemory::Free((const void*)arg0);
+    }
+  }
+  return arg0;
+}
+
+extern "C" int fn_44_60F4(int arg0, int arg1, int arg2) {
+  int var_r31 = false;
+  if ((*(unsigned short*)(arg0 + 0xcce)) != kInvalidUniqueId.value ||
+      ((CPatterned*)arg0)->InDetectionRange(*(CStateManager*)arg1, *(const CTriggerData*)arg2)) {
+    var_r31 = true;
+  }
+  return var_r31;
+}
+
+extern "C" int fn_44_E64(int arg0, int arg1) {
+  if (arg0) {
+    CMemory::Free((const void*)*(int*)(arg0 + 0xc));
+    if ((short)arg1 > 0) {
+      CMemory::Free((const void*)arg0);
+    }
+  }
+  return arg0;
+}
+
+extern "C" int fn_44_107C(int arg0, int arg1) {
+  if (arg0) {
+    ((CDamageVulnerability*)(arg0 + 36))->~CDamageVulnerability();
+    if ((short)arg1 > 0) {
+      CMemory::Free((const void*)arg0);
+    }
+  }
+  return arg0;
+}
+
+extern "C" void fn_44_396C(int arg0) {
+  int var_r31;
+  for (var_r31 = 0; var_r31 < (*(int*)(arg0 + 0xce0)); var_r31 = var_r31 + 1) {
+    fn_44_3B0C(arg0, var_r31, 0);
+  }
+}
+
+extern "C" int fn_44_9BB8(int arg0, int arg1) {
+  void fn_44_9C10(int, int);
+  if (arg0) {
+    fn_44_9C10(arg0 + 80, -1);
+    if ((short)arg1 > 0) {
+      CMemory::Free((const void*)arg0);
+    }
+  }
+  return arg0;
+}
+
+extern "C" int fn_44_9C68(int arg0, int arg1) {
+  if (arg0) {
+    fn_44_9CC0(arg0 + 24, -1);
+    if ((short)arg1 > 0) {
+      CMemory::Free((const void*)arg0);
+    }
+  }
+  return arg0;
+}
+
+extern "C" void fn_44_3CB4(int arg0, float arg1) {
+  float temp_f2;
+  if ((*(int*)(arg0 + 0xcc8)) == 1) {
+    temp_f2 = *(float*)(arg0 + 0x440);
+    if (temp_f2 > lbl_44_rodata_7C) {
+      *(float*)(arg0 + 0x440) = temp_f2 - arg1;
+    }
+  }
+  *(float*)(arg0 + 0xd04) = *(float*)(arg0 + 0xd04) - arg1;
+  *(float*)(arg0 + 0xd10) = *(float*)(arg0 + 0xd10) - arg1;
+  *(float*)(arg0 + 0xd1c) = *(float*)(arg0 + 0xd1c) - arg1;
+  *(float*)(arg0 + 0xd38) = *(float*)(arg0 + 0xd38) - arg1;
+}
+
+extern "C" int fn_44_78BC(int arg0, int arg1) {
+  if (arg0) {
+    *(int*)arg0 = (int)&lbl_44_data_790;
+    if (arg0) {
+      *(int*)arg0 = (int)&lbl_44_data_79C;
+    }
+    if ((short)arg1 > 0) {
+      CMemory::Free((const void*)arg0);
+    }
+  }
+  return arg0;
+}
+
+extern "C" int fn_44_8404(int arg0, int arg1) {
+  if (arg0) {
+    *(int*)arg0 = (int)&lbl_44_data_784;
+    if (arg0) {
+      *(int*)arg0 = (int)&lbl_44_data_79C;
+    }
+    if ((short)arg1 > 0) {
+      CMemory::Free((const void*)arg0);
+    }
+  }
+  return arg0;
+}
+
+extern "C" int fn_44_87E0(int arg0, int arg1) {
+  if (arg0) {
+    *(int*)arg0 = (int)&lbl_44_data_778;
+    if (arg0) {
+      *(int*)arg0 = (int)&lbl_44_data_79C;
+    }
+    if ((short)arg1 > 0) {
+      CMemory::Free((const void*)arg0);
+    }
+  }
+  return arg0;
+}
+
+extern "C" int fn_44_13BC(int arg0, int arg1) {
+  if (arg0) {
+    if ((*(unsigned char*)(arg0 + 0x4c))) {
+      ((CModelData*)arg0)->~CModelData();
+    }
+    if ((short)arg1 > 0) {
+      CMemory::Free((const void*)arg0);
+    }
+  }
+  return arg0;
+}
+
+extern "C" int fn_44_1660(int arg0, int arg1) {
+  if (arg0) {
+    ((SLdrDamageInfo*)(arg0 + 8))->~SLdrDamageInfo();
+    ((SLdrHealthInfo*)arg0)->~SLdrHealthInfo();
+    if ((short)arg1 > 0) {
+      CMemory::Free((const void*)arg0);
+    }
+  }
+  return arg0;
+}
+
+extern "C" int fn_44_17CC(int arg0, int arg1) {
+  if (arg0) {
+    ((SLdrDamageVulnerability*)(arg0 + 88))->~SLdrDamageVulnerability();
+    ((SLdrDamageInfo*)arg0)->~SLdrDamageInfo();
+    if ((short)arg1 > 0) {
+      CMemory::Free((const void*)arg0);
+    }
+  }
+  return arg0;
+}
+
+extern "C" int fn_44_1358(int arg0, int arg1) {
+  if (arg0) {
+    if ((*(unsigned char*)arg0)) {
+      delete (CAnimData*)*(int*)(arg0 + 0x4);
+    }
+    if ((short)arg1 > 0) {
+      CMemory::Free((const void*)arg0);
+    }
+  }
+  return arg0;
+}
+
+extern "C" void fn_44_343C(int arg0, int arg1) {
+  float temp_f31;
+  float temp_f1;
+  *(float*)(arg0 + 0xd04) = ((CPatterned*)arg0)->GetAverageAttackTime();
+  if ((unsigned int)(*(unsigned char*)(arg1 + 0x16e8) >> 7 & 1) == 1) {
+    temp_f31 = *(float*)(arg0 + 0x3e8);
+    temp_f1 = ((CRandom16*)(arg1 + 5860))->Float();
+    *(float*)(arg0 + 0xd04) = temp_f1 * temp_f31 + *(float*)(arg0 + 0xd04);
+  }
+}
+
+extern "C" void fn_44_1134(int arg0) {
+  if ((unsigned int)arg0 != 0) {
+    fn_44_115C();
+  }
+}
+
+extern "C" void fn_44_6720(int arg0) {
+  if ((unsigned int)arg0 != 0) {
+    fn_44_6748();
+  }
+}
+
+extern "C" int fn_44_64AC(int arg0, int arg1) {
+  void fn_44_6500(int, int);
+  if (arg0) {
+    fn_44_6500(arg0, -1);
+    if ((short)arg1 > 0) {
+      CMemory::Free((const void*)arg0);
+    }
+  }
+  return arg0;
+}
+
+extern "C" int fn_44_28D8(int arg0, int arg1) {
+  void fn_44_2930(int, int);
+  if (arg0) {
+    fn_44_2930(arg0 + 4, -1);
+    if ((short)arg1 > 0) {
+      CMemory::Free((const void*)arg0);
+    }
+  }
+  return arg0;
+}
+
+extern "C" int fn_44_9C10(int arg0, int arg1) {
+  void fn_44_9C68(int, int);
+  if (arg0) {
+    fn_44_9C68(*(int*)arg0, 1);
+    if ((short)arg1 > 0) {
+      CMemory::Free((const void*)arg0);
+    }
+  }
+  return arg0;
+}
+
+extern "C" int fn_44_6500(int arg0, int arg1) {
+  void fn_44_655C();
+  if (arg0) {
+    if ((*(unsigned char*)(arg0 + 0x14))) {
+      fn_44_655C();
+    }
+    if ((short)arg1 > 0) {
+      CMemory::Free((const void*)arg0);
+    }
+  }
+  return arg0;
+}
+
+extern "C" void fn_44_3670(int arg0, int arg1) {
+  float temp_f1;
+  float temp_f2;
+  CVector3f stack_14;
+  unsigned char stack_8[12];
+  fn_44_34B0(stack_8, arg0, arg1);
+  float temp_f3 = *(float*)stack_8;
+  temp_f2 = *(float*)((char*)stack_8 + 0x4);
+  temp_f1 = *(float*)((char*)stack_8 + 0x8);
+  stack_14.SetX(temp_f3);
+  stack_14.SetY(temp_f2);
+  stack_14.SetZ(temp_f1);
+  bool var_r0 = 0.0f != temp_f3 || 0.0f != temp_f2 || 0.0f != temp_f1;
+  if (var_r0) {
+    ((CActor*)arg0)->SetTranslation(stack_14);
+  }
+}
+
+extern "C" int fn_44_141C(int arg0, int arg1) {
+  if (arg0) {
+    if (arg0 + 1248) {
+      ((SLdrDamageInfo*)(arg0 + 1256))->~SLdrDamageInfo();
+      ((SLdrHealthInfo*)(arg0 + 1248))->~SLdrHealthInfo();
+    }
+    if (arg0 + 812) {
+      ((SLdrDamageVulnerability*)(arg0 + 900))->~SLdrDamageVulnerability();
+      ((SLdrDamageInfo*)(arg0 + 812))->~SLdrDamageInfo();
+    }
+    ((SLdrDamageInfo*)(arg0 + 760))->~SLdrDamageInfo();
+    ((SLdrActorParameters*)(arg0 + 640))->~SLdrActorParameters();
+    ((SLdrPatternedAITypedef*)(arg0 + 60))->~SLdrPatternedAITypedef();
+    ((SLdrEditorProperties*)arg0)->~SLdrEditorProperties();
+    if ((short)arg1 > 0) {
+      CMemory::Free((const void*)arg0);
+    }
+  }
+  return arg0;
+}
+
+extern "C" bool fn_44_3D10(int arg0, int arg1, int arg2) {
+  unsigned char fn_44_5D34(int, int, int);
+  unsigned char fn_44_5E70();
+  CVector3f stack_8;
+  if (!fn_44_5E70()) {
+    return true;
+  }
+  if (!fn_44_60C4(arg0, arg1, arg2)) {
+    return true;
+  }
+  if (fn_44_5D34(arg0, arg1, arg2)) {
+    return true;
+  }
+  if (!((*(unsigned char*)((char*)arg0 + 0xd3d)) >> 5 & 1)) {
+    fn_44_8BF4(&stack_8, arg0, arg0 + 84);
+    if (((CPathFindSearch*)(arg0 + 2400))->OnPath(stack_8)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+// ---- End of raw matching-decompiler output ----

@@ -599,3 +599,93 @@ extern "C" void RELMain() { SetFuncPtrs(); }
 
 extern "C" void RELExit() { SetSAIMannedTurret_FuncPtrs(nullptr); }
 #endif
+
+// ---- Raw matching-decompiler output from a local tree (reference only, not cleaned up) ----
+
+extern "C" void fn_1_1350();
+struct __mwdec_vt_0_fn_1_4360 {
+  virtual void _0(int);
+};
+struct __mwdec_vt_0_fn_1_4648 {
+  virtual void _0(int);
+};
+
+extern "C" void fn_1_1330() { fn_1_1350(); }
+
+extern "C" int fn_1_C88(int arg0, int arg1) {
+  if (arg0 && (short)arg1 > 0) {
+    CMemory::Free((const void*)arg0);
+  }
+  return arg0;
+}
+
+extern "C" void fn_1_B74(int arg0, int arg1) {
+  int temp_r3;
+  int temp_r4;
+
+  int temp_r3_2;
+  int temp_r4_2;
+  unsigned short temp_r5_2;
+  int var_r31 = 0;
+  int temp_r5 = *(int*)(arg1 + 0x8);
+  *(int*)(arg1 + 0x8) = temp_r5 + 2;
+  unsigned short temp_r27 = *(unsigned short*)temp_r5;
+  while (var_r31 < temp_r27) {
+    temp_r4 = *(int*)(arg1 + 0x8);
+    *(int*)(arg1 + 0x8) = temp_r4 + 4;
+    temp_r3 = *(int*)(arg1 + 0x8);
+    temp_r4_2 = *(int*)temp_r4;
+    *(int*)(arg1 + 0x8) = temp_r3 + 2;
+    temp_r5_2 = *(unsigned short*)temp_r3;
+    switch (temp_r4_2) {
+    case 1297578256:
+      temp_r3_2 = *(int*)(arg1 + 0x8);
+      *(int*)(arg1 + 0x8) = temp_r3_2 + 4;
+      *(int*)arg0 = *(int*)temp_r3_2;
+      break;
+    case -202602680:
+      *(float*)(arg0 + 0x4) = ((CInputStream*)arg1)->ReadFloat();
+      break;
+    case 257525561:
+      *(float*)(arg0 + 0x8) = ((CInputStream*)arg1)->ReadFloat();
+      break;
+    case 1459194953:
+      *(float*)(arg0 + 0xc) = ((CInputStream*)arg1)->ReadFloat();
+      break;
+    default:
+      ((CInputStream*)arg1)->ReadBytes(nullptr, temp_r5_2);
+      break;
+    }
+    var_r31 = var_r31 + 1;
+  }
+}
+
+extern "C" int fn_1_4360(int arg0, int arg1) {
+  int temp_r3;
+  if (arg0) {
+    temp_r3 = *(int*)arg0;
+    if ((unsigned int)temp_r3 != 0) {
+      ((__mwdec_vt_0_fn_1_4360*)temp_r3)->_0(1);
+    }
+    if ((short)arg1 > 0) {
+      CMemory::Free((const void*)arg0);
+    }
+  }
+  return arg0;
+}
+
+extern "C" int fn_1_4648(int arg0, int arg1) {
+  int temp_r3;
+  if (arg0) {
+    temp_r3 = *(int*)arg0;
+    if ((unsigned int)temp_r3 != 0) {
+      ((__mwdec_vt_0_fn_1_4648*)temp_r3)->_0(1);
+    }
+    if ((short)arg1 > 0) {
+      CMemory::Free((const void*)arg0);
+    }
+  }
+  return arg0;
+}
+
+// ---- End of raw matching-decompiler output ----

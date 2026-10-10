@@ -1980,3 +1980,110 @@ static void SetFuncPtrs() {
 extern "C" void RELMain() { SetFuncPtrs(); }
 
 extern "C" void RELExit() { SetSSplitterMainChassis_FuncPtrs(nullptr); }
+
+// ---- Raw matching-decompiler output from a local tree (reference only, not cleaned up) ----
+
+extern "C" void fn_75_4CC();
+extern "C" void fn_75_3888();
+extern unsigned char lbl_75_data_5C4[12];
+extern unsigned char lbl_75_data_E24[12];
+extern unsigned char lbl_75_data_E18[12];
+extern unsigned char lbl_75_data_E0C[12];
+extern unsigned char lbl_75_data_E00[12];
+
+extern "C" int fn_75_81F8(int arg0) { return arg0 + 2940; }
+
+extern "C" bool fn_75_8200() { return true; }
+
+extern "C" bool fn_75_8208() { return false; }
+
+extern "C" void fn_75_8678() { fn_75_4CC(); }
+
+extern "C" void fn_75_AA10() { fn_75_3888(); }
+
+extern "C" int fn_75_B540(int arg0, int arg1) {
+  if (arg0 && (short)arg1 > 0) {
+    CMemory::Free((const void*)arg0);
+  }
+  return arg0;
+}
+
+extern "C" int fn_75_C444(int arg0, int arg1) {
+  if (arg0) {
+    *(int*)arg0 = (int)lbl_75_data_E24;
+    if (arg0) {
+      *(int*)arg0 = (int)lbl_75_data_5C4;
+    }
+    if ((short)arg1 > 0) {
+      CMemory::Free((const void*)arg0);
+    }
+  }
+  return arg0;
+}
+
+extern "C" int fn_75_C898(int arg0, int arg1) {
+  if (arg0) {
+    *(int*)arg0 = (int)lbl_75_data_E18;
+    if (arg0) {
+      *(int*)arg0 = (int)lbl_75_data_5C4;
+    }
+    if ((short)arg1 > 0) {
+      CMemory::Free((const void*)arg0);
+    }
+  }
+  return arg0;
+}
+
+extern "C" int fn_75_CC3C(int arg0, int arg1) {
+  if (arg0) {
+    *(int*)arg0 = (int)lbl_75_data_E0C;
+    if (arg0) {
+      *(int*)arg0 = (int)lbl_75_data_5C4;
+    }
+    if ((short)arg1 > 0) {
+      CMemory::Free((const void*)arg0);
+    }
+  }
+  return arg0;
+}
+
+extern "C" int fn_75_DBAC(int arg0, int arg1) {
+  if (arg0) {
+    *(int*)arg0 = (int)lbl_75_data_E00;
+    if (arg0) {
+      *(int*)arg0 = (int)lbl_75_data_5C4;
+    }
+    if ((short)arg1 > 0) {
+      CMemory::Free((const void*)arg0);
+    }
+  }
+  return arg0;
+}
+
+extern "C" int fn_75_8614(int arg0, int arg1) {
+  void fn_75_8B74(int, int);
+  if (arg0) {
+    fn_75_8B74(arg0 + 104, -1);
+    ((CDamageVulnerability*)(arg0 + 56))->~CDamageVulnerability();
+    if ((short)arg1 > 0) {
+      CMemory::Free((const void*)arg0);
+    }
+  }
+  return arg0;
+}
+
+extern "C" int fn_75_8698(int arg0, int arg1) {
+  void fn_75_8B74(int, int);
+  if (arg0) {
+    fn_75_8B74(arg0 + 760, -1);
+    ((SLdrActorParameters*)(arg0 + 640))->~SLdrActorParameters();
+    ((SLdrPatternedAITypedef*)(arg0 + 60))->~SLdrPatternedAITypedef();
+    ((SLdrEditorProperties*)arg0)->~SLdrEditorProperties();
+    if ((short)arg1 > 0) {
+      CMemory::Free((const void*)arg0);
+    }
+  }
+  return arg0;
+}
+
+// ---- End of raw matching-decompiler output ----

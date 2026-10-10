@@ -2001,4 +2001,25 @@ void SetRelLoaderFunctionToLoader() {
 extern "C" void RELMain() { SetRelLoaderFunctionToLoader(); }
 
 extern "C" void RELExit() { SetSFlyingPirate_FuncPtrs(nullptr); }
+
+extern "C" void fn_22_2B3C();
+extern "C" void fn_22_2B1C() { fn_22_2B3C(); }
+
+extern "C" void fn_22_2D78(int obj) {
+  rstl::destroy< CImpactVisorEffect::SParticleEffect >((CImpactVisorEffect::SParticleEffect*)obj);
+}
+
+extern "C" int fn_22_2CA4(int obj, int val) {
+  if (obj && (short)val > 0) {
+    CMemory::Free((const void*)obj);
+  }
+  return obj;
+}
+
+extern "C" int fn_22_2CE0(int obj, int val) {
+  if (obj && (short)val > 0) {
+    CMemory::Free((const void*)obj);
+  }
+  return obj;
+}
 #endif

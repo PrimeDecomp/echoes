@@ -1203,3 +1203,7 @@ void RELExit() { SetSGunTurretBase_FuncPtrs(nullptr); }
 #endif
 
 CGunTurretBase::~CGunTurretBase() {}
+
+extern "C" void fn_28_2594(int obj) {
+  rstl::destroy< CImpactVisorEffect::SParticleEffect >((CImpactVisorEffect::SParticleEffect*)obj);
+}

@@ -4187,3 +4187,53 @@ extern "C" void RELMain() { SetFuncPtrs(); }
 
 extern "C" void RELExit() { SetSGrenchler_FuncPtrs(nullptr); }
 #endif
+
+// ---- Raw matching-decompiler output from a local tree (reference only, not cleaned up) ----
+
+extern "C" int fn_27_123DC(int arg0, int arg1) {
+  if (arg0) {
+    ((SLdrAudioPlaybackParms*)arg0)->~SLdrAudioPlaybackParms();
+    if ((short)arg1 > 0) {
+      CMemory::Free((const void*)arg0);
+    }
+  }
+  return arg0;
+}
+
+extern "C" int fn_27_133F0(int arg0, int arg1) {
+  if (arg0) {
+    if (arg0) {
+      delete (CCollisionActorManager*)*(int*)arg0;
+    }
+    if ((short)arg1 > 0) {
+      CMemory::Free((const void*)arg0);
+    }
+  }
+  return arg0;
+}
+
+extern "C" int fn_27_12F50(int arg0, int arg1) {
+  if (arg0) {
+    if (arg0 && (*(unsigned char*)(arg0 + 0x4c))) {
+      ((CModelData*)arg0)->~CModelData();
+    }
+    if ((short)arg1 > 0) {
+      CMemory::Free((const void*)arg0);
+    }
+  }
+  return arg0;
+}
+
+extern "C" int fn_27_135FC(int arg0, int arg1) {
+  if (arg0) {
+    if (arg0 && (*(unsigned char*)(arg0 + 0x8))) {
+      ((CToken*)arg0)->~CToken();
+    }
+    if ((short)arg1 > 0) {
+      CMemory::Free((const void*)arg0);
+    }
+  }
+  return arg0;
+}
+
+// ---- End of raw matching-decompiler output ----

@@ -193,3 +193,93 @@ bool CWallCrawler::UpdateWPDestination(CStateManager& mgr) {
   }
   return arrived;
 }
+
+// ---- Raw matching-decompiler output from a local tree (reference only, not cleaned up) ----
+
+extern unsigned char lbl_83_data_1A0[12];
+extern "C" void fn_83_1ACC();
+extern unsigned char lbl_83_data_188[12];
+extern unsigned char lbl_83_data_194[12];
+
+extern "C" void RELMain() {}
+
+extern "C" void RELExit() {}
+
+extern "C" int fn_83_48C(int arg0, int arg1) {
+  if (arg0 && (short)arg1 > 0) {
+    CMemory::Free((const void*)arg0);
+  }
+  return arg0;
+}
+
+extern "C" int fn_83_DA8(int arg0, int arg1) {
+  if (arg0 && (short)arg1 > 0) {
+    CMemory::Free((const void*)arg0);
+  }
+  return arg0;
+}
+
+extern "C" void fn_83_1E78(int arg0, int arg1, int arg2) {
+  float temp_f3;
+  float temp_f4;
+  float temp_f5;
+  float temp_f6;
+  temp_f5 = *(float*)(arg1 + 0x8);
+  float temp_f7 = *(float*)(arg2 + 0x4);
+  temp_f3 = *(float*)arg1;
+  float temp_f2 = *(float*)(arg2 + 0x8);
+  temp_f4 = *(float*)(arg1 + 0x4);
+  temp_f6 = *(float*)arg2;
+  *(float*)arg0 = temp_f4 * temp_f2 - temp_f7 * temp_f5;
+  *(float*)(arg0 + 0x4) = temp_f5 * temp_f6 - temp_f2 * temp_f3;
+  *(float*)(arg0 + 0x8) = temp_f3 * temp_f7 - temp_f6 * temp_f4;
+}
+
+extern "C" int fn_83_1A7C(int arg0, int arg1) {
+  if (arg0) {
+    fn_83_1ACC();
+    if ((short)arg1 > 0) {
+      CMemory::Free((const void*)arg0);
+    }
+  }
+  return arg0;
+}
+
+extern "C" int fn_83_DE4(int arg0, int arg1) {
+  if (arg0) {
+    *(int*)arg0 = (int)lbl_83_data_188;
+    if (arg0) {
+      *(int*)arg0 = (int)lbl_83_data_1A0;
+    }
+    if ((short)arg1 > 0) {
+      CMemory::Free((const void*)arg0);
+    }
+  }
+  return arg0;
+}
+
+extern "C" int fn_83_E40(int arg0, int arg1) {
+  if (arg0) {
+    *(int*)arg0 = (int)lbl_83_data_194;
+    if (arg0) {
+      *(int*)arg0 = (int)lbl_83_data_1A0;
+    }
+    if ((short)arg1 > 0) {
+      CMemory::Free((const void*)arg0);
+    }
+  }
+  return arg0;
+}
+
+extern "C" int fn_83_1A24(int arg0, int arg1) {
+  void fn_83_1A7C(int, int);
+  if (arg0) {
+    fn_83_1A7C(arg0 + 24, -1);
+    if ((short)arg1 > 0) {
+      CMemory::Free((const void*)arg0);
+    }
+  }
+  return arg0;
+}
+
+// ---- End of raw matching-decompiler output ----

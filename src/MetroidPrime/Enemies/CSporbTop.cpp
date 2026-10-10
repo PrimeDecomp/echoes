@@ -410,3 +410,9 @@ CEntity* LoadSporbTop(CStateManager& mgr, CInputStream& input, CEntityInfo& info
 }
 
 CSporbTop::~CSporbTop() {}
+
+// ---- Raw matching-decompiler output from a local tree (reference only, not cleaned up) ----
+
+extern "C" void fn_76_11D0() {}
+
+// ---- End of raw matching-decompiler output ----

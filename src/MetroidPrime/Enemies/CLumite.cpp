@@ -1294,3 +1294,341 @@ void CLumite::DeliverCommand(EStateMsg msg, pas::EAnimationState state, const T&
     mAnimationState.SetState(CAnimationState::kAS_NotReady);
   }
 }
+
+// ---- Raw matching-decompiler output from a local tree (reference only, not cleaned up) ----
+
+extern "C" void fn_39_4094();
+extern "C" int fn_39_572C();
+extern int lbl_39_data_434;
+extern "C" void fn_39_4124(int, unsigned char*, unsigned char*, unsigned char*);
+extern int lbl_39_data_428;
+extern int lbl_39_data_41C;
+extern int lbl_39_data_410;
+extern int lbl_39_data_404;
+extern "C" void fn_39_4260();
+extern "C" void fn_39_7C0();
+struct __mwdec_vt_0_fn_39_6E74 {
+  virtual void _0(int);
+};
+
+extern "C" bool fn_39_14F4() { return false; }
+
+extern "C" void fn_39_3F08() {
+  void fn_39_3E24();
+  fn_39_3E24();
+}
+
+extern "C" void fn_39_4074() { fn_39_4094(); }
+
+extern "C" void fn_39_4218() {
+  void fn_39_4238();
+  fn_39_4238();
+}
+
+extern "C" void fn_39_778() {
+  void fn_39_798();
+  fn_39_798();
+}
+
+extern "C" int fn_39_5704() {
+  u32 ret_0 = 0;
+  ret_0 = (fn_39_572C() == 0) ? 1 : ret_0;
+  return ret_0;
+}
+
+extern "C" int fn_39_3DE8(int arg0, int arg1) {
+  if (arg0 && (short)arg1 > 0) {
+    CMemory::Free((const void*)arg0);
+  }
+  return arg0;
+}
+
+extern "C" int fn_39_43A0(int arg0, int arg1) {
+  if (arg0 && (short)arg1 > 0) {
+    CMemory::Free((const void*)arg0);
+  }
+  return arg0;
+}
+
+extern "C" int fn_39_43DC(int arg0, int arg1) {
+  if (arg0 && (short)arg1 > 0) {
+    CMemory::Free((const void*)arg0);
+  }
+  return arg0;
+}
+
+extern "C" int fn_39_690C(int arg0, int arg1) {
+  if (arg0 && (short)arg1 > 0) {
+    CMemory::Free((const void*)arg0);
+  }
+  return arg0;
+}
+
+extern "C" int fn_39_6A48(int arg0, int arg1) {
+  if (arg0 && (short)arg1 > 0) {
+    CMemory::Free((const void*)arg0);
+  }
+  return arg0;
+}
+
+extern "C" int fn_39_CE8(int arg0, int arg1) {
+  if (arg0 && (short)arg1 > 0) {
+    CMemory::Free((const void*)arg0);
+  }
+  return arg0;
+}
+
+extern "C" int fn_39_14FC(int arg0, int arg1) {
+  if (arg0) {
+    *(int*)arg0 = (int)&lbl_39_data_434;
+    if ((short)arg1 > 0) {
+      CMemory::Free((const void*)arg0);
+    }
+  }
+  return arg0;
+}
+
+extern "C" void fn_39_40DC(int arg0) {
+  void fn_39_4018(unsigned char*, int);
+  unsigned char stack_24[28];
+  unsigned char stack_14[16];
+  unsigned char stack_8[12];
+  *(unsigned char*)(stack_24 + 0x14) = 0;
+  *(unsigned char*)(stack_14 + 0xc) = 0;
+  *(unsigned char*)(stack_8 + 0x8) = 0;
+  fn_39_4124(arg0, stack_24, stack_14, stack_8);
+  fn_39_4018(stack_24, -1);
+}
+
+extern "C" int fn_39_4F18(int arg0, int arg1) {
+  if (arg0) {
+    CMemory::Free((const void*)*(int*)(arg0 + 0xc));
+    if ((short)arg1 > 0) {
+      CMemory::Free((const void*)arg0);
+    }
+  }
+  return arg0;
+}
+
+extern "C" int fn_39_6494(int arg0, int arg1) {
+  void fn_39_64EC(int, int);
+  if (arg0) {
+    fn_39_64EC(arg0 + 80, -1);
+    if ((short)arg1 > 0) {
+      CMemory::Free((const void*)arg0);
+    }
+  }
+  return arg0;
+}
+
+extern "C" int fn_39_6544(int arg0, int arg1) {
+  void fn_39_659C(int, int);
+  if (arg0) {
+    fn_39_659C(arg0 + 24, -1);
+    if ((short)arg1 > 0) {
+      CMemory::Free((const void*)arg0);
+    }
+  }
+  return arg0;
+}
+
+extern "C" int fn_39_2D1C(int arg0, int arg1) {
+  if (arg0) {
+    *(int*)arg0 = (int)&lbl_39_data_428;
+    if (arg0) {
+      *(int*)arg0 = (int)&lbl_39_data_434;
+    }
+    if ((short)arg1 > 0) {
+      CMemory::Free((const void*)arg0);
+    }
+  }
+  return arg0;
+}
+
+extern "C" int fn_39_3724(int arg0, int arg1) {
+  if (arg0) {
+    *(int*)arg0 = (int)&lbl_39_data_41C;
+    if (arg0) {
+      *(int*)arg0 = (int)&lbl_39_data_434;
+    }
+    if ((short)arg1 > 0) {
+      CMemory::Free((const void*)arg0);
+    }
+  }
+  return arg0;
+}
+
+extern "C" int fn_39_3BA0(int arg0, int arg1) {
+  if (arg0) {
+    *(int*)arg0 = (int)&lbl_39_data_410;
+    if (arg0) {
+      *(int*)arg0 = (int)&lbl_39_data_434;
+    }
+    if ((short)arg1 > 0) {
+      CMemory::Free((const void*)arg0);
+    }
+  }
+  return arg0;
+}
+
+extern "C" int fn_39_4798(int arg0, int arg1) {
+  if (arg0) {
+    *(int*)arg0 = (int)&lbl_39_data_404;
+    if (arg0) {
+      *(int*)arg0 = (int)&lbl_39_data_434;
+    }
+    if ((short)arg1 > 0) {
+      CMemory::Free((const void*)arg0);
+    }
+  }
+  return arg0;
+}
+
+extern "C" int fn_39_6F70(int arg0, int arg1) {
+  if (arg0) {
+    if (*(unsigned char*)(arg0 + 0x8)) {
+      ((CToken*)arg0)->~CToken();
+    }
+    if ((short)arg1 > 0) {
+      CMemory::Free((const void*)arg0);
+    }
+  }
+  return arg0;
+}
+
+extern "C" int fn_39_A20(int arg0, int arg1) {
+  if (arg0) {
+    if ((*(unsigned char*)(arg0 + 0x4c))) {
+      ((CModelData*)arg0)->~CModelData();
+    }
+    if ((short)arg1 > 0) {
+      CMemory::Free((const void*)arg0);
+    }
+  }
+  return arg0;
+}
+
+extern "C" int fn_39_6C6C(int arg0, int arg1) {
+  if (arg0) {
+    if (arg0 && (*(unsigned char*)(arg0 + 0x8))) {
+      ((CToken*)arg0)->~CToken();
+    }
+    if ((short)arg1 > 0) {
+      CMemory::Free((const void*)arg0);
+    }
+  }
+  return arg0;
+}
+
+extern "C" void fn_39_4238(int arg0) {
+  if ((unsigned int)arg0 != 0) {
+    fn_39_4260();
+  }
+}
+
+extern "C" void fn_39_798(int arg0) {
+  if ((unsigned int)arg0 != 0) {
+    fn_39_7C0();
+  }
+}
+
+extern "C" int fn_39_3FC4(int arg0, int arg1) {
+  void fn_39_4018(int, int);
+  if (arg0) {
+    fn_39_4018(arg0, -1);
+    if ((short)arg1 > 0) {
+      CMemory::Free((const void*)arg0);
+    }
+  }
+  return arg0;
+}
+
+extern "C" int fn_39_4EC0(int arg0, int arg1) {
+  void fn_39_4F18(int, int);
+  if (arg0) {
+    fn_39_4F18(arg0 + 4, -1);
+    if ((short)arg1 > 0) {
+      CMemory::Free((const void*)arg0);
+    }
+  }
+  return arg0;
+}
+
+extern "C" int fn_39_64EC(int arg0, int arg1) {
+  void fn_39_6544(int, int);
+  if (arg0) {
+    fn_39_6544(*(int*)arg0, 1);
+    if ((short)arg1 > 0) {
+      CMemory::Free((const void*)arg0);
+    }
+  }
+  return arg0;
+}
+
+extern "C" int fn_39_4018(int arg0, int arg1) {
+  void fn_39_4074();
+  if (arg0) {
+    if ((*(unsigned char*)(arg0 + 0x14))) {
+      fn_39_4074();
+    }
+    if ((short)arg1 > 0) {
+      CMemory::Free((const void*)arg0);
+    }
+  }
+  return arg0;
+}
+
+extern "C" int fn_39_6E74(int arg0, int arg1) {
+  int temp_r3;
+  if (arg0) {
+    if ((*(unsigned char*)arg0)) {
+      temp_r3 = *(int*)(arg0 + 0x4);
+      if ((unsigned int)temp_r3 != 0) {
+        ((__mwdec_vt_0_fn_39_6E74*)temp_r3)->_0(1);
+      }
+    }
+    if ((short)arg1 > 0) {
+      CMemory::Free((const void*)arg0);
+    }
+  }
+  return arg0;
+}
+
+extern "C" int fn_39_A80(int arg0, int arg1) {
+  if (arg0) {
+    ((SLdrDamageInfo*)(arg0 + 800))->~SLdrDamageInfo();
+    ((SLdrDamageInfo*)(arg0 + 772))->~SLdrDamageInfo();
+    ((SLdrActorParameters*)(arg0 + 640))->~SLdrActorParameters();
+    ((SLdrPatternedAITypedef*)(arg0 + 60))->~SLdrPatternedAITypedef();
+    ((SLdrEditorProperties*)arg0)->~SLdrEditorProperties();
+    if ((short)arg1 > 0) {
+      CMemory::Free((const void*)arg0);
+    }
+  }
+  return arg0;
+}
+
+extern "C" int fn_39_659C(int obj, const int val) {
+  if (obj) {
+    unsigned int ptr = *(int*)(0xc + (char*)obj);
+    if (ptr != 0) {
+      unsigned char* ptr2 = (unsigned char*)obj;
+      if ((*ptr2) >> 5 & 1) {
+        CMemory::Free((const void*)ptr);
+      } else {
+        FreeLockedCache((void*)ptr);
+      }
+      unsigned char val2 = *ptr2;
+      *ptr2 = __rlwimi(val2, (val2 >> 2 & 3) - 1, 2, 28, 29);
+      if ((*ptr2) >> 2 & 3) {
+        *ptr2 = __rlwimi(*ptr2, *ptr2, 1, 26, 26);
+      }
+    }
+    if ((short)val > 0) {
+      CMemory::Free((const void*)obj);
+    }
+  }
+  return obj;
+}
+
+// ---- End of raw matching-decompiler output ----

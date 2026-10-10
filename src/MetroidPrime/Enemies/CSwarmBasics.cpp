@@ -1997,4 +1997,47 @@ static void SetFuncPtrs() {
 void RELMain() { SetFuncPtrs(); }
 
 void RELExit() { SetSSwarmBasics_FuncPtrs(nullptr); }
+
+extern "C" CModelData fn_80_87B8(int val) { return CModelData(); }
+
+extern "C" void fn_80_9AB0();
+extern "C" void fn_80_9A90() { fn_80_9AB0(); }
+
+extern "C" void fn_80_7440(int obj, int obj2, int obj3) {
+  float f;
+  float f2;
+  float f3;
+  float f4;
+  f3 = *(float*)(obj2 + 0x8);
+  float f5 = *(float*)(obj3 + 0x4);
+  f = *(float*)obj2;
+  float f6 = *(float*)(obj3 + 0x8);
+  f2 = *(float*)(obj2 + 0x4);
+  f4 = *(float*)obj3;
+  *(float*)obj = f2 * f6 - f5 * f3;
+  *(float*)(obj + 0x4) = f3 * f4 - f6 * f;
+  *(float*)(obj + 0x8) = f * f5 - f4 * f2;
+}
+
+extern "C" int fn_80_87D8(int obj, int val) {
+  if (obj) {
+    ((rstl::vector< SConnection, rstl::rmemory_allocator >*)(obj + 4))->~vector();
+    if ((short)val > 0) {
+      CMemory::Free((const void*)obj);
+    }
+  }
+  return obj;
+}
+
+extern "C" int fn_80_9CD4(int obj, int val) {
+  if (obj) {
+    if (*(unsigned char*)obj) {
+      delete (CAnimData*)*(int*)(obj + 0x4);
+    }
+    if ((short)val > 0) {
+      CMemory::Free((const void*)obj);
+    }
+  }
+  return obj;
+}
 #endif

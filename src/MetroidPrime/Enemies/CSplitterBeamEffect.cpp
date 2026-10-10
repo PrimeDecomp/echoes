@@ -277,3 +277,9 @@ void CSplitterBeamEffect::PreRenderAllViewports(CStateManager& mgr) {
     SetRenderBoundsDirty(false);
   }
 }
+
+// ---- Raw matching-decompiler output from a local tree (reference only, not cleaned up) ----
+
+extern "C" CModelData fn_75_11A8C(int arg0) { return CModelData(); }
+
+// ---- End of raw matching-decompiler output ----

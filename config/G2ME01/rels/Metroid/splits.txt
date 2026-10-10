@@ -19,3 +19,7 @@ MetroidPrime/Enemies/CBabyMetroid.cpp:
 	.ctors      start:0x00000004 end:0x00000008
 	.rodata     start:0x000002F8 end:0x000004F8
 	.data       start:0x00000518 end:0x00000A68
+
+REL/REL_Setup.cpp:
+	.text       start:0x0000A980 end:0x0000AB24
+	.rodata     start:0x000004F8 end:0x0000057C

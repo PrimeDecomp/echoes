@@ -421,3 +421,9 @@ extern "C" void RELMain() { SetFuncPtrs(); }
 
 extern "C" void RELExit() { SetSKralee_FuncPtrs(nullptr); }
 #endif
+
+// ---- Raw matching-decompiler output from a local tree (reference only, not cleaned up) ----
+
+extern "C" bool fn_37_1398() { return false; }
+
+// ---- End of raw matching-decompiler output ----

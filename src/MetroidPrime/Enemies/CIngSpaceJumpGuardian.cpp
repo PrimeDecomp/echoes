@@ -1096,3 +1096,320 @@ extern "C" void RELMain() { SetFuncPtrs(); }
 
 extern "C" void RELExit() { SetSIngSpaceJumpGuardian_FuncPtrs(nullptr); }
 #endif
+
+// ---- Raw matching-decompiler output from a local tree (reference only, not cleaned up) ----
+
+struct __mwdec_vt_0 {
+  virtual void _0();
+  virtual void _1();
+  virtual void _2();
+  virtual void _3();
+  virtual void _4();
+  virtual void _5();
+  virtual void _6();
+  virtual void _7();
+  virtual void _8();
+  virtual void _9();
+  virtual void _10();
+  virtual void _11();
+  virtual void _12();
+};
+extern int lbl_34_data_5EC;
+extern int lbl_34_data_5E0;
+extern int lbl_34_data_5D4;
+extern int lbl_34_data_5C8;
+extern "C" void fn_34_2C98();
+extern "C" void fn_34_528();
+extern "C" void fn_34_1EF0(int, int);
+
+extern "C" int fn_34_68(int arg0) { return *(unsigned char*)(arg0 + 0x44f); }
+
+extern "C" bool fn_34_70() { return false; }
+
+extern "C" bool fn_34_78() { return false; }
+
+extern "C" bool fn_34_80() { return false; }
+
+extern "C" int fn_34_A4(int arg0) { return arg0 + 1876; }
+
+extern "C" bool fn_34_AC() { return true; }
+
+extern "C" void fn_34_15A0(int arg0) { *(int*)(arg0 + 0x4) = 0; }
+
+extern "C" bool fn_34_98(int arg0) { return *(unsigned char*)(arg0 + 0x34c) >> 3 & 1; }
+
+extern "C" void fn_34_58(int arg0) { *(float*)(arg0 + 0x448) = CPatterned::skDamageHitTime; }
+
+extern "C" void fn_34_88(int arg0) { *(unsigned short*)arg0 = kInvalidUniqueId.value; }
+
+extern "C" void fn_34_B4(int arg0, int arg1) {
+  *(float*)arg0 = *(float*)(arg1 + 0x54);
+  *(float*)(arg0 + 0x4) = *(float*)(arg1 + 0x58);
+  *(float*)(arg0 + 0x8) = *(float*)(arg1 + 0x5c);
+}
+
+extern "C" void fn_34_2C50() {
+  void fn_34_2C70();
+  fn_34_2C70();
+}
+
+extern "C" void fn_34_4E0() {
+  void fn_34_500();
+  fn_34_500();
+}
+
+extern "C" void fn_34_D0(int arg0) { ((__mwdec_vt_0*)arg0)->_12(); }
+
+extern "C" int fn_34_6294(int arg0, int arg1) {
+  if (arg0 && (short)arg1 > 0) {
+    CMemory::Free((const void*)arg0);
+  }
+  return arg0;
+}
+
+extern "C" int fn_34_633C(int arg0, int arg1) {
+  if (arg0 && (short)arg1 > 0) {
+    CMemory::Free((const void*)arg0);
+  }
+  return arg0;
+}
+
+extern "C" int fn_34_E48(int arg0, int arg1) {
+  if (arg0 && (short)arg1 > 0) {
+    CMemory::Free((const void*)arg0);
+  }
+  return arg0;
+}
+
+extern "C" int fn_34_3C24(int arg0, int arg1) {
+  if (arg0) {
+    *(int*)arg0 = (int)&lbl_34_data_5EC;
+    if ((short)arg1 > 0) {
+      CMemory::Free((const void*)arg0);
+    }
+  }
+  return arg0;
+}
+
+extern "C" int fn_34_160C(int arg0, int arg1) {
+  if (arg0) {
+    CMemory::Free((const void*)*(int*)(arg0 + 0xc));
+    if ((short)arg1 > 0) {
+      CMemory::Free((const void*)arg0);
+    }
+  }
+  return arg0;
+}
+
+extern "C" int fn_34_1ADC(int arg0, int arg1) {
+  if (arg0) {
+    CMemory::Free((const void*)*(int*)(arg0 + 0xc));
+    if ((short)arg1 > 0) {
+      CMemory::Free((const void*)arg0);
+    }
+  }
+  return arg0;
+}
+
+extern "C" int fn_34_1DF0(int arg0, int arg1) {
+  if (arg0) {
+    CMemory::Free((const void*)*(int*)(arg0 + 0xc));
+    if ((short)arg1 > 0) {
+      CMemory::Free((const void*)arg0);
+    }
+  }
+  return arg0;
+}
+
+extern "C" int fn_34_6378(int arg0, int arg1) {
+  if (arg0) {
+    delete (CCollisionActorManager*)*(int*)arg0;
+    if ((short)arg1 > 0) {
+      CMemory::Free((const void*)arg0);
+    }
+  }
+  return arg0;
+}
+
+extern "C" int fn_34_3BC8(int arg0, int arg1) {
+  if (arg0) {
+    *(int*)arg0 = (int)&lbl_34_data_5E0;
+    if (arg0) {
+      *(int*)arg0 = (int)&lbl_34_data_5EC;
+    }
+    if ((short)arg1 > 0) {
+      CMemory::Free((const void*)arg0);
+    }
+  }
+  return arg0;
+}
+
+extern "C" int fn_34_3D4C(int arg0, int arg1) {
+  if (arg0) {
+    *(int*)arg0 = (int)&lbl_34_data_5D4;
+    if (arg0) {
+      *(int*)arg0 = (int)&lbl_34_data_5EC;
+    }
+    if ((short)arg1 > 0) {
+      CMemory::Free((const void*)arg0);
+    }
+  }
+  return arg0;
+}
+
+extern "C" int fn_34_449C(int arg0, int arg1) {
+  if (arg0) {
+    *(int*)arg0 = (int)&lbl_34_data_5C8;
+    if (arg0) {
+      *(int*)arg0 = (int)&lbl_34_data_5EC;
+    }
+    if ((short)arg1 > 0) {
+      CMemory::Free((const void*)arg0);
+    }
+  }
+  return arg0;
+}
+
+extern "C" int fn_34_788(int arg0, int arg1) {
+  if (arg0) {
+    if (*(unsigned char*)(arg0 + 0x4c)) {
+      ((CModelData*)arg0)->~CModelData();
+    }
+    if ((short)arg1 > 0) {
+      CMemory::Free((const void*)arg0);
+    }
+  }
+  return arg0;
+}
+
+extern "C" int fn_34_724(int arg0, int arg1) {
+  if (arg0) {
+    if (*(unsigned char*)arg0) {
+      delete (CAnimData*)*(int*)(arg0 + 0x4);
+    }
+    if ((short)arg1 > 0) {
+      CMemory::Free((const void*)arg0);
+    }
+  }
+  return arg0;
+}
+
+extern "C" int fn_34_1D28(int arg0, int arg1) {
+  void fn_34_1D98(int, int);
+  if (arg0) {
+    fn_34_1D98(arg0 + 160, -1);
+    fn_34_1D98(arg0 + 92, -1);
+    fn_34_1D98(arg0 + 24, -1);
+    if ((short)arg1 > 0) {
+      CMemory::Free((const void*)arg0);
+    }
+  }
+  return arg0;
+}
+
+extern "C" int fn_34_7E8(int arg0, int arg1) {
+  void fn_34_ADC(int, int);
+  if (arg0) {
+    fn_34_ADC(arg0 + 760, -1);
+    ((SLdrActorParameters*)(arg0 + 640))->~SLdrActorParameters();
+    ((SLdrPatternedAITypedef*)(arg0 + 60))->~SLdrPatternedAITypedef();
+    ((SLdrEditorProperties*)arg0)->~SLdrEditorProperties();
+    if ((short)arg1 > 0) {
+      CMemory::Free((const void*)arg0);
+    }
+  }
+  return arg0;
+}
+
+extern "C" void fn_34_2C70(int arg0) {
+  if ((unsigned int)arg0 != 0) {
+    fn_34_2C98();
+  }
+}
+
+extern "C" void fn_34_500(int arg0) {
+  if ((unsigned int)arg0 != 0) {
+    fn_34_528();
+  }
+}
+
+extern "C" int fn_34_1A84(int arg0, int arg1) {
+  void fn_34_1ADC(int, int);
+  if (arg0) {
+    fn_34_1ADC(arg0 + 4, -1);
+    if ((short)arg1 > 0) {
+      CMemory::Free((const void*)arg0);
+    }
+  }
+  return arg0;
+}
+
+extern "C" int fn_34_1D98(int arg0, int arg1) {
+  void fn_34_1DF0(int, int);
+  if (arg0) {
+    fn_34_1DF0(arg0 + 8, -1);
+    if ((short)arg1 > 0) {
+      CMemory::Free((const void*)arg0);
+    }
+  }
+  return arg0;
+}
+
+extern "C" void fn_34_2280(int arg0, int arg1) {
+  *(float*)arg0 = *(float*)arg1;
+  *(float*)((char*)arg0 + 0x4) = *(float*)((char*)arg1 + 0x4);
+  *(float*)((char*)arg0 + 0x8) = *(float*)((char*)arg1 + 0x8);
+  *(float*)((char*)arg0 + 0xc) = *(float*)((char*)arg1 + 0xc);
+  *(float*)((char*)arg0 + 0x10) = *(float*)((char*)arg1 + 0x10);
+  *(float*)((char*)arg0 + 0x14) = *(float*)((char*)arg1 + 0x14);
+  *(int*)((char*)arg0 + 0x18) = *(int*)((char*)arg1 + 0x18);
+  *(int*)((char*)arg0 + 0x1c) = *(int*)((char*)arg1 + 0x1c);
+  *(float*)((char*)arg0 + 0x20) = *(float*)((char*)arg1 + 0x20);
+  *(float*)((char*)arg0 + 0x24) = *(float*)((char*)arg1 + 0x24);
+  *(float*)((char*)arg0 + 0x28) = *(float*)((char*)arg1 + 0x28);
+  *(float*)((char*)arg0 + 0x2c) = *(float*)((char*)arg1 + 0x2c);
+  *(float*)((char*)arg0 + 0x30) = *(float*)((char*)arg1 + 0x30);
+  *(float*)((char*)arg0 + 0x34) = *(float*)((char*)arg1 + 0x34);
+  *(float*)((char*)arg0 + 0x38) = *(float*)((char*)arg1 + 0x38);
+  *(int*)((char*)arg0 + 0x3c) = *(int*)((char*)arg1 + 0x3c);
+  *(int*)((char*)arg0 + 0x40) = *(int*)((char*)arg1 + 0x40);
+  *(float*)((char*)arg0 + 0x44) = *(float*)((char*)arg1 + 0x44);
+  *(float*)((char*)arg0 + 0x48) = *(float*)((char*)arg1 + 0x48);
+  *(unsigned char*)((char*)arg0 + 0x4c) = *(unsigned char*)((char*)arg1 + 0x4c);
+}
+
+extern "C" int fn_34_1E44(int arg0, int arg1) {
+  *(int*)arg0 = *(int*)arg1;
+  *(float*)((char*)arg0 + 0x4) = *(float*)((char*)arg1 + 0x4);
+  *(float*)((char*)arg0 + 0x8) = *(float*)((char*)arg1 + 0x8);
+  *(float*)((char*)arg0 + 0xc) = *(float*)((char*)arg1 + 0xc);
+  *(float*)((char*)arg0 + 0x10) = *(float*)((char*)arg1 + 0x10);
+  *(float*)((char*)arg0 + 0x14) = *(float*)((char*)arg1 + 0x14);
+  fn_34_1EF0(arg0 + 24, arg1 + 24);
+  fn_34_1EF0(arg0 + 92, arg1 + 92);
+  fn_34_1EF0(arg0 + 160, arg1 + 160);
+  *(int*)((char*)arg0 + 0xe4) = *(int*)((char*)arg1 + 0xe4);
+  *(float*)((char*)arg0 + 0xe8) = *(float*)((char*)arg1 + 0xe8);
+  *(float*)((char*)arg0 + 0xec) = *(float*)((char*)arg1 + 0xec);
+  *(float*)((char*)arg0 + 0xf0) = *(float*)((char*)arg1 + 0xf0);
+  return arg0;
+}
+
+extern "C" int fn_34_ADC(int arg0, int arg1) {
+  void fn_34_E48(int, int);
+  if (arg0) {
+    ((SLdrShockWaveInfo*)(arg0 + 192))->~SLdrShockWaveInfo();
+    ((SLdrPlasmaBeamInfo*)(arg0 + 120))->~SLdrPlasmaBeamInfo();
+    ((SLdrDamageInfo*)(arg0 + 104))->~SLdrDamageInfo();
+    fn_34_E48(arg0 + 68, -1);
+    fn_34_E48(arg0 + 48, -1);
+    fn_34_E48(arg0 + 28, -1);
+    fn_34_E48(arg0 + 8, -1);
+    if ((short)arg1 > 0) {
+      CMemory::Free((const void*)arg0);
+    }
+  }
+  return arg0;
+}
+
+// ---- End of raw matching-decompiler output ----

@@ -290,3 +290,15 @@ extern "C" void RELMain() { SetFuncPtrs(); }
 
 extern "C" void RELExit() { SetSEmperorIngStage2Tentacle_FuncPtrs(nullptr); }
 #endif
+
+// ---- Raw matching-decompiler output from a local tree (reference only, not cleaned up) ----
+
+extern float lbl_17_rodata_44;
+
+extern "C" void fn_17_90C(int arg0) {
+  float temp_f0 = lbl_17_rodata_44;
+  *(float*)arg0 = temp_f0;
+  *(float*)(arg0 + 0x4) = temp_f0;
+}
+
+// ---- End of raw matching-decompiler output ----

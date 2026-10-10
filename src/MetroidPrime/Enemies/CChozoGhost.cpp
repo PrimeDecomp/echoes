@@ -1079,4 +1079,8 @@ static void SetFuncPtrs() {
 void RELMain() { SetFuncPtrs(); }
 
 void RELExit() { SetSChozoGhost_FuncPtrs(nullptr); }
+
+extern "C" void fn_8_1BB4(int obj) {
+  rstl::destroy< CImpactVisorEffect::SParticleEffect >((CImpactVisorEffect::SParticleEffect*)obj);
+}
 #endif

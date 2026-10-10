@@ -48,16 +48,21 @@ inline SLdrEyeBall::SLdrEyeBall()
 , plasmaTexture(kInvalidAssetId)
 , plasmaGlow(kInvalidAssetId)
 , laserInnerColor(CColor::Green())
-, laserOuterColor(CColor::Green()) {
+, laserOuterColor(CColor::Green())
+, animation_Anim0(-1)
+, animation_Anim1(-1)
+, animation_Anim2(-1)
+, animation_Anim3(-1)
+, laserSound(-1) {
+  editorProperties.unknown_0x5d298a43 = 0x00000003u;
+  patterned.health.hI_KnockBackResistance = 2.0f;
+  patterned.echoParameters.isEchoEmitter = true;
+  actorInformation.lighting.ambientColor = CColor(1.0f, 1.0f, 1.0f, 1.0f);
+  actorInformation.visor.visorFlags = 0x0000000fu;
   closeTime = 3.0f;
   fireWaitTime = 3.0f;
   laserInnerColor = CColor(1.0f, 1.0f, 1.0f, 1.0f);
   laserOuterColor = CColor(0.0f, 1.0f, 0.0f, 1.0f);
-  animation_Anim0 = -1;
-  animation_Anim1 = -1;
-  animation_Anim2 = -1;
-  animation_Anim3 = -1;
-  laserSound = 0;
   shouldBeTriggered = false;
   maxAudibleDistance = 50.0f;
   dropOff = 0.2f;

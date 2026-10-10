@@ -6,6 +6,15 @@ Sections:
 	.data       type:data align:8
 	.bss        type:bss align:8
 
+Harvest/DarkSamus/text_00000.cpp:
+	.text       start:0x00000000 end:0x000044D0
+
+Harvest/DarkSamus/text_0452C.cpp:
+	.text       start:0x0000452C end:0x0000CDB8
+
+Harvest/DarkSamus/text_0CE4C.cpp:
+	.text       start:0x0000CE4C end:0x000221C0
+
 REL/global_destructor_chain.c:
 	.text       start:0x00022EE0 end:0x00022F54
 	.dtors      start:0x00000000 end:0x00000004 rename:.dtors$10

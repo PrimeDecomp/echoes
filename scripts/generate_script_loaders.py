@@ -68,19 +68,34 @@ USHORT_COUNT_STRUCTS = {"CameraWaypoint", "SpiderBallWaypoint"}
 U16_COUNT_STRUCTS = {
     "ActorRotate",
     "AreaDamage",
+    "AtomicAlpha",
     "CameraHint",
+    "ChozoGhost",
     "ColorModulate",
     "ControlHint",
     "ControllerAction",
     "Debris",
     "DebrisExtended",
+    "DestructibleBarrier",
     "DistanceFog",
     "Dock",
+    "EyeBall",
+    "FishCloud",
+    "FlyingPirate",
     "FogVolume",
+    "GuiMenu",
+    "GuiSlider",
+    "GuiWidget",
+    "GunTurretBase",
+    "GunTurretTop",
+    "Metaree",
     "PickupGenerator",
     "PlayerStateChange",
     "PointOfInterest",
+    "Puffer",
     "Ripper",
+    "SafeZone",
+    "SafeZoneCrystal",
     "ScanTreeCategory",
     "ScanTreeInventory",
     "ScanTreeMenu",
@@ -96,10 +111,17 @@ U16_COUNT_STRUCTS = {
     "Steam",
     "Subtitle",
     "Trigger",
+    "Tryclops",
     "VisorFlare",
+    "WallWalker",
     "Water",
     "WorldTeleporter",
 }
+
+# Script object loaders whose loop index is declared before the count and whose
+# property IDs are read with ReadInt32 (LoadFrontEndDataNetwork,
+# ScriptFrontEndDataNetwork.rel).
+HOISTED_INDEX_STRUCTS = {"FrontEndDataNetwork"}
 
 PROFILE_DIRECTORY = Path(__file__).resolve().parent.parent / "config" / "loader_profiles"
 
@@ -351,6 +373,101 @@ NATIVE_INSTANCE_DEFAULTS: dict[str, tuple[tuple[int, ...], ...]] = {
         (0x7E397FED, 0xB028DB0E, 0xA33E5B0E),
         (0x7E397FED, 0x05AD250E, 0xCA19E8C6),
     ),
+    # ---- REL constructors (G2ME01 module loaders) ----
+    # SLdrAtomicAlpha, AtomicAlpha.rel
+    "SLdrAtomicAlpha": (
+        (0xB3774750, 0xCF90D15E, 0x3A2D17E4),
+        (0x7E397FED, 0xB028DB0E, 0xA33E5B0E),
+        (0x7E397FED, 0x05AD250E, 0xCA19E8C6),
+    ),
+    # SLdrMetaree, Metaree.rel
+    "SLdrMetaree": (
+        (0x255A4580, 0x5D298A43),
+        (0xB3774750, 0x4476BED8, 0x17ADDFC6),
+        (0x7E397FED, 0xB028DB0E, 0xA33E5B0E),
+        (0x7E397FED, 0x05AD250E, 0xCA19E8C6),
+    ),
+    # SLdrDestructibleBarrier, DestructibleBarrier.rel
+    "SLdrDestructibleBarrier": (
+        (0x255A4580, 0x5D298A43),
+        (0x7E397FED, 0xB028DB0E, 0xA33E5B0E),
+        (0x7E397FED, 0x05AD250E, 0xCA19E8C6),
+    ),
+    # SLdrEyeBall, EyeBall.rel
+    "SLdrEyeBall": (
+        (0x255A4580, 0x5D298A43),
+        (0xB3774750, 0xCF90D15E, 0x3A2D17E4),
+        (0xB3774750, 0x4476BED8, 0x17ADDFC6),
+        (0x7E397FED, 0xB028DB0E, 0xA33E5B0E),
+        (0x7E397FED, 0x05AD250E, 0xCA19E8C6),
+    ),
+    # SLdrFishCloud, FishCloud.rel
+    "SLdrFishCloud": ((0x255A4580, 0x5D298A43),),
+    # SLdrFlyingPirate, FlyingPirate.rel
+    "SLdrFlyingPirate": (
+        (0x7E397FED, 0xB028DB0E, 0xA33E5B0E),
+        (0x7E397FED, 0x05AD250E, 0xCA19E8C6),
+    ),
+    # SLdrGunTurretBase, GunTurret.rel
+    "SLdrGunTurretBase": (
+        (0xB3774750, 0xCF90D15E, 0x3A2D17E4),
+        (0xB3774750, 0x4476BED8, 0x17ADDFC6),
+        (0x7E397FED, 0xB028DB0E, 0xA33E5B0E),
+        (0x7E397FED, 0x05AD250E, 0xCA19E8C6),
+    ),
+    # SLdrGunTurretTop, GunTurret.rel
+    "SLdrGunTurretTop": (
+        (0xB3774750, 0xCF90D15E, 0x3A2D17E4),
+        (0x7E397FED, 0xB028DB0E, 0xA33E5B0E),
+        (0x7E397FED, 0x05AD250E, 0xCA19E8C6),
+    ),
+    # SLdrParasite, Parasite.rel
+    "SLdrParasite": (
+        (0xB3774750, 0xCF90D15E, 0x3A2D17E4),
+        (0x7E397FED, 0xB028DB0E, 0xA33E5B0E),
+        (0x7E397FED, 0x05AD250E, 0xCA19E8C6),
+    ),
+    # SLdrBrizgee, Parasite.rel
+    "SLdrBrizgee": (
+        (0xB3774750, 0xCF90D15E, 0x3A2D17E4),
+        (0x7E397FED, 0xB028DB0E, 0xA33E5B0E),
+        (0x7E397FED, 0x05AD250E, 0xCA19E8C6),
+    ),
+    # SLdrCrystallite, Parasite.rel
+    "SLdrCrystallite": (
+        (0xB3774750, 0xCF90D15E, 0x3A2D17E4),
+        (0x7E397FED, 0xB028DB0E, 0xA33E5B0E),
+        (0x7E397FED, 0x05AD250E, 0xCA19E8C6),
+    ),
+    # SLdrPuffer, Puffer.rel
+    "SLdrPuffer": (
+        (0xB3774750, 0xCF90D15E, 0x3A2D17E4),
+        (0x7E397FED, 0xB028DB0E, 0xA33E5B0E),
+        (0x7E397FED, 0x05AD250E, 0xCA19E8C6),
+    ),
+    # SLdrFrontEndDataNetwork, ScriptFrontEndDataNetwork.rel
+    "SLdrFrontEndDataNetwork": ((0x255A4580, 0x5D298A43),),
+    # SLdrSafeZoneCrystal, ScriptSafeZone.rel
+    "SLdrSafeZoneCrystal": (
+        (0x255A4580, 0x5D298A43),
+        (0xD29C031D, 0xB028DB0E, 0xA33E5B0E),
+        (0xD29C031D, 0x05AD250E, 0xCA19E8C6),
+    ),
+    # SLdrTryclops, Tryclops.rel
+    "SLdrTryclops": (
+        (0xB3774750, 0xCF90D15E, 0x3A2D17E4),
+        (0x7E397FED, 0xB028DB0E, 0xA33E5B0E),
+        (0x7E397FED, 0x05AD250E, 0xCA19E8C6),
+    ),
+    # SLdrWallWalker, WallWalker.rel
+    "SLdrWallWalker": (
+        (0xB3774750, 0xCF90D15E, 0x3A2D17E4),
+        (0x7E397FED, 0xB028DB0E, 0xA33E5B0E),
+        (0x7E397FED, 0x05AD250E, 0xCA19E8C6),
+    ),
+    # SLdrGuiSlider, ScriptGui.rel
+    "SLdrGuiSlider": ((0x255A4580, 0x5D298A43),),
+    # ---- end REL constructors ----
 }
 
 # Header-only objects whose native constructor is an out-of-line function in the
@@ -388,6 +505,91 @@ NATIVE_INITIALIZER_DEFAULTS: dict[str, frozenset[int]] = {
     "SLdrAmbientAI": frozenset({0xBFE017DE, 0xED5F16AC}),
     # SLdrMasterLayer, inlined into LoadScriptLayerController: areaID(-1).
     "SLdrMasterLayer": frozenset({0x0}),
+}
+
+# Object constructors that construct a scalar in the initializer list with a value the
+# templates don't give it (REL loaders: sounds and animation indices built as -1).
+# Record -> property ID -> initializer value.
+NATIVE_INITIALIZER_VALUES: dict[str, dict[int, str]] = {
+    # ---- REL constructors (G2ME01 module loaders) ----
+    "SLdrDestructibleBarrier": {
+        0x6E4A9D27: "-1",
+        0xBC2381A6: "-1",
+        0x6575A3D5: "-1",
+        0xC91B0946: "-1",
+        0x4B2D5A37: "-1",
+    },
+    "SLdrEyeBall": {
+        0xE4780219: "-1",
+        0x81D14BE8: "-1",
+        0x6E1320D6: "-1",
+        0x85249BD5: "-1",
+        0x6AE6F0EB: "-1",
+    },
+    "SLdrFishCloud": {
+        0x3DE26FC8: "-1",
+    },
+    "SLdrFlyingPirate": {
+        0xEAC27605: "-1",
+        0x1BB16EA5: "-1",
+        0x0FF5AB8F: "-1",
+        0x3BB37A8F: "-1",
+        0xE160B593: "-1",
+    },
+    "SLdrGunTurretBase": {
+        0x23316032: "-1",
+        0xA3B39766: "-1",
+        0x9674EFF1: "-1",
+        0x49880C24: "-1",
+        0xF57880EC: "-1",
+        0x99FE97F6: "-1",
+        0xA2714856: "-1",
+        0xD58A2FA7: "-1",
+        0xB381355A: "-1",
+        0x00628C84: "-1",
+        0x40533B8D: "-1",
+        0x613CAFD8: "-1",
+        0x20C03692: "-1",
+    },
+    "SLdrGunTurretTop": {
+        0x67C8A8F4: "-1",
+        0x68D8B844: "-1",
+        0xE4AEEBA4: "-1",
+        0x5D9ED447: "-1",
+    },
+    "SLdrBrizgee": {
+        0x6A942A60: "-1",
+        0x808392EC: "-1",
+        0xDF2D8017: "-1",
+    },
+    "SLdrPuffer": {
+        0x1F80154D: "-1",
+    },
+    "SLdrFrontEndDataNetwork": {
+        0x2D23720F: "-1",
+    },
+    "SLdrWallWalker": {
+        0x7F1613B7: "-1",
+        0x7050D866: "-1",
+    },
+    "SLdrGuiSlider": {
+        0xD158734B: "-1",
+    },
+    # ---- end REL constructors ----
+}
+
+# Instance defaults where the selected build's native constructor stores a different value
+# than the templates (REL loaders). Record -> property-ID path -> scalar text or components.
+NATIVE_DEFAULT_VALUES: dict[str, dict[tuple[int, ...], str | tuple[str, ...]]] = {
+    # ---- REL constructors (G2ME01 module loaders) ----
+    "SLdrFrontEndDataNetwork": {
+        (0xED286CE4,): ('0.5', '0.5', '0.5', '0.75'),
+        (0xB44D4C70,): ('0.25', '0.25', '0.25', '1.0'),
+    },
+    "SLdrTryclops": {
+        (0xB3774750, 0xD756416E, 0x119FBD31,): "0",
+    },
+    # ---- end REL constructors ----
 }
 
 # Object constructors that do not re-store a nested record's template overrides.
@@ -934,6 +1136,30 @@ class Generator:
             # A generator-only annotation makes even an equal archetype default an
             # instance override for defaults(), preserving its native re-store.
             default.set("NativeInstance", "true")
+        for path, value in NATIVE_DEFAULT_VALUES.get(name, {}).items():
+            prop = node
+            for pid in path:
+                children = {
+                    property_id(child): child
+                    for child in prop.findall("SubProperties/Element")
+                }
+                if pid not in children:
+                    raise TemplateError(
+                        f"Missing native default property 0x{pid:08x} in {name}"
+                    )
+                prop = children[pid]
+            default = prop.find("DefaultValue")
+            if default is None:
+                default = ET.SubElement(prop, "DefaultValue")
+            if isinstance(value, tuple):
+                kind = prop.attrib["Type"]
+                for component, text in zip("XYZ" if kind == "Vector" else "RGBA", value):
+                    element = default.find(component)
+                    if element is None:
+                        element = ET.SubElement(default, component)
+                    element.text = text
+            else:
+                default.text = value
 
     def add_duplicates(self, duplicates: dict[str, str]) -> None:
         """Reconstruct duplicate native root records without duplicating helpers."""
@@ -1228,6 +1454,7 @@ class Generator:
         initializers: list[tuple[str | None, str]] = []
         initializer_defaults = NATIVE_INITIALIZER_DEFAULTS.get(name, frozenset())
         overrides = NATIVE_CONSTRUCTOR_OVERRIDES.get(name, {})
+        initializer_values = NATIVE_INITIALIZER_VALUES.get(name, {})
         for prop in struct.fields:
             kind = prop.node.attrib["Type"]
             value = ""
@@ -1235,6 +1462,8 @@ class Generator:
                 continue
             elif property_id(prop.node) in initializer_defaults:
                 value = (prop.node.findtext("DefaultValue") or "").strip()
+            elif property_id(prop.node) in initializer_values:
+                value = initializer_values[property_id(prop.node)]
             elif not prop.dependency:
                 if kind == "Color":
                     value = "CColor::Green()"
@@ -1283,7 +1512,9 @@ class Generator:
                 for prop in struct.fields
                 if property_id(prop.node) not in overrides
                 and property_id(prop.node)
-                not in initializer_defaults | NATIVE_SKIPPED_OVERRIDES.get(name, frozenset())
+                not in initializer_defaults
+                | initializer_values.keys()
+                | NATIVE_SKIPPED_OVERRIDES.get(name, frozenset())
             ]
         )
         source += ["}", ""]
@@ -1338,10 +1569,20 @@ class Generator:
         else:
             count = "  const int propertyCount = input.ReadUint16();"
         size_type = "ushort" if name in TWEAKS_USHORT_SIZE_STRUCTS else "u16"
-        lines = [
-            count,
-            "  for (int i = 0; i < propertyCount; ++i) {",
-            "    const uint propertyId = input.Get< uint >();",
+        if name in HOISTED_INDEX_STRUCTS:
+            lines = [
+                "  int i;",
+                count,
+                "  for (i = 0; i < propertyCount; ++i) {",
+                "    const uint propertyId = input.ReadInt32();",
+            ]
+        else:
+            lines = [
+                count,
+                "  for (int i = 0; i < propertyCount; ++i) {",
+                "    const uint propertyId = input.Get< uint >();",
+            ]
+        lines += [
             f"    const {size_type} propertySize = input.ReadUint16();",
             "    switch (propertyId) {",
         ]

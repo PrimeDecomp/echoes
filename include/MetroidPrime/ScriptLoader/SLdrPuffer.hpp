@@ -35,7 +35,8 @@ inline SLdrPuffer::SLdrPuffer()
 , cloudEffect(kInvalidAssetId)
 , cloudDamage()
 , cloudSteam(kInvalidAssetId)
-, explosionDamage() {
+, explosionDamage()
+, sound_Turn(-1) {
   patterned.mass = 25.0f;
   patterned.turnSpeed = 720.0f;
   patterned.detectionRange = 5.0f;
@@ -47,15 +48,17 @@ inline SLdrPuffer::SLdrPuffer()
   patterned.contactDamage.dI_Damage = 10.0f;
   patterned.contactDamage.dI_KnockBackPower = 5.0f;
   patterned.damageWaitTime = 1.0f;
+  patterned.health.hI_KnockBackResistance = 2.0f;
   patterned.collisionRadius = 0.5f;
   patterned.collisionHeight = 1.5f;
   patterned.unknown_0xe287d8dd = 0.0f;
+  actorInformation.lighting.ambientColor = CColor(1.0f, 1.0f, 1.0f, 1.0f);
+  actorInformation.visor.visorFlags = 0x0000000fu;
   hoverSpeed = 3.0f;
   cloudSteamAlpha = 0.5f;
   cloudInCombatOrScan = true;
   cloudInDark = false;
   cloudInEcho = false;
-  sound_Turn = 0;
 }
 
 inline SLdrPuffer::~SLdrPuffer() {}

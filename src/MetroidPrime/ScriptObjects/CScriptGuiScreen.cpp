@@ -1098,3 +1098,117 @@ CEntity* LoadGuiScreen(CStateManager& mgr, CInputStream& input, CEntityInfo& inf
   }
   return nullptr;
 }
+
+extern "C" void fn_60_39A8();
+extern "C" void fn_60_3988() { fn_60_39A8(); }
+
+extern "C" void fn_60_6890(int, int);
+extern "C" void fn_60_6840(int obj) {
+  if (--*(int*)(*(int*)(obj + 0x4)) <= 0) {
+    fn_60_6890(*(int*)obj, 1);
+    CMemory::Free((const void*)*(int*)(obj + 0x4));
+  }
+}
+
+extern "C" void fn_60_6A5C(int, int);
+extern "C" void fn_60_6A0C(int obj) {
+  if (--*(int*)(*(int*)(obj + 0x4)) <= 0) {
+    fn_60_6A5C(*(int*)obj, 1);
+    CMemory::Free((const void*)*(int*)(obj + 0x4));
+  }
+}
+
+extern "C" void fn_60_6B84(int, int);
+extern "C" void fn_60_6B34(int obj) {
+  if (--*(int*)(*(int*)(obj + 0x4)) <= 0) {
+    fn_60_6B84(*(int*)obj, 1);
+    CMemory::Free((const void*)*(int*)(obj + 0x4));
+  }
+}
+
+extern "C" void fn_60_6E7C(int, int);
+extern "C" void fn_60_6E2C(int obj) {
+  if (--*(int*)(*(int*)(obj + 0x4)) <= 0) {
+    fn_60_6E7C(*(int*)obj, 1);
+    CMemory::Free((const void*)*(int*)(obj + 0x4));
+  }
+}
+
+extern "C" void fn_60_6F20(int obj) {
+  if (--*(int*)(*(int*)(obj + 0x4)) <= 0) {
+    delete (rstl::vector< int, rstl::rmemory_allocator >*)*(int*)obj;
+    CMemory::Free((const void*)*(int*)(obj + 0x4));
+  }
+}
+
+extern "C" int fn_60_3C00(int obj, int val) {
+  if (obj) {
+    CMemory::Free((const void*)*(int*)(obj + 0xc));
+    if ((short)val > 0) {
+      CMemory::Free((const void*)obj);
+    }
+  }
+  return obj;
+}
+
+extern "C" int fn_60_6964(int obj, int val) {
+  if (obj) {
+    CMemory::Free((const void*)*(int*)(obj + 0xc));
+    if ((short)val > 0) {
+      CMemory::Free((const void*)obj);
+    }
+  }
+  return obj;
+}
+
+extern "C" int fn_60_69B8(int obj, int val) {
+  if (obj) {
+    CMemory::Free((const void*)*(int*)(obj + 0xc));
+    if ((short)val > 0) {
+      CMemory::Free((const void*)obj);
+    }
+  }
+  return obj;
+}
+
+extern "C" int fn_60_6AE0(int obj, int val) {
+  if (obj) {
+    CMemory::Free((const void*)*(int*)(obj + 0xc));
+    if ((short)val > 0) {
+      CMemory::Free((const void*)obj);
+    }
+  }
+  return obj;
+}
+
+extern "C" void fn_60_6C48(int, int);
+extern "C" int fn_60_6BF4(int obj, int val) {
+  if (obj) {
+    fn_60_6C48(obj, -1);
+    if ((short)val > 0) {
+      CMemory::Free((const void*)obj);
+    }
+  }
+  return obj;
+}
+
+extern "C" int fn_60_690C(int obj, int val) {
+  if (obj) {
+    fn_60_6964(obj + 4, -1);
+    if ((short)val > 0) {
+      CMemory::Free((const void*)obj);
+    }
+  }
+  return obj;
+}
+
+extern "C" void fn_60_6CF4(int, int);
+extern "C" int fn_60_6C9C(int obj, int val) {
+  if (obj) {
+    fn_60_6CF4(obj + 12, -1);
+    if ((short)val > 0) {
+      CMemory::Free((const void*)obj);
+    }
+  }
+  return obj;
+}

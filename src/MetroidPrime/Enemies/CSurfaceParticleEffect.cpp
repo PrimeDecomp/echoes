@@ -491,3 +491,14 @@ void SetSurfaceParticleEffectFuncPtrs() {
 }
 
 void ClearSurfaceParticleEffectFuncPtrs() { SetSSurfaceParticleEffect_FuncPtrs(nullptr); }
+
+// ---- Raw matching-decompiler output from a local tree (reference only, not cleaned up) ----
+
+extern "C" int fn_25_5614(int arg0, int arg1) {
+  if (arg0 && (short)arg1 > 0) {
+    CMemory::Free((const void*)arg0);
+  }
+  return arg0;
+}
+
+// ---- End of raw matching-decompiler output ----

@@ -6,6 +6,12 @@ Sections:
 	.data       type:data align:8
 	.bss        type:bss align:8
 
+Harvest/IngBoostBallGuardian/text_00000.cpp:
+	.text       start:0x00000000 end:0x000110C4
+
+Harvest/IngBoostBallGuardian/text_11CD8.cpp:
+	.text       start:0x00011CD8 end:0x000164D0
+
 REL/global_destructor_chain.c:
 	.text       start:0x000164D0 end:0x00016544
 	.dtors      start:0x00000000 end:0x00000004 rename:.dtors$10

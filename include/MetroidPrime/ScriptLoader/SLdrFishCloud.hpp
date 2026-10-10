@@ -57,7 +57,9 @@ inline SLdrFishCloud::SLdrFishCloud()
 , deathEffect0(kInvalidAssetId)
 , deathEffect1(kInvalidAssetId)
 , deathEffect2(kInvalidAssetId)
-, deathEffect3(kInvalidAssetId) {
+, deathEffect3(kInvalidAssetId)
+, deathSound(-1) {
+  editorProperties.unknown_0x5d298a43 = 0x00000003u;
   active = true;
   fishCount = 20.0f;
   speed = 3.0f;
@@ -83,7 +85,6 @@ inline SLdrFishCloud::SLdrFishCloud()
   deathEffect1Count = 0;
   deathEffect2Count = 0;
   deathEffect3Count = 0;
-  deathSound = 0;
   unknown_0xc320a050 = true;
   isHighlightedInDarkVisor = true;
 }
