@@ -19,7 +19,7 @@ struct SLdrFlareDef {
 
 inline SLdrFlareDef::SLdrFlareDef() : texture(kInvalidAssetId), color(CColor::Green()) {
   position = 0.0f;
-  scale = 0.0f;
+  scale = 1.0f;
   color = CColor(1.0f, 1.0f, 1.0f, 1.0f);
 }
 
@@ -84,15 +84,15 @@ inline SLdrVisorFlare::SLdrVisorFlare()
   combatVisorMode = 0;
   unknown_0xa51f243e = true;
   noOcclusionTest = false;
-  flare1.scale = 1.0f;
+  flare1.color = CColor(1.0f, 1.0f, 1.0f, 1.0f);
   flare2.position = 0.25f;
-  flare2.scale = 1.0f;
+  flare2.color = CColor(1.0f, 1.0f, 1.0f, 1.0f);
   flare3.position = 0.5f;
-  flare3.scale = 1.0f;
+  flare3.color = CColor(1.0f, 1.0f, 1.0f, 1.0f);
   flare4.position = 0.75f;
-  flare4.scale = 1.0f;
+  flare4.color = CColor(1.0f, 1.0f, 1.0f, 1.0f);
   flare5.position = 1.0f;
-  flare5.scale = 1.0f;
+  flare5.color = CColor(1.0f, 1.0f, 1.0f, 1.0f);
 }
 
 inline SLdrVisorFlare::~SLdrVisorFlare() {}

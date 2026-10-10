@@ -1,5 +1,5 @@
 {
-  "template_ref": "f51c44249d572ac609d5a93401c747ab2db32666",
+  "template_ref": "4c8cbaeb76da51db2e770ca4c294d7d4f65e6d1b",
   "sources": [
     "Structs/SLdrAnimationSet.cpp",
     "Structs/SLdrCameraBehaviour.cpp",

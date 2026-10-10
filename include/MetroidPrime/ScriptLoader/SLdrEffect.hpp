@@ -47,6 +47,7 @@ inline SLdrEffect::SLdrEffect()
 , lighting()
 , motionSplineType()
 , motionControlSpline() {
+  editorProperties.unknown_0x5d298a43 = 0x00000003u;
   unknown_0x3df5a489 = false;
   restartOnActivate = false;
   unknown_0xee538174 = false;
@@ -64,6 +65,7 @@ inline SLdrEffect::SLdrEffect()
   deleteWhenDone = false;
   destroyParticlesOnDeactivate = false;
   renderOrder = 0;
+  lighting.ambientColor = CColor(1.0f, 1.0f, 1.0f, 1.0f);
   motionSplinePathLoops = false;
   motionSplineDuration = 10.0f;
   splineMovesParticleEmitterOnly = false;

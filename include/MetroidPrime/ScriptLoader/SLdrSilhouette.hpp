@@ -21,7 +21,7 @@ inline SLdrSilhouette::SLdrSilhouette() : editorProperties(), silhouetteColor(CC
   editorProperties.transform.scale = CVector3f(2.0f, 2.0f, 2.0f);
   editorProperties.active = false;
   unknown_0x82bad3ee = 0.5f;
-  silhouetteColor = CColor(0.29803899f, 0.60000002f, 1.0f, 0.49803901f);
+  silhouetteColor = CColor(0.3f, 0.60000002f, 1.0f, 0.5f);
   fadeInTime = 1.0f;
   fadeOutTime = 1.0f;
 }

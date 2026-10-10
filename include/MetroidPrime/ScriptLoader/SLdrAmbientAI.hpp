@@ -35,22 +35,14 @@ inline SLdrAmbientAI::SLdrAmbientAI()
 , health()
 , vulnerability()
 , animationInformation()
-, actorInformation() {
+, actorInformation()
+, animation_React(-1)
+, animation_Damaged(-1) {
   mass = 1.0f;
-  vulnerability.power.effect = 0;
-  vulnerability.boostBall.effect = 0;
-  vulnerability.bomb.effect = 0;
-  vulnerability.powerBomb.effect = 0;
-  vulnerability.missile.effect = 0;
-  vulnerability.phazon.effect = 0;
-  vulnerability.powerCharge.effect = 0;
-  vulnerability.superMissle.effect = 0;
   actorInformation.lighting.ambientColor = CColor(1.0f, 1.0f, 1.0f, 1.0f);
   actorInformation.visor.visorFlags = 0x0000000fu;
   detectRadius = 7.0f;
   explodeRadius = 1.5f;
-  animation_React = -1;
-  animation_Damaged = -1;
 }
 
 inline SLdrAmbientAI::~SLdrAmbientAI() {}
