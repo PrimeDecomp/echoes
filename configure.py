@@ -2065,6 +2065,13 @@ config.libs = [
         ],
         extra_cflags=["-pool off"],
     ),
+    Rel(
+        "Sandworm",
+        [
+            Object(NonMatching, "MetroidPrime/Enemies/CSandworm.cpp"),
+        ],
+        extra_cflags=["-pool off"],
+    ),
 ]
 
 if args.monolithic:

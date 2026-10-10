@@ -45,11 +45,11 @@ public:
   }
 
   CVector3f& Translation(int index) {
-    return *reinterpret_cast< CVector3f* >(mTranslations + index * mStride);
+    return *reinterpret_cast< CVector3f* >(mTranslations + mStride * index);
   }
 
   const CVector3f& Translation(int index) const {
-    return *reinterpret_cast< const CVector3f* >(mTranslations + index * mStride);
+    return *reinterpret_cast< const CVector3f* >(mTranslations + mStride * index);
   }
 
   CVector3f& Scale(int index) { return *reinterpret_cast< CVector3f* >(mScales + index * mStride); }

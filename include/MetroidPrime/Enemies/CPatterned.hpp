@@ -57,6 +57,7 @@ enum EPatternedAI {
   kPAI_Puffer = 0x2d,                  // Guessed name; Puffer REL constructor.
   kPAI_Rezbit = 0x2e,                  // Guessed name; Rezbit REL constructor.
   kPAI_Ripper = 0x30,                  // Guessed name; Ripper REL constructor.
+  kPAI_Sandworm = 0x32,                // Guessed name; Sandworm REL constructor.
   kPAI_SpacePirate = 0x35,             // Guessed name; SpacePirate REL constructor.
   kPAI_SpankWeed = 0x36,               // Guessed name; SpankWeed REL constructor.
   kPAI_Splinter = 0x37,                // Guessed name; Splinter REL constructor.
