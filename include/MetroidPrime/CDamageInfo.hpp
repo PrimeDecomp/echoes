@@ -66,6 +66,7 @@ public:
   ushort GetDamageLoopSfxId() const { return mDamageLoopSfxId; }
   ushort GetSamusVoiceSfxId() const { return mSamusVoiceSfxId; }
 
+  void SetDamageSfxId(ushort id) { mDamageSfxId = id; }         // Guessed name.
   void SetDamageLoopSfxId(ushort id) { mDamageLoopSfxId = id; } // Guessed name.
   void SetWeaponMode(const CWeaponMode& mode) { mWeaponMode = mode; }
 

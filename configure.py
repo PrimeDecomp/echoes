@@ -1869,6 +1869,13 @@ config.libs = [
         extra_cflags=["-pool off"],
     ),
     Rel(
+        "ScriptPlayerTurret",
+        [
+            Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptPlayerTurret.cpp"),
+        ],
+        extra_cflags=["-pool off"],
+    ),
+    Rel(
         "OctapedeSegment",
         [
             Object(NonMatching, "MetroidPrime/Enemies/COctapedeSegment.cpp"),

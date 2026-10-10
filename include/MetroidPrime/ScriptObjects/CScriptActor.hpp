@@ -52,11 +52,16 @@ public:
   bool IsAnimating() const { return mAnimating; }
   void SetAnimating(const bool animating) { mAnimating = animating; }
   bool GetProcessmodelFlags() const { return mProcessModelFlags; }
-  void SetProcessmodelFlags(const bool processModelFlags) { mProcessModelFlags = processModelFlags; }
+  void SetProcessmodelFlags(const bool processModelFlags) {
+    mProcessModelFlags = processModelFlags;
+  }
   bool IsPlayerActor() const { return mIsPlayerActor; }
   void SetPlayerActor(const bool playerActor) { mIsPlayerActor = playerActor; }
   bool IsSkipRendering() const { return mSkipRendering; }
   void SetSkipRendering(const bool skipRendering) { mSkipRendering = skipRendering; }
+  void SetRenderImmediately(const bool renderImmediately) { // Guessed name
+    mRenderImmediately = renderImmediately;
+  }
 
 private:
   void FireProjectile(CStateManager& mgr, const rstl::string& locator); // Guessed name
