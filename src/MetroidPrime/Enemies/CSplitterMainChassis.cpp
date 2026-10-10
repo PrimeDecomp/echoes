@@ -410,10 +410,10 @@ pas::EStepDirection CSplitterMainChassis::FindBestDodgeStep(CStateManager& mgr,
       const CVector3f offset = other->GetTranslation() - position;
       if (offset.MagSquared() < radiusSq) {
         if (CVector3f::Dot(offset, candidate) >= 0.f) {
-          if (canStepForward && CVector3f::GetAngleDiff(candidate, offset) < 1.0471976f) {
+          if (canStepForward && CVector3f::GetAngleDiff(candidate, offset) < (M_PIF / 3.f)) {
             canStepForward = false;
           }
-        } else if (canStepBackward && CVector3f::GetAngleDiff(-candidate, offset) < 1.0471976f) {
+        } else if (canStepBackward && CVector3f::GetAngleDiff(-candidate, offset) < (M_PIF / 3.f)) {
           canStepBackward = false;
         }
       }
@@ -459,7 +459,7 @@ void CSplitterMainChassis::MoveSpinning(float dt, const CVector3f& desired) {
       if (desired.IsMagnitudeSafe()) {
         const float limit = mData.data.spinAttackTurnSpeed * dt;
         const float angle = CVector3f::GetAngleDiff(mSpinVelocity, desired);
-        const float radians = 0.017453292f * limit;
+        const float radians = (M_PIF / 180.f) * limit;
         if (angle > radians) {
           direction = CVector3f::Slerp(mSpinVelocity.AsNormalized(), desired.AsNormalized(),
                                        CRelAngle::FromRadians(radians));
@@ -472,7 +472,7 @@ void CSplitterMainChassis::MoveSpinning(float dt, const CVector3f& desired) {
     }
 
     float acceleration;
-    if (CVector3f::GetAngleDiff(desired, mSpinVelocity) > 0.17453292f) {
+    if (CVector3f::GetAngleDiff(desired, mSpinVelocity) > (10.f * (M_PIF / 180.f))) {
       acceleration = -mData.data.spinAttackLinearDeceleration * dt;
     } else {
       acceleration = mData.data.spinAttackLinearAcceleration * dt;
@@ -741,7 +741,7 @@ void CSplitterMainChassis::UpdateCommandModule(float dt, CStateManager& mgr) {
           module->GetFacingDirection() == CVector3f::Zero()) {
         const CVector3f moduleForward = module->GetTransform().GetForward();
         const CVector3f attachForward = attachXf.GetForward();
-        const float limit = 12.566371f * dt;
+        const float limit = (2.f * M_2PIF) * dt;
         if (mDeployState == 5 && CVector3f::GetAngleDiff(moduleForward, attachForward) >= limit) {
           const CVector3f direction =
               CVector3f::Slerp(moduleForward, attachForward, CRelAngle::FromRadians(limit));
@@ -1662,7 +1662,7 @@ void CSplitterMainChassis::FollowDeployPath(CStateManager& mgr, EStateMsg msg, f
           const float limit = mData.data.spinAttackTurnSpeed * dt;
           if (CVector3f::GetAngleDiff(mSpinVelocity, direction) > limit) {
             direction = CVector3f::Slerp(mSpinVelocity.AsNormalized(), direction,
-                                         CRelAngle::FromRadians(0.017453292f * limit));
+                                         CRelAngle::FromRadians((M_PIF / 180.f) * limit));
           }
         }
         mSpinVelocity = dt * (mData.data.deploymentSpeed * direction);
@@ -1701,8 +1701,8 @@ void CSplitterMainChassis::DeploymentLanding(CStateManager& mgr, EStateMsg msg, 
         if (direction.IsMagnitudeSafe()) {
           const float limit = 180.f * dt;
           if (CVector3f::GetAngleDiff(forward, direction) > limit) {
-            direction =
-                CVector3f::Slerp(forward, direction, CRelAngle::FromRadians(0.017453292f * limit));
+            direction = CVector3f::Slerp(forward, direction,
+                                         CRelAngle::FromRadians((M_PIF / 180.f) * limit));
           }
           const CVector3f position = GetTranslation();
           SetTransform(CTransform4f::LookAt(position, position + direction, CVector3f::Up()));
@@ -1850,19 +1850,19 @@ void CSplitterMainChassis::SetupLaserSweep(CStateManager& mgr, float dt) {
     if (direction.IsMagnitudeSafe() && flat.IsMagnitudeSafe()) {
       const float angle = CVector3f::GetAngleDiff(direction, flat);
       if (direction.GetZ() > 0.f) {
-        if (angle > 0.7853982f) {
+        if (angle > (M_PIF / 4.f)) {
           direction = direction.Magnitude() * CVector3f::Slerp(flat.AsNormalized(),
                                                                direction.AsNormalized(),
-                                                               CRelAngle::FromRadians(0.7853982f));
+                                                               CRelAngle::FromRadians(M_PIF / 4.f));
         }
-      } else if (angle > 0.2617994f) {
+      } else if (angle > (M_PIF / 12.f)) {
         direction =
             direction.Magnitude() * CVector3f::Slerp(flat.AsNormalized(), direction.AsNormalized(),
-                                                     CRelAngle::FromRadians(0.2617994f));
+                                                     CRelAngle::FromRadians(M_PIF / 12.f));
       }
     }
-    const float cosine = CMath::FastCosR(0.7853982f);
-    const float sine = CMath::FastSinR(0.7853982f);
+    const float cosine = CMath::FastCosR(M_PIF / 4.f);
+    const float sine = CMath::FastSinR(M_PIF / 4.f);
     const CVector3f start(
         beamPosition.GetX() + (cosine * direction.GetX() + sine * direction.GetY()),
         beamPosition.GetY() + (cosine * direction.GetY() - sine * direction.GetX()),

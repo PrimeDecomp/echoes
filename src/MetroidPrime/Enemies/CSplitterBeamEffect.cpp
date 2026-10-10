@@ -104,7 +104,7 @@ void CSplitterBeamEffect::PreRender(CStateManager& mgr) {
   const float aspect = CGraphics::GetPixelAspectRatio() *
                        (float(mTexture->GetWidth()) / float(mTexture->GetHeight()));
   const CFrustumPlanes frustum(xf, mCurrentAngle, aspect, 0.2f, true, mRange);
-  gpRender->SetPerspective(57.295776f * mCurrentAngle, aspect, 0.2f, mRange);
+  gpRender->SetPerspective(CMath::Rad2Deg(mCurrentAngle), aspect, 0.2f, mRange);
 
   CGX::SetNumTevStages(1);
   CGX::SetNumTexGens(1);

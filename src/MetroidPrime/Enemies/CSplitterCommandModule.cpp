@@ -1160,10 +1160,10 @@ pas::EStepDirection CSplitterCommandModule::ChooseDodgeDirection(CStateManager& 
         const CVector3f delta = actor->GetTranslation() - position;
         if (delta.MagSquared() < stepDistanceSquared) {
           if (CVector3f::Dot(delta, right) >= 0.f) {
-            if (rightFree && CVector3f::GetAngleDiff(right, delta) < 1.0471976f) {
+            if (rightFree && CVector3f::GetAngleDiff(right, delta) < (M_PIF / 3.f)) {
               rightFree = false;
             }
-          } else if (leftFree && CVector3f::GetAngleDiff(-right, delta) < 1.0471976f) {
+          } else if (leftFree && CVector3f::GetAngleDiff(-right, delta) < (M_PIF / 3.f)) {
             leftFree = false;
           }
         }
