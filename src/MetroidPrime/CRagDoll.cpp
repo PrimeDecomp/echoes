@@ -141,7 +141,7 @@ void CRagDoll::AccumulateForces(float dt, float waterTop) {
   if (mAngTimer > 4.f) {
     mAngTimer -= 4.f;
   }
-  float targetZ = 0.1f * CMath::FastSinR(1.5707964f * mAngTimer) + (waterTop - 0.2f);
+  float targetZ = 0.1f * CMath::FastSinR((M_PIF / 2.f) * mAngTimer) + (waterTop - 0.2f);
   CVector3f centerOfVolume = CVector3f::Zero();
   float totalVolume = 0.f;
   for (int i = 0; i < mParticles.size(); ++i) {

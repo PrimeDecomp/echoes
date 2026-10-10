@@ -163,7 +163,8 @@ void CBouncyGrenade::Render(const CStateManager& mgr) const {
                              CModelFlags(CModelFlags::kT_Opaque, 1.f));
     }
     bool darkVisor = false;
-    if ((mFlags & 2) != 0 && mgr.GetCurrentRenderPlayerState()->GetActiveVisor(mgr) == CPlayerState::kPV_Dark) {
+    if ((mFlags & 2) != 0 &&
+        mgr.GetCurrentRenderPlayerState()->GetActiveVisor(mgr) == CPlayerState::kPV_Dark) {
       darkVisor = true;
     }
     if (darkVisor) {
@@ -185,7 +186,8 @@ void CBouncyGrenade::Render(const CStateManager& mgr) const {
 
 void CBouncyGrenade::AddToRenderer(const CStateManager& mgr) const {
   CActor::AddToRenderer(mgr);
-  if (mExploded && mgr.GetCurrentRenderPlayerState()->GetActiveVisor(mgr) != CPlayerState::kPV_Echo) {
+  if (mExploded &&
+      mgr.GetCurrentRenderPlayerState()->GetActiveVisor(mgr) != CPlayerState::kPV_Echo) {
     gpRender->AddParticleGen(*mElementGenExplodeCombat);
   }
   if (mHasRenderBounds && mgr.IsActorVisible(*this)) {
@@ -383,7 +385,7 @@ void CBouncyGrenade::Bounce(CStateManager& mgr, const CVector3f& normal, bool co
       toTarget.SetZ(0.f);
       CQuaternion rotation = CQuaternion::ShortestRotationArc(velocity, toTarget);
       if (2.f * rotation.GetScalar() * rotation.GetScalar() - 1.f <= 0.99f) {
-        float maxAngle = 0.017453292f * mMaxHomingAngle;
+        float maxAngle = (M_PIF / 180.f) * mMaxHomingAngle;
         const float angle = acos(2.f * rotation.GetScalar() * rotation.GetScalar() - 1.f);
         if (maxAngle < angle) {
           const float sinHalfAngle = sin(0.5f * angle);

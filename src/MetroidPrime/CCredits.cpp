@@ -468,7 +468,7 @@ void CPlayMovie::UpdateText(float dt) {
     }
     if (!mUnlockText.null()) {
       float alpha = 0.5f * CMath::FastSinR(
-                               1.57079637f *
+                               (M_PIF / 2.f) *
                                (2.f * (mPulseTime / gpTweakGui->GetCompletionScreenPulseTime()))) +
                     0.5f;
       alpha = rstl::max_val(0.f, alpha);

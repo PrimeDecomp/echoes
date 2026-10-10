@@ -124,7 +124,7 @@ CDarkTrooper::CDarkTrooper(TUniqueId uid, const rstl::string& name, const CEntit
 , mGunSegId(AnimationData()->GetLocatorSegId(rstl::string_l(skGunLocatorName)))
 , mHeadSegId(AnimationData()->GetLocatorSegId(rstl::string_l(skHeadLocatorName)))
 , mRootSegId(AnimationData()->GetLocatorSegId(rstl::string_l(skRootLocatorName)))
-, mBoneTracking(*AnimationData(), rstl::string_l(skBoneTrackingName), 0.5235988f, 3.1415927f,
+, mBoneTracking(*AnimationData(), rstl::string_l(skBoneTrackingName), M_PIF / 6.f, M_PIF,
                 kBTF_NoParent)
 , mLineOfSightTracker(GetUniqueId(), mHeadSegId, 0.2f, 0.05f)
 , mPreviousAttackState(-1)
@@ -350,7 +350,7 @@ void CDarkTrooper::FireSmallShot(CStateManager& mgr) {
       toTarget.Normalize();
       CVector3f forward = mGunTransform.GetColumn(kDY);
       forward.SetZ(0.f);
-      if (forward.CanBeNormalized() && CVector3f::GetAngleDiff(forward, toTarget) < 0.7853982f) {
+      if (forward.CanBeNormalized() && CVector3f::GetAngleDiff(forward, toTarget) < (M_PIF / 4.f)) {
         LaunchProjectile(CTransform4f::LookAt(mGunTransform.GetTranslation(), target), mgr, 5,
                          kPA_None, false, CImpactVisorEffect::None(), CVector3f(1.f, 1.f, 1.f));
       }
@@ -376,7 +376,7 @@ void CDarkTrooper::FireMissile(CStateManager& mgr) {
       toTarget.Normalize();
       CVector3f forward = mGunTransform.GetColumn(kDY);
       forward.SetZ(0.f);
-      if (forward.CanBeNormalized() && CVector3f::GetAngleDiff(forward, toTarget) < 0.7853982f &&
+      if (forward.CanBeNormalized() && CVector3f::GetAngleDiff(forward, toTarget) < (M_PIF / 4.f) &&
           mLineOfSightTracker.HasLineOfSight()) {
         LaunchProjectile(CTransform4f::LookAt(mGunTransform.GetTranslation(), target), mgr, 5,
                          kPA_None, false, CImpactVisorEffect::None(), CVector3f(1.f, 1.f, 1.f));
@@ -669,7 +669,7 @@ void CDarkTrooper::ThinkRagDoll(float dt, CStateManager& mgr) {
         Stop();
         if (!mAvoidDownFrames && !mFadeToDeath) {
           mFadeToDeath = true;
-          mAlphaDelta = -0.33333334f;
+          mAlphaDelta = -(1.f / 3.f);
         }
       }
     } else if (mUpdatingAnimation) {
@@ -731,7 +731,7 @@ void CDarkTrooper::MeleeAttack(CStateManager& mgr, EStateMsg msg, float dt) {
   } else if (msg == kStateMsg_Deactivate) {
     mMeleeAttack.mNextAttackTime += mElapsedTime;
   }
-  RotateToPoint(GetTargetPosition(mgr), dt, 1.5707964f);
+  RotateToPoint(GetTargetPosition(mgr), dt, M_PIF / 2.f);
   DeliverCommand(msg, pas::kAS_MeleeAttack, CBCMeleeAttackCmd(pas::kS_One));
 }
 
@@ -756,7 +756,7 @@ void CDarkTrooper::Pursue(CStateManager& mgr, EStateMsg msg, float dt) {
 
     if (InRange(mgr, 0.f, 3.f)) {
       BodyController()->CommandMgr().ClearLocomotionCmds();
-      RotateToPoint(GetTargetPosition(mgr), dt, 0.87266463f);
+      RotateToPoint(GetTargetPosition(mgr), dt, 50.f * (M_PIF / 180.f));
     } else {
       if ((target - mPathDestination).MagSquared() > 16.f) {
         MoveToTarget(mgr, dt, target);
@@ -825,7 +825,8 @@ bool CDarkTrooper::FacingPlayer(CStateManager& mgr, const CTriggerData&) const {
   const CVector3f toTarget = GetTargetPosition(mgr) - GetTranslation();
   const CVector3f forward = GetTransform().GetColumn(kDY);
   return CVector2f::GetAngleDiff(CVector2f(forward.GetX(), forward.GetY()),
-                                 CVector2f(toTarget.GetX(), toTarget.GetY())) < 0.6981317f;
+                                 CVector2f(toTarget.GetX(), toTarget.GetY())) <
+         (40.f * (M_PIF / 180.f));
 }
 
 bool CDarkTrooper::InRange(CStateManager& mgr, float minRange, float maxRange) const {
@@ -853,7 +854,7 @@ void CDarkTrooper::SmallShotAttack(CStateManager& mgr, EStateMsg msg, float dt) 
     mSmallShotAttack.mNextAttackTime += mElapsedTime;
     BodyController()->CommandMgr().DeliverAdditiveTargetVector(CVector3f::Zero());
   }
-  RotateToPoint(target, dt, 0.87266463f);
+  RotateToPoint(target, dt, 50.f * (M_PIF / 180.f));
   DeliverCommand(msg, pas::kAS_LoopAttack, CBCLoopAttackCmd(pas::kLAT_Zero));
 }
 
@@ -877,7 +878,7 @@ void CDarkTrooper::MissileAttack(CStateManager& mgr, EStateMsg msg, float dt) {
     mMissileAttack.mNextAttackTime += mElapsedTime;
     BodyController()->CommandMgr().DeliverAdditiveTargetVector(CVector3f::Zero());
   }
-  RotateToPoint(target, dt, 1.3962634f);
+  RotateToPoint(target, dt, 80.f * (M_PIF / 180.f));
   DeliverCommand(msg, pas::kAS_LoopAttack, CBCLoopAttackCmd(pas::kLAT_One));
 }
 

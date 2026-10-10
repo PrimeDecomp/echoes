@@ -863,7 +863,7 @@ void CGraphics::EndScene() {
       }
     }
     const float elapsedMs = static_cast< float >(waitTimer.GetElapsedMicros() / 1000);
-    const float framePeriod = sIs50Hz ? 20.f : 16.6666667f;
+    const float framePeriod = sIs50Hz ? 20.f : (50.f / 3.f);
     sPreviousFrameWaitFraction = sFrameWaitFraction;
     sFrameWaitFraction = (framePeriod - elapsedMs) / framePeriod;
   }

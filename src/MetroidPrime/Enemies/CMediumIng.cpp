@@ -523,7 +523,8 @@ bool CMediumIng::ShouldMistAttack(CStateManager& mgr, const CTriggerData& data) 
         CVector3f toPlayer = player->GetTranslation() - GetTranslation();
         const float distance = toPlayer.Magnitude();
         toPlayer *= 1.f / distance;
-        if (CVector3f::GetAngleDiff(player->GetTransform().GetForward(), -toPlayer) < 0.7853982f &&
+        if (CVector3f::GetAngleDiff(player->GetTransform().GetForward(), -toPlayer) <
+                (M_PIF / 4.f) &&
             distance * distance < mData.mMaxMistAttackRange * mData.mMaxMistAttackRange) {
           return true;
         }

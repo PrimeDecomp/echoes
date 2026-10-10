@@ -422,7 +422,7 @@ void CPatterned::Death(CStateManager& mgr, const CVector3f& direction, EScriptOb
         const CVector3f pos = GetTranslation();
         const CVector3f target = pos - direction;
         const CTransform4f deathXf = CTransform4f::LookAt(pos, target) *
-                                     CTransform4f::RotateX(CRelAngle::FromRadians(0.7853982f));
+                                     CTransform4f::RotateX(CRelAngle::FromRadians(M_PIF / 4.f));
         SetTransform(deathXf);
       }
     } else {
@@ -1285,7 +1285,7 @@ void CPatterned::Render(const CStateManager& mgr) const {
         CPhysicsActor::Render(mgr);
       } else if (HasModelData()) {
         const CColor disColor = mLaggedBurnDeath ? skDisintegrateColor : CColor::Black();
-        const float t = (mLaggedBurnDeath ? 0.0078740157f : 0.0039215689f) * CCast::ToReal32(alpha);
+        const float t = (mLaggedBurnDeath ? (1.f / 127.f) : (1.f / 255.f)) * CCast::ToReal32(alpha);
         GetModelData()->DisintegrateDraw(mgr, GetTransform(), *ashyTexture, disColor, t);
       }
 

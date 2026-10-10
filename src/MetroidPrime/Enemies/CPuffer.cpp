@@ -156,7 +156,7 @@ void CPuffer::UpdateJets(CStateManager& mgr) {
     for (int i = 0; i < ARRAY_SIZE(skGasJetLocators); ++i) {
       CVector3f offset = GetTransform().Rotate(
           animData->GetLocatorTransform(mGasLocators[i], nullptr).GetColumn(kDY));
-      const float ang = CMath::FastCosR(1.0471976f);
+      const float ang = CMath::FastCosR(M_PIF / 3.f);
       enable = CVector3f::Dot(moveNorm, offset) > ang;
       const bool isEnabled = IsParticleEnabled(i);
       if (isEnabled != enable) {

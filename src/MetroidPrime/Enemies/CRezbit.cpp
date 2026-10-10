@@ -877,18 +877,18 @@ void CRezbit::CheckNeighbors(CStateManager& mgr, rstl::reserved_vector< bool, 4 
       const CVector3f toOther = other->GetTranslation() - position;
       if (toOther.MagSquared() < radiusSq) {
         if (CVector3f::Dot(toOther, right) >= 0.f) {
-          if (available[1] && CVector3f::GetAngleDiff(right, toOther) < 1.0471976f) {
+          if (available[1] && CVector3f::GetAngleDiff(right, toOther) < (M_PIF / 3.f)) {
             available[1] = false;
           }
-        } else if (available[0] && CVector3f::GetAngleDiff(-right, toOther) < 1.0471976f) {
+        } else if (available[0] && CVector3f::GetAngleDiff(-right, toOther) < (M_PIF / 3.f)) {
           available[1] = false;
         }
         if (toOther.GetZ() >= 0.f) {
-          if (available[2] && CVector3f::GetAngleDiff(CVector3f::Up(), toOther) < 1.0471976f) {
+          if (available[2] && CVector3f::GetAngleDiff(CVector3f::Up(), toOther) < (M_PIF / 3.f)) {
             available[2] = false;
           }
         } else if (available[3] &&
-                   CVector3f::GetAngleDiff(CVector3f::Down(), toOther) < 1.0471976f) {
+                   CVector3f::GetAngleDiff(CVector3f::Down(), toOther) < (M_PIF / 3.f)) {
           available[3] = false;
         }
       }
@@ -985,7 +985,8 @@ void CRezbit::DeflectMissiles(CStateManager& mgr) {
       const CVector3f axis = CVector3f::Cross(dir, delta);
       if (axis.CanBeNormalized()) {
         const CQuaternion rotation = CQuaternion::AxisAngle(
-            CUnitVector3f(axis), CRelAngle::FromDegrees(0.017453292f * mData.missileDeflectRate));
+            CUnitVector3f(axis),
+            CRelAngle::FromDegrees((M_PIF / 180.f) * mData.missileDeflectRate));
         weapon.SetWorldSpaceOrientation(rotation.BuildTransform4f() *
                                         weapon.GetTransform().GetRotation());
       }
@@ -1046,10 +1047,10 @@ void CRezbit::FireEnergyBolt(CStateManager& mgr, float dt) {
   CVector3f dir = aimPos - gunPos;
   if (dir.IsMagnitudeSafe()) {
     if (mBoltCount > 0 && mLastBoltDirection.IsMagnitudeSafe() &&
-        CVector3f::GetAngleDiff(dir, mLastBoltDirection) > 0.17453292f) {
+        CVector3f::GetAngleDiff(dir, mLastBoltDirection) > (10.f * (M_PIF / 180.f))) {
       const CVector3f limited =
           CVector3f::Slerp(mLastBoltDirection.AsNormalized(), dir.AsNormalized(),
-                           CRelAngle::FromRadians(0.17453292f));
+                           CRelAngle::FromRadians(10.f * (M_PIF / 180.f)));
       aimPos = gunPos + dir.Magnitude() * limited;
     }
     const CTransform4f xf = CTransform4f::LookAt(gunPos, aimPos, CVector3f::Up());

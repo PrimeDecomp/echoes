@@ -375,7 +375,7 @@ CCubeRenderer::CCubeRenderer(IObjectStore& store, COsContext& context, CMemorySy
 , mObjStore(store)
 , mFont(1.f)
 , mPrimVertCount(0)
-, mFrustumPlanes(CTransform4f::Identity(), 1.5707964f, 1.f, 1.f, false, 100.f)
+, mFrustumPlanes(CTransform4f::Identity(), M_PIF / 2.f, 1.f, 1.f, false, 100.f)
 , mDrawableCallback(nullptr)
 , mViewPlane(0.f, CUnitVector3f(0.f, 1.f, 0.f, CUnitVector3f::kN_Yes))
 , mPVSMode(0)
@@ -595,7 +595,7 @@ void CCubeRenderer::BeginScene() {
   CGraphics::SetCullMode(kCM_Front);
   CGraphics::SetDepthWriteMode(true, kE_LEqual, true);
   CGraphics::SetBlendMode(kBM_Blend, kBF_SrcAlpha, kBF_InvSrcAlpha, kLO_Clear);
-  CGraphics::SetPerspective(75.f, 1.3333334f, 1.f, 4096.f);
+  CGraphics::SetPerspective(75.f, 4.f / 3.f, 1.f, 4096.f);
   CGraphics::SetModelMatrix(CTransform4f::Identity());
   CGraphics::TickRenderTimings();
   if (mSilhouetteMaskCountdown != 0) {
@@ -1785,7 +1785,7 @@ void CCubeRenderer::DrawModelDisintegrate(const SModelRenderData& model, const C
   CGX::SetTevKColor(GX_KCOLOR0, color.GetGXColor());
 
   const CAABox& bounds = model.GetAABB();
-  CTransform4f xf = CTransform4f::RotateX(CRelAngle::FromRadians(-0.7853982f));
+  CTransform4f xf = CTransform4f::RotateX(CRelAngle::FromRadians(-(M_PIF / 4.f)));
   const CAABox rotatedBounds = bounds.GetTransformedAABox(xf);
   const CVector3f dimensions = rotatedBounds.GetMaxPoint() - rotatedBounds.GetMinPoint();
   xf = (CTransform4f::Scale(5.f / dimensions.GetX(), 5.f / dimensions.GetY(),

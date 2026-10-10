@@ -512,7 +512,7 @@ CGrenchler::CGrenchler(
 , mElapsedTime(0.f)
 , mPathDestination(CVector3f::Zero())
 , mPathDestinationTime(-1000.f)
-, mBoneTracking(*AnimationData(), rstl::string_l("head"), 0.5235988f, 0.9424779f, 1)
+, mBoneTracking(*AnimationData(), rstl::string_l("head"), M_PIF / 6.f, 0.9424779f, 1)
 , mLastKnockBackTime(-1000.f)
 , mLastHitTime(-1000.f)
 , mLastLeashTeleportTime(-1000.f)
@@ -694,7 +694,7 @@ float CGrenchler::GetFacingAngleDiff(const CTransform4f& xf) const {
   forward.SetZ(0.f);
   otherForward.SetZ(0.f);
   if (!otherForward.CanBeNormalized() || !forward.CanBeNormalized()) {
-    return 6.2831855f;
+    return M_2PIF;
   }
   return CVector3f::GetAngleDiff(otherForward.AsNormalized(), forward.AsNormalized());
 }
@@ -923,7 +923,7 @@ bool CGrenchler::CanCrystalTakeDamage() const {
 }
 
 float CGrenchler::GetVulnerableAngle() const {
-  return mIsGrappleGuardian == true ? 0.7853982f : 1.3089969f;
+  return mIsGrappleGuardian == true ? (M_PIF / 4.f) : (75.f * (M_PIF / 180.f));
 }
 
 void CGrenchler::DestroyTail(CStateManager& mgr) {
@@ -1455,7 +1455,7 @@ void CGrenchler::UpdateGuardianBlend(float dt, CStateManager& mgr) {
   if (mIsGrappleGuardian) {
     if (mScanned) {
       float step = dt / 0.5f;
-      if (IsFacingTarget(mgr, 1.5707964f) == true) {
+      if (IsFacingTarget(mgr, M_PIF / 2.f) == true) {
         mGuardianFacingBlend -= step;
       } else {
         mGuardianFacingBlend += step;
@@ -1961,7 +1961,7 @@ void CGrenchler::BiteAttack(CStateManager& mgr, EStateMsg msg, float dt) {
   } else if (msg == kStateMsg_Deactivate) {
     mBiteAttack.mLastBiteTime = mElapsedTime;
   } else if (mIsGrappleGuardian == 1) {
-    TurnToPlayer(mgr, dt, 1.0471976f);
+    TurnToPlayer(mgr, dt, M_PIF / 3.f);
   }
   SetSubmerged(mBiteAttack.mSubmerged);
   DeliverCommand(msg, pas::kAS_MeleeAttack, CBCMeleeAttackCmd(pas::kS_One));
@@ -2038,11 +2038,11 @@ bool CGrenchler::IsPlayerLookingAtMe(CStateManager& mgr) const {
   const CPlayer* player = mgr.GetPlayer(0);
   CVector2f playerForward = player->GetTransform().GetForward().ToVec2f();
   CVector2f toMe = (GetTranslation() - player->GetTranslation()).ToVec2f();
-  return CVector2f::GetAngleDiff(playerForward, toMe) < 0.87266463f;
+  return CVector2f::GetAngleDiff(playerForward, toMe) < (50.f * (M_PIF / 180.f));
 }
 
 bool CGrenchler::FacingPlayer(CStateManager& mgr, const CTriggerData& data) const {
-  return IsFacingTarget(mgr, 0.61086524f);
+  return IsFacingTarget(mgr, 35.f * (M_PIF / 180.f));
 }
 
 bool CGrenchler::ShouldTurn(CStateManager& mgr, const CTriggerData& data) const {
@@ -2067,7 +2067,7 @@ bool CGrenchler::ShouldBackstep(CStateManager& mgr, const CTriggerData& data) co
     CActor* actor =
         TCastToPtr< CActor >(const_cast< CEntity* >(mgr.GetObjectById(mTouchingTeammateId)));
     if (actor != nullptr) {
-      if (IsFacing(actor->GetTranslation(), 2.0943952f) == true) {
+      if (IsFacing(actor->GetTranslation(), 120.f * (M_PIF / 180.f)) == true) {
         return true;
       }
       if (CMath::AbsF(actor->GetTranslation().GetZ() - GetTranslation().GetZ()) > 4.f) {
@@ -2176,7 +2176,7 @@ bool CGrenchler::AbortCharge(CStateManager& mgr, const CTriggerData& data) const
   if (!mIsGrappleGuardian) {
     return false;
   }
-  return !IsFacingTarget(mgr, 1.5882496f) ? true : ChargeFinished(mgr, data);
+  return !IsFacingTarget(mgr, 91.f * (M_PIF / 180.f)) ? true : ChargeFinished(mgr, data);
 }
 
 void CGrenchler::Turn(CStateManager& mgr, EStateMsg msg, float dt) {
@@ -2187,12 +2187,12 @@ void CGrenchler::Turn(CStateManager& mgr, EStateMsg msg, float dt) {
     if (mSubmerged == 1) {
       mTurnAnimActive = 0;
     } else if (!mIsGrappleGuardian) {
-      if (0.1f + mLastHitTime > mElapsedTime && !IsFacingTarget(mgr, 2.0943952f)) {
+      if (0.1f + mLastHitTime > mElapsedTime && !IsFacingTarget(mgr, 120.f * (M_PIF / 180.f))) {
         mTurnAnimActive = 1;
       }
     } else {
       mTurnAnimActive = 0;
-      if (2.f + mLastTurnAnimTime < mElapsedTime && !IsFacingTarget(mgr, 1.5882496f)) {
+      if (2.f + mLastTurnAnimTime < mElapsedTime && !IsFacingTarget(mgr, 91.f * (M_PIF / 180.f))) {
         mTurnAnimActive = 1;
       }
       if (mTurnAnimActive == 0) {
@@ -2209,7 +2209,7 @@ void CGrenchler::Turn(CStateManager& mgr, EStateMsg msg, float dt) {
   if (mTurnAnimActive == 1) {
     DeliverCommand(msg, pas::kAS_Taunt, CBCTauntCmd(pas::kTT_Six));
   } else if (!mIsGrappleGuardian && mSubmerged == 0 && 0.2f + mLastHitTime > mElapsedTime &&
-             !IsFacingTarget(mgr, 2.0943952f)) {
+             !IsFacingTarget(mgr, 120.f * (M_PIF / 180.f))) {
     mTurnStartTime = -1000.f;
     mLastTurnAnimTime = -1000.f;
     mTurnAnimActive = 0;
@@ -2497,13 +2497,13 @@ void CGrenchler::BeamAttack(CStateManager& mgr, EStateMsg msg, float) {
     mBurstAttack.x2c_ = false;
     mBeamAttack.x2c_ = false;
     SetSubmerged(false);
-    mBoneTracking.SetMaxBoneRotation(0.43633232f);
+    mBoneTracking.SetMaxBoneRotation(25.f * (M_PIF / 180.f));
     if (mTailDestroyed == 1) {
       mSpeed = 1.2f;
     }
   } else if (msg == kStateMsg_Deactivate) {
     StopElectricBeam(mgr);
-    mBoneTracking.SetMaxBoneRotation(0.87266463f);
+    mBoneTracking.SetMaxBoneRotation(50.f * (M_PIF / 180.f));
     mBeamAttack.mLastBeamTime = mElapsedTime;
     mBiteCount = 0;
     mSpeed = 1.f;
@@ -3133,10 +3133,10 @@ bool CGrenchler::IsPointVisibleToPlayer(CStateManager& mgr, const CVector3f& poi
 }
 
 bool CGrenchler::ClearLineOfFire(CStateManager& mgr, const CTriggerData& data) const {
-  if (IsFacingTarget(mgr, 0.61086524f) == false) {
+  if (IsFacingTarget(mgr, 35.f * (M_PIF / 180.f)) == false) {
     return false;
   }
-  return HasClearShotAtPlayer(mgr, 0.87266463f);
+  return HasClearShotAtPlayer(mgr, 50.f * (M_PIF / 180.f));
 }
 
 float CGrenchler::GetManeuverRangeWeight(float range, const CVector3f& a,
@@ -3192,7 +3192,7 @@ void CGrenchler::Maneuver(CStateManager& mgr, EStateMsg msg, float dt) {
     mManeuverTarget = zero;
     mManeuverStartTime = 0.f;
     mDefaultTurnSpeed = BodyController()->GetTurnSpeed();
-    if (!HasClearShotAtPlayer(mgr, 1.7453293f)) {
+    if (!HasClearShotAtPlayer(mgr, 100.f * (M_PIF / 180.f))) {
       mManeuverStartTime = mElapsedTime;
       mManeuverTarget = GetManeuverTarget(mgr);
       MoveToTarget(mgr, dt, mManeuverTarget);
@@ -3233,7 +3233,7 @@ bool CGrenchler::ManeuverDone(CStateManager& mgr, const CTriggerData& data) cons
   if (Stuck(mgr, CTriggerData(0)) == true) {
     return true;
   }
-  return HasClearShotAtPlayer(mgr, 1.7453293f);
+  return HasClearShotAtPlayer(mgr, 100.f * (M_PIF / 180.f));
 }
 
 bool CGrenchler::CancelManeuvering(CStateManager& mgr, const CTriggerData& data) const {
@@ -3364,7 +3364,7 @@ bool CGrenchler::TookDamage(CStateManager&, const CTriggerData&) const {
 bool CGrenchler::JustHit(CStateManager& mgr, const CTriggerData&) const {
   if (!mIsGrappleGuardian) {
     if (0.2f + mLastHitTime > mElapsedTime) {
-      if (!IsFacingTarget(mgr, 1.5882496f)) {
+      if (!IsFacingTarget(mgr, 91.f * (M_PIF / 180.f))) {
         return true;
       }
     }
@@ -3411,7 +3411,7 @@ bool CGrenchler::JustBurstAttacked(CStateManager&, const CTriggerData&) const {
 
 void CGrenchler::TurnToFaceTarget(CStateManager& mgr) {
   CVector3f faceVec = CVector3f::Zero();
-  if (!IsFacingTarget(mgr, 0.61086524f)) {
+  if (!IsFacingTarget(mgr, 35.f * (M_PIF / 180.f))) {
     faceVec = mgr.GetPlayer(0)->GetTranslation() - GetTranslation();
   }
   BodyController()->CommandMgr().DeliverCmd(CBCLocomotionCmd(CVector3f::Zero(), faceVec, 1.f));
@@ -3625,7 +3625,7 @@ void CGrenchler::GrappleLoop(CStateManager& mgr, EStateMsg msg, float dt) {
   }
   case kStateMsg_Update: {
     if (mEffectC.mSwoosh.mGen.get() == nullptr) {
-      TurnToPlayer(mgr, dt, 1.5707964f);
+      TurnToPlayer(mgr, dt, M_PIF / 2.f);
       mEffectB.x24_ += dt;
     } else {
       if (mgr.GetPlayer(0)->GetMorphballTransitionState() == CPlayer::kMS_Morphed) {
@@ -3780,7 +3780,7 @@ bool CGrenchler::BeamBadAngle(CStateManager& mgr, const CTriggerData& data) cons
       const CVector2f targetDir = CVector2f(toTarget.GetX(), toTarget.GetY());
       const CVector2f facing =
           CVector2f(GetTransform().GetForward().GetX(), GetTransform().GetForward().GetY());
-      return CVector2f::GetAngleDiff(facing, targetDir) > 0.87266463f;
+      return CVector2f::GetAngleDiff(facing, targetDir) > (50.f * (M_PIF / 180.f));
     }
   }
   return false;

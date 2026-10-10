@@ -102,7 +102,7 @@ void CLightBeam::Fire(const TCachedToken< CWeaponDescription >& projectile, bool
     int collisionDelay = 0;
     for (int i = 0; i < pelletCount; ++i) {
       const TToken< CWeaponDescription >& pelletToken = *mChargedProjectiles[i % 3];
-      const float angle = 0.017453292f * (360.f * mgr.Random()->Float());
+      const float angle = (M_PIF / 180.f) * (360.f * mgr.Random()->Float());
       const float radius = mgr.Random()->Float();
       CVector3f dir(radius * (1.9f * CMath::FastSinR(angle)), 8.f,
                     radius * CMath::FastCosR(angle) + aimOffsetZ);
@@ -125,7 +125,7 @@ void CLightBeam::Fire(const TCachedToken< CWeaponDescription >& projectile, bool
             toTarget.SetZ(toTarget.GetZ() * 1.9f);
             if (toTarget.CanBeNormalized()) {
               const float angle = acos(CVector3f::Dot(shotDir, toTarget.AsNormalized()));
-              if (angle > 0.17453292f) {
+              if (angle > (10.f * (M_PIF / 180.f))) {
                 usable = false;
               }
             }

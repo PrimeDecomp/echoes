@@ -76,8 +76,8 @@ CBallCamera::CBallCamera(TUniqueId uid, TUniqueId watchedId, const CTransform4f&
 , mElevation(2.736f)
 , mCurAnglePerSecond(gpTweakBall->GetBallCameraAnglePerSecond())
 , mTargetAnglePerSecond(gpTweakBall->GetBallCameraAnglePerSecond())
-, mAttitudeRange(1.553343f)
-, mAzimuthRange(1.553343f)
+, mAttitudeRange(89.f * (M_PIF / 180.f))
+, mAzimuthRange(89.f * (M_PIF / 180.f))
 , mLookAtOffset(gpTweakBall->GetBallCameraOffset())
 , mLookPosAhead(0.f, 0.f, 0.f)
 , mFixedLookPos(CVector3f::Zero())
@@ -785,13 +785,13 @@ void CBallCamera::UpdateTransform(const CVector3f& lookDirection, const CVector3
   if (CMath::AbsF(dot) >= 0.99999988f) {
     SetTransform(CTransform4f::LookAt(usePosition, usePosition + desiredLook, CVector3f::Up()));
   } else {
-    const float speedFactor = CMath::Clamp(0.f, acosf(dot) / (1.0471976f * dt), 1.f);
+    const float speedFactor = CMath::Clamp(0.f, acosf(dot) / ((M_PIF / 3.f) * dt), 1.f);
     CRelAngle angle = CRelAngle::FromRadians(dt * (mCurAnglePerSecond * speedFactor));
     const float upDot = CMath::Limit(CVector3f::Dot(desiredLook, CVector3f::Up()), 1.f);
     const float absUpDot = CMath::AbsF(upDot);
-    float maxAngle = (12.566371f * dt) * (1.f - absUpDot);
+    float maxAngle = ((4.f * M_PIF) * dt) * (1.f - absUpDot);
     if (mSplineState == kBSS_One) {
-      maxAngle = 4.1887903f * dt;
+      maxAngle = (4.f * M_PIF / 3.f) * dt;
       if (angle.AsRadians() > maxAngle) {
         angle = CRelAngle::FromRadians(maxAngle);
       }
@@ -815,9 +815,8 @@ void CBallCamera::UpdateTransform(const CVector3f& lookDirection, const CVector3
 
     if (mLookAtBall) {
       mLookAtBall = false;
-      const CQuaternion rotation =
-          CQuaternion::LookAt(CUnitVector3f(currentLook), CUnitVector3f(desiredLook),
-                              CRelAngle::FromRadians(6.2831855f));
+      const CQuaternion rotation = CQuaternion::LookAt(
+          CUnitVector3f(currentLook), CUnitVector3f(desiredLook), CRelAngle::FromRadians(M_2PIF));
       SetTransform(rotation.BuildTransform4f() * GetTransform().GetRotation());
     } else {
       const CQuaternion rotation =
@@ -852,7 +851,7 @@ void CBallCamera::UpdatePlayerMovement(float dt, CStateManager& mgr) {
   if (camToBallFlat.IsMagnitudeSafe()) {
     camToBallFlat.Normalize();
     float dot = CMath::Limit(CVector3f::Dot(camToBallFlat, player.GetMovementDirection()), 1.f);
-    if (CMath::AbsF(CMath::FastArcCosR(dot)) > 1.7453293f) {
+    if (CMath::AbsF(CMath::FastArcCosR(dot)) > (100.f * (M_PIF / 180.f))) {
       mObtuseDirection = true;
     }
   }
@@ -1127,10 +1126,8 @@ bool CBallCamera::fn_801a39d0(float distance, float dt, CVector3f& position, CSt
       const CVector3f closestPoint = line.GetClosestPoint(repulsor->GetTranslation());
       if (repulsorDirection.Magnitude() < distance) {
         const float strength = repulsor->GetStrength();
-        const float falloff =
-            1.f - CMath::Clamp(0.f, repulsorDirection.Magnitude() / radius, 1.f);
-        const CVector2f pushOffset =
-            CVector3f(closestPoint - repulsor->GetTranslation()).ToVec2f();
+        const float falloff = 1.f - CMath::Clamp(0.f, repulsorDirection.Magnitude() / radius, 1.f);
+        const CVector2f pushOffset = CVector3f(closestPoint - repulsor->GetTranslation()).ToVec2f();
         CVector3f pushDirection(pushOffset.GetX(), pushOffset.GetY(), 0.f);
         if (CMath::AbsF(CVector3f::Dot(pushDirection, ballDirection)) > 0.999f) {
           pushDirection = CVector3f(pushDirection.GetY(), -pushDirection.GetX(), 0.f);
@@ -1690,9 +1687,9 @@ CVector3f CBallCamera::ComputeVelocity(CVector3f currentVelocity, CVector3f posi
 
 void CBallCamera::UpdateAnglePerSecond(float dt) {
   float delta = mTargetAnglePerSecond - mCurAnglePerSecond;
-  if (CMath::AbsF(delta) >= 0.0017453292f) {
+  if (CMath::AbsF(delta) >= 0.1f * (M_PIF / 180.f)) {
     const float limited = CMath::Limit(delta / M_PIF, 1.f);
-    mCurAnglePerSecond += limited * (10.471975f * dt);
+    mCurAnglePerSecond += limited * ((600.f * (M_PIF / 180.f)) * dt);
   } else {
     mCurAnglePerSecond = mTargetAnglePerSecond;
   }
@@ -1968,8 +1965,7 @@ void CBallCamera::CheckFailSafe(float dt, CStateManager& mgr) {
 }
 
 bool CBallCamera::CheckDoorProximity(const CVector3f& position, const CStateManager& mgr) const {
-  const CScriptDoor* door =
-      TCastToConstPtr< CScriptDoor >(mgr.GetObjectById(GetTooCloseActorId()));
+  const CScriptDoor* door = TCastToConstPtr< CScriptDoor >(mgr.GetObjectById(GetTooCloseActorId()));
   if (door == nullptr || (door != nullptr && door->IsOpen())) {
     return false;
   }

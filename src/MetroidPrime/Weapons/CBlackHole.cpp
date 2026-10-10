@@ -94,7 +94,7 @@ void CBlackHole::Think(float dt, CStateManager& mgr) {
         const bool atCenter = distance < 5.f;
         if (!atCenter && !isOwner) {
           const CVector3f direction = toHole.AsNormalized();
-          if (static_cast< float >(cos(0.017453292f * mPullConeAngleDegrees)) <
+          if (static_cast< float >(cos((M_PIF / 180.f) * mPullConeAngleDegrees)) <
                   CVector3f::Dot(-direction, mPullDirection) &&
               distance < mAttractionRange) {
             const float speed = rstl::min_val(

@@ -602,7 +602,8 @@ CEntity* LoadPuddleSpore(CStateManager& mgr, CInputStream& input, CEntityInfo& i
 
   const SPuddleSporeData data(
       sldrThis.chargeTime, sldrThis.timeOpen, sldrThis.platformTime, sldrThis.unknown_0xf1c2d224,
-      sldrThis.knockOffForce, static_cast< float >(sin(0.017453292f * sldrThis.hitDetectionAngle)),
+      sldrThis.knockOffForce,
+      static_cast< float >(sin((M_PIF / 180.f) * sldrThis.hitDetectionAngle)),
       sldrThis.shockWaveHeight, static_cast< ushort >(sldrThis.sound_ShockWaveTravelSound),
       CShockWaveInfo(sldrThis.shockWaveInfo));
   return rs_new CPuddleSpore(

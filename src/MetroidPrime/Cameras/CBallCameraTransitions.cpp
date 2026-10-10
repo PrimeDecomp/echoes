@@ -85,7 +85,7 @@ bool CBallCamera::UpdateTransitionFromBallCamera(CStateManager& mgr) {
                              player.GetTransform().GetForward())) < 0.9999f) {
       const CQuaternion rotation = CQuaternion::LookAt(
           CUnitVector3f(mFromBallTransition->mPlayerXf.GetForward()),
-          CUnitVector3f(player.GetTransform().GetForward()), CRelAngle::FromRadians(6.2831855f));
+          CUnitVector3f(player.GetTransform().GetForward()), CRelAngle::FromRadians(M_2PIF));
       mFromBallTransition->mSpline.Rotate(rotation, eyePos);
     }
   }
@@ -192,7 +192,7 @@ bool CBallCamera::UpdateTransitionToBallCamera(float dt, CStateManager& mgr) {
                              player.GetTransform().GetForward())) < 0.9999f) {
       const CQuaternion rotation = CQuaternion::LookAt(
           CUnitVector3f(mToBallTransition->mPlayerXf.GetForward()),
-          CUnitVector3f(player.GetTransform().GetForward()), CRelAngle::FromRadians(6.2831855f));
+          CUnitVector3f(player.GetTransform().GetForward()), CRelAngle::FromRadians(M_2PIF));
       mToBallTransition->mSpline.Rotate(rotation, eyePos);
     }
   }

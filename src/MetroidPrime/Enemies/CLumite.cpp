@@ -712,7 +712,7 @@ bool CLumite::FacingHint(const CVector3f& point) const {
   if (direction.CanBeNormalized()) {
     direction.Normalize();
   }
-  return CVector3f::GetAngleDiff(direction, GetTransform().GetRight()) < 0.7853982f;
+  return CVector3f::GetAngleDiff(direction, GetTransform().GetRight()) < (M_PIF / 4.f);
 }
 
 // Attack
@@ -945,7 +945,8 @@ void CLumite::Hop(CStateManager& mgr, EStateMsg msg, float dt) {
           SetVelocityWR(mHop.mSpeedScale * (GetHopSpeedScale(t) * velocity));
         }
         CVector3f orientation = mHop.mLaunchDirection;
-        if (CVector3f::GetAngleDiff(mHop.mLaunchDirection, mHop.mPlane.GetNormal()) > 0.08726646f) {
+        if (CVector3f::GetAngleDiff(mHop.mLaunchDirection, mHop.mPlane.GetNormal()) >
+            (5.f * (M_PIF / 180.f))) {
           orientation = CVector3f::Slerp(mHop.mLaunchDirection, mHop.mPlane.GetNormal(),
                                          CRelAngle::FromRadians(mHop.mAngleDiff * t));
         }
@@ -967,7 +968,8 @@ void CLumite::Hop(CStateManager& mgr, EStateMsg msg, float dt) {
       if (mSurfaceAlign.FindNearestSurface(mgr, GetTranslation(), 4.f, surface)) {
         mSurface.mPlane = surface.GetPlane();
         if (!surface.IsDegenerate() &&
-            CVector3f::GetAngleDiff(surface.GetNormal(), mHop.mPlane.GetNormal()) > 0.2617994f) {
+            CVector3f::GetAngleDiff(surface.GetNormal(), mHop.mPlane.GetNormal()) >
+                (M_PIF / 12.f)) {
           mHop.mNextHopTime = -1000.f;
           return;
         }

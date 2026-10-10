@@ -278,7 +278,7 @@ void CShrieker::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
     if (!mAlive && mDying && !mLaunched) {
       mLaunched = true;
       Stop();
-      const float angle = mgr.Random()->Range(0.f, 360.f) * 0.5f / 3.1415927f;
+      const float angle = mgr.Random()->Range(0.f, 360.f) * 0.5f / M_PIF;
       SetVelocityWR(CVector3f(15.f * CMath::FastSinR(angle), 15.f * CMath::FastCosR(angle), 0.f));
       SetMomentumWR(CVector3f(0.f, 0.f, -GetGravityConstant() * GetMass() * 10.5f));
     }

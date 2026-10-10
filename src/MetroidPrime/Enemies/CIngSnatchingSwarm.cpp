@@ -110,7 +110,7 @@ SIngSnatchingSwarmData::SIngSnatchingSwarmData(
 , mLifetime(lifetime)
 , mMaxLinearSpeed(maxLinearSpeed)
 , mMaxLinearAcceleration(maxLinearAcceleration)
-, mMaxTurnSpeed(0.017453292f * maxTurnSpeed)
+, mMaxTurnSpeed((M_PIF / 180.f) * maxTurnSpeed)
 , mUnknown0xe6b57a25(unknown0xe6b57a25)
 , mExitPortalDistance(exitPortalDistance)
 , mLoiterTime(loiterTime)
