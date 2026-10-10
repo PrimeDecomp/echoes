@@ -72,7 +72,7 @@ void CVisorFlare::Render(const CVector3f& pos, const CActor& actor, const CState
       CGameArea::kOS_Visible) {
     return;
   }
-  switch (mgr.GetPlayerState()->GetActiveVisor(mgr)) {
+  switch (mgr.GetCurrentRenderPlayerState()->GetActiveVisor(mgr)) {
   case CPlayerState::kPV_Combat:
     if (mCombatVisorMode != 0) {
       return;
@@ -293,7 +293,7 @@ void CVisorFlare::DrawStreamed(const CColor& color, float sinScale, float cosSca
 
 void CVisorFlare::SetupRenderState(const CStateManager& mgr) const {
   if (mBlendMode == kBM_Additive ||
-      (mgr.GetPlayerState()->GetActiveVisor(mgr) == CPlayerState::kPV_Dark &&
+      (mgr.GetCurrentRenderPlayerState()->GetActiveVisor(mgr) == CPlayerState::kPV_Dark &&
        mDarkVisorMode == 2)) {
     gpRender->SetBlendMode_AdditiveAlpha();
   } else {

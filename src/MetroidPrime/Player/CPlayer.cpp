@@ -1182,7 +1182,7 @@ void CPlayer::UpdatePlayerDrawFlags(CStateManager& mgr) {
     mPlayerDrawFlags = CModelFlags::AlphaBlended(CColor::White().WithAlphaModulatedBy(alpha));
     SetModelFlags(mPlayerDrawFlags);
   } else if (playerState.GetItemAmount(CPlayerState::kIT_Invisibility, true) != 0) {
-    if (mgr.GetPlayerState()->GetActiveVisor(mgr) != CPlayerState::kPV_Dark) {
+    if (mgr.GetCurrentRenderPlayerState()->GetActiveVisor(mgr) != CPlayerState::kPV_Dark) {
       const float timeLeft = playerState.GetTimeLeft(CPlayerState::kIT_Invisibility);
       float invisibilityAlpha = 0.5f;
       if (timeLeft < 2.f && (static_cast< int >(20.f * timeLeft) & 1) != 0) {
@@ -1220,7 +1220,7 @@ void CPlayer::UpdatePlayerDrawFlags(CStateManager& mgr) {
   }
 
   SetModelFlags(mPlayerDrawFlags);
-  if (mgr.GetPlayerState()->GetActiveVisor(mgr) == CPlayerState::kPV_Dark) {
+  if (mgr.GetCurrentRenderPlayerState()->GetActiveVisor(mgr) == CPlayerState::kPV_Dark) {
     mModelDepthUpdateEnabled = false;
   }
   SetModelFlags(GetModelFlags().UseShaderSet(mgr.IsMultiplayer() ? GetModelShaderSet() : 0));
@@ -2860,7 +2860,7 @@ void CPlayer::PreRender(CStateManager& mgr) {
     mMorphBall->DeleteBallShadow();
   }
 
-  const bool darkVisor = mgr.GetPlayerState()->GetActiveVisor(mgr) == CPlayerState::kPV_Dark &&
+  const bool darkVisor = mgr.GetCurrentRenderPlayerState()->GetActiveVisor(mgr) == CPlayerState::kPV_Dark &&
                          mgr.GetCurrentRenderPlayer()->GetUniqueId() != GetUniqueId();
   SetModelFlags(GetModelFlags().DepthCompareUpdate(!darkVisor, mModelDepthUpdateEnabled));
   UpdateModelScale(mgr);
@@ -2932,7 +2932,7 @@ rstl::pair< bool, CColor > CPlayer::GetHackedEffectColor() const {
 void CPlayer::Render(const CStateManager& mgr) const {
   if (mgr.GetCurrentRenderPlayer()->GetUniqueId() != GetUniqueId() &&
       mPlayerState->GetItemAmount(CPlayerState::kIT_Invisibility) != 0 &&
-      mgr.GetPlayerState()->GetActiveVisor(mgr) != CPlayerState::kPV_Dark) {
+      mgr.GetCurrentRenderPlayerState()->GetActiveVisor(mgr) != CPlayerState::kPV_Dark) {
     return;
   }
   if (mTurretState == kTS_Active || mTurretState == kTS_Four || mTurretState == kTS_Entering) {

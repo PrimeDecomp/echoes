@@ -397,7 +397,7 @@ void CPlayerTargeting::Draw(CStateManager& mgr, const CInGameGuiManagerSet& gui)
     palette[i] = GetScanObjectColor(mgr, i - 2);
   }
 
-  const float transition = mgr.GetPlayerState()->GetVisorTransitionFactor();
+  const float transition = mgr.GetCurrentRenderPlayerState()->GetVisorTransitionFactor();
   if (transition < 1.f) {
     for (uint i = 0; i < 64; ++i) {
       palette[i] = CColor::Lerp(CColor::Black(), palette[i], transition);

@@ -257,7 +257,7 @@ void CKralee::Think(float dt, CStateManager& mgr) {
 void CKralee::PreRender(CStateManager& mgr) {
   if (mAlive) {
     if ((mWarpState == kWS_WarpOut || mWarpState == kWS_Invisible) &&
-        mgr.GetPlayerState()->GetActiveVisor(mgr) == CPlayerState::kPV_Dark) {
+        mgr.GetCurrentRenderPlayerState()->GetActiveVisor(mgr) == CPlayerState::kPV_Dark) {
       SetEnableRender(true);
       mColor.SetAlpha(1.f);
       AnimationData()->GetParticleDB().SetModulationColorAllActiveEffects(
@@ -271,7 +271,7 @@ void CKralee::PreRender(CStateManager& mgr) {
 
 void CKralee::AddToRenderer(const CStateManager& mgr) const {
   if (mAlive && mWarpState == kWS_Invisible &&
-      mgr.GetPlayerState()->GetActiveVisor(mgr) == CPlayerState::kPV_Echo) {
+      mgr.GetCurrentRenderPlayerState()->GetActiveVisor(mgr) == CPlayerState::kPV_Echo) {
     return;
   }
   CPatterned::AddToRenderer(mgr);

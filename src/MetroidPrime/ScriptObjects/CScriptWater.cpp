@@ -495,7 +495,7 @@ void CScriptWater::Render(const CStateManager& mgr) const {
     const CTransform4f areaXf = mgr.GetWorld()->GetAreaAlways(GetCurrentAreaId()).GetTM() * scale;
     mFluidPlane->Render(mgr, mAlpha, renderBounds, xf, areaXf, GetUniqueId(), mTileIntersects.get(),
                         mGridDimX, mGridDimY);
-    if (mFogBias != 0.f && mgr.GetPlayerState()->CanVisorSeeFog(mgr) && gkWaterFog) {
+    if (mFogBias != 0.f && mgr.GetCurrentRenderPlayerState()->CanVisorSeeFog(mgr) && gkWaterFog) {
       const float wave = CMath::FastSinR(mFogSpeed * CGraphics::GetSecondsMod900());
       const float fogLevel = mgr.IntegrateVisorFog(mFogMagnitude * wave + mFogBias);
       if (fogLevel > 0.f) {

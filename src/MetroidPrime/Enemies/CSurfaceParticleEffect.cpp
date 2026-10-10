@@ -434,7 +434,7 @@ void CSurfaceParticleEffect::AddToRenderer(const CStateManager& mgr) const {
 
 void CSurfaceParticleEffect::Render(const CStateManager& mgr) const {
   int alpha = GetRenderAlphaBufferAlpha(mgr);
-  if (alpha != -1 && mgr.GetPlayerState()->GetActiveVisor(mgr) == CPlayerState::kPV_Dark) {
+  if (alpha != -1 && mgr.GetCurrentRenderPlayerState()->GetActiveVisor(mgr) == CPlayerState::kPV_Dark) {
     gpRender->SetDestinationAlpha(alpha);
   } else {
     alpha = -1;

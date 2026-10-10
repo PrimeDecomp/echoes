@@ -1215,7 +1215,7 @@ void CEnvFxManager::Render(const CStateManager& mgr) {
   const EEnvFxType type = static_cast< EEnvFxType >(mgr.GetWorld()->GetNeededEnvFx());
   if (type == kEFX_None ||
       (mgr.GetPlayer(0)->GetMorphballTransitionState() == CPlayer::kMS_Unmorphed &&
-       mgr.GetPlayerState()->GetActiveVisor(mgr) == CPlayerState::kPV_Echo)) {
+       mgr.GetCurrentRenderPlayerState()->GetActiveVisor(mgr) == CPlayerState::kPV_Echo)) {
     return;
   }
 

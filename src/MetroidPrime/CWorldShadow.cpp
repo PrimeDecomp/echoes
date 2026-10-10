@@ -33,7 +33,7 @@ bool CWorldShadow::CanRender(const CStateManager& mgr) {
   if (mgr.IsMultiplayer())
     return false;
   if (!mgr.GetIsDarkWorld()) {
-    switch (mgr.GetPlayerState()->GetActiveVisor(mgr)) {
+    switch (mgr.GetCurrentRenderPlayerState()->GetActiveVisor(mgr)) {
     case CPlayerState::kPV_Combat:
       return true;
     }

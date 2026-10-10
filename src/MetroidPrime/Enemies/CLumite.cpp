@@ -329,7 +329,7 @@ void CLumite::UpdateSunlight(CStateManager& mgr, float dt) {
     }
   }
 
-  if (mgr.GetPlayerState()->GetActiveVisor(mgr) == CPlayerState::kPV_Dark) {
+  if (mgr.GetPlayerState(0)->GetActiveVisor(mgr) == CPlayerState::kPV_Dark) {
     AddMaterial(kMT_Orbit, kMT_Target, kMT_SeekerTarget, mgr);
     mColor.SetAlpha(1.f);
     Shadow()->SetUserAlpha(0.f);

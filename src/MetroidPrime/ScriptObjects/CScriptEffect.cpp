@@ -339,7 +339,7 @@ void CScriptEffect::PreRender(CStateManager& mgr) {
       mRemTime = rstl::max_val(mDurationResetWhileVisible, mRemTime);
       visible = true;
       if (!mAnyVisorVisible) {
-        switch (mgr.GetPlayerState()->GetActiveVisor(mgr)) {
+        switch (mgr.GetCurrentRenderPlayerState()->GetActiveVisor(mgr)) {
         case CPlayerState::kPV_Combat:
         case CPlayerState::kPV_Scan:
           visible = mCombatVisorVisible;

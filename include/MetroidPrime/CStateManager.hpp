@@ -505,7 +505,7 @@ public:
     return mCameraManagers[playerIndex];
   }
   CCameraManager* CameraManager(int playerIndex) { return mCameraManagers[playerIndex]; }
-  const CPlayerState* GetPlayerState() const { return mPlayerState; }
+  const CPlayerState* GetCurrentRenderPlayerState() const { return mCurrentRenderPlayerState; }
   TUniqueId GetPlayerActorHead() const { return mPlayerActorHead; } // Prime-correlated name
   void SetPlayerActorHead(TUniqueId id) { mPlayerActorHead = id; } // Prime-correlated name
   const CPlayer* GetCurrentRenderPlayer() const { return mCurrentRenderPlayer; } // Guessed name
@@ -542,7 +542,7 @@ public:
   CFinalInput mFinalInputs[4];
   rstl::reserved_vector< TUniqueId, 4 > mForceTriggerIds;
   CPlayer* mCurrentRenderPlayer; // 0x15f8, guessed name
-  CPlayerState* mPlayerState;
+  CPlayerState* mCurrentRenderPlayerState;
   CCameraManager* mCameraManager;
   rstl::single_ptr< CWorld > mWorld; // Native teardown owns and deletes the world.
   rstl::list< rstl::reserved_vector< CEntity*, 32 > > mGraveyard; // 0x1608

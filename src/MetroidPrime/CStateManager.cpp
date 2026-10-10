@@ -253,7 +253,7 @@ void CStateManager::AddDarkWorldSphereToRenderer(
     const CVector2f& scroll1, const CVector2f& scroll2, const CVector2f& texScale1,
     const CVector2f& texScale2, const CTexture& environment, const CTexture& cloud1,
     const CTexture& cloud2, CColor color, CColor additiveColor, bool cylinder) const {
-  const CPlayerState::EPlayerVisor visor = mPlayerState->GetActiveVisor(*this);
+  const CPlayerState::EPlayerVisor visor = mCurrentRenderPlayerState->GetActiveVisor(*this);
   if (mIsDarkWorld && visor != CPlayerState::kPV_Echo) {
     gpRender->DrawDarkWorldVolume(pos, scale, mix, alpha, inside, lod, scroll1, scroll2, texScale1,
                                   texScale2, environment, cloud1, cloud2, color, additiveColor,
@@ -360,7 +360,7 @@ void CStateManager::SetupPlayerViewport(uint playerIndex) {
   mCameraManagers[mCurrentRenderPlayerIndex]->SetAspectRatio(pixelAspect * viewportAspect, *this);
 
   mCurrentRenderPlayer = mPlayers[playerIndex];
-  mPlayerState = mPlayerStates[playerIndex];
+  mCurrentRenderPlayerState = mPlayerStates[playerIndex];
   mCameraManager = mCameraManagers[playerIndex];
 }
 
@@ -704,7 +704,7 @@ void CStateManager::PreRender(uint playerIndex) {
   }
 
   CStopwatch timer;
-  switch (mPlayerState->GetActiveVisor(*this)) {
+  switch (mCurrentRenderPlayerState->GetActiveVisor(*this)) {
   case CPlayerState::kPV_Combat:
   case CPlayerState::kPV_Scan:
     mRenderVisorMode = kRVM_Normal;
@@ -780,7 +780,7 @@ void CStateManager::PreRender(uint playerIndex) {
 }
 
 bool CStateManager::SetupFogForDraw() const {
-  switch (mPlayerState->GetActiveVisor(*this)) {
+  switch (mCurrentRenderPlayerState->GetActiveVisor(*this)) {
   case CPlayerState::kPV_Echo: {
     const CTweakGui* tweak = gpTweakGui.get();
     gpRender->SetWorldFog(tweak->GetEchoFogMode(), tweak->GetEchoFogNearZ(),
@@ -1153,7 +1153,7 @@ void CStateManager::DrawWorld(const CInGameGuiManagerSet& gui) {
   CScopedProfiler profile(rstl::string_l("*TotalDrawWorld"), true);
   SetRendererWorkspace(alloca(GetRendererWorkspaceSize()));
 
-  const CPlayerState::EPlayerVisor visor = mPlayerState->GetActiveVisor(*this);
+  const CPlayerState::EPlayerVisor visor = mCurrentRenderPlayerState->GetActiveVisor(*this);
   CTimeProvider timeProvider(mCurTimeMod900);
   CViewport viewport = CGraphics::GetViewport();
   viewport.mTop = CGraphics::GetViewportTop(viewport.mTop);
@@ -1350,7 +1350,7 @@ void CStateManager::DrawReflection(const CVector3f& point) {
 }
 
 void CStateManager::DrawSpaceWarp(const CVector3f& position, float strength) const {
-  switch (mPlayerState->GetActiveVisor(*this)) {
+  switch (mCurrentRenderPlayerState->GetActiveVisor(*this)) {
   case CPlayerState::kPV_Echo:
   case CPlayerState::kPV_Scan:
     return;
@@ -1679,7 +1679,7 @@ void CStateManager::DoCollisionResponse(const CCollisionResponseData& responseDa
 }
 
 void CStateManager::GetCharacterRenderMaskAndTarget(uint& mask, uint& target) const {
-  const CPlayerState::EPlayerVisor visor = mPlayerState->GetActiveVisor(*this);
+  const CPlayerState::EPlayerVisor visor = mCurrentRenderPlayerState->GetActiveVisor(*this);
   uint renderMask = 0;
   uint renderTarget = 0;
   switch (visor) {
@@ -1826,7 +1826,7 @@ void CStateManager::SendScriptMsg(TUniqueId target, TUniqueId sender, EScriptObj
 }
 
 float CStateManager::IntegrateVisorFog(float fog) const {
-  const CPlayerState* playerState = mPlayerState;
+  const CPlayerState* playerState = mCurrentRenderPlayerState;
   if (playerState->GetActiveVisor(*this) == CPlayerState::kPV_Scan) {
     return fog * (1.f - playerState->GetVisorTransitionFactor());
   }
@@ -1839,7 +1839,7 @@ uint CStateManager::MaskUIdNumPlayers(TUniqueId id) const {
 }
 
 void CStateManager::SetupParticleDrawMask() {
-  const CPlayerState::EPlayerVisor visor = mPlayerState->GetActiveVisor(*this);
+  const CPlayerState::EPlayerVisor visor = mCurrentRenderPlayerState->GetActiveVisor(*this);
   uint flags = 0;
   uint mask = 8;
   switch (visor) {
@@ -1970,7 +1970,7 @@ CStateManager::CStateManager(
 , mNumPlayers(0)
 , mForceTriggerIds(kInvalidUniqueId)
 , mCurrentRenderPlayer(nullptr)
-, mPlayerState(nullptr)
+, mCurrentRenderPlayerState(nullptr)
 , mCameraManager(nullptr)
 , mWorld(nullptr)
 , mStateManagerContainer(rs_new CStateManagerContainer())
@@ -3329,7 +3329,7 @@ TEditorId CStateManager::GetEditorIdForUniqueId(TUniqueId uid) const {
 void CStateManager::EndPlayerRender() {
   mCurrentRenderPlayerIndex = kInvalidRenderPlayerIndex;
   mCurrentRenderPlayer = nullptr;
-  mPlayerState = nullptr;
+  mCurrentRenderPlayerState = nullptr;
   mCameraManager = nullptr;
 }
 

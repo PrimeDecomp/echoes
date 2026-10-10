@@ -737,7 +737,7 @@ void CScriptSafeZone::ApplyRenderEffect(CStateManager& mgr) {
 }
 
 void CScriptSafeZone::Render(const CStateManager& mgr) const {
-  if (mgr.GetPlayerState()->GetActiveVisor(mgr) == CPlayerState::kPV_Dark) {
+  if (mgr.GetCurrentRenderPlayerState()->GetActiveVisor(mgr) == CPlayerState::kPV_Dark) {
     RenderDarkVisorSpot(mgr);
   }
   CScriptTriggerEllipsoid::Render(mgr);

@@ -757,7 +757,7 @@ void CCollisionTracker::Think(float dt, CStateManager& mgr) {
 
 void CCollisionTracker::Render(const CStateManager& mgr) const {
   int alpha = GetRenderAlphaBufferAlpha(mgr);
-  if (alpha != -1 && mgr.GetPlayerState()->GetActiveVisor(mgr) == CPlayerState::kPV_Dark) {
+  if (alpha != -1 && mgr.GetCurrentRenderPlayerState()->GetActiveVisor(mgr) == CPlayerState::kPV_Dark) {
     gpRender->SetDestinationAlpha(alpha);
   } else {
     alpha = -1;

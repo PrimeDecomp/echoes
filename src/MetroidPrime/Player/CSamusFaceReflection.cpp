@@ -148,7 +148,7 @@ void CSamusFaceReflection::Draw(const CStateManager& mgr) const {
       if (x2c_ == 3) {
         mModelData->Render(mgr, modelXf, lights, CModelFlags::Normal());
       } else {
-        const CPlayerState* playerState = mgr.GetPlayerState();
+        const CPlayerState* playerState = mgr.GetCurrentRenderPlayerState();
         float transFactor = playerState->GetActiveVisor(mgr) == CPlayerState::kPV_Combat
                                 ? playerState->GetVisorTransitionFactor()
                                 : 0.f;
