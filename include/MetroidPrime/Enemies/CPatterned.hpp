@@ -41,6 +41,7 @@ enum EPatternedAI {
   kPAI_DarkCommando = 6, // Guessed name; DarkCommando REL constructor.
   kPAI_DarkSamus = 7,
   kPAI_DarkTrooper = 8, // Guessed name; DarkTrooper REL constructor.
+  kPAI_ElitePirate = 0xc,              // Guessed name; ElitePirate REL constructor.
   kPAI_EmperorIngStage2Tentacle = 0xe, // Guessed name; EmperorIngStage2Tentacle REL constructor.
   kPAI_EyeBall = 0x10,                 // Guessed name; EyeBall REL constructor.
   kPAI_FlyingPirate = 0x15,            // Guessed name; FlyingPirate REL constructor.
