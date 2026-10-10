@@ -36,6 +36,7 @@ public:
   float GetTurnSpeed() const { return mTurnSpeed; }
   float GetMinAttackRange() const { return mMinAttackRange; }
   float GetMaxAttackRange() const { return mMaxAttackRange; }
+  const SEchoParameters& GetEchoParameters() const { return mEchoParameters; }
 
 private:
   float mMass;

@@ -57,6 +57,7 @@ enum EPatternedAI {
   kPAI_Puffer = 0x2d,                  // Guessed name; Puffer REL constructor.
   kPAI_Rezbit = 0x2e,                  // Guessed name; Rezbit REL constructor.
   kPAI_Ripper = 0x30,                  // Guessed name; Ripper REL constructor.
+  kPAI_SpacePirate = 0x35,             // Guessed name; SpacePirate REL constructor.
   kPAI_SpankWeed = 0x36,               // Guessed name; SpankWeed REL constructor.
   kPAI_Splinter = 0x37,                // Guessed name; Splinter REL constructor.
   kPAI_SplitterMainChassis = 0x38, // Guessed name; SplitterMainChassis REL constructor.
@@ -221,6 +222,8 @@ public:
   CTransform4f GetLctrTransform(const CSegId& id) const;
   bool IsBeingSnatched() const;
   bool IsIngPossessed() const;
+  bool GetFadeToDeath() const { return mFadeToDeath; }    // Guessed Prime name.
+  void SetFadeToDeath(bool fade) { mFadeToDeath = fade; } // Guessed Prime name.
 
   int GetIngPossessionAnimation() const { return mIngPossessionData.unknown_0x2befc1bf; }
 

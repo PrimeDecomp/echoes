@@ -408,6 +408,7 @@ CHECK_SIZEOF(CBCWallHangCmd, 0xc)
 class CBCAdditiveAimCmd : public CBodyStateCmd {
 public:
   CBCAdditiveAimCmd() : CBodyStateCmd(kBSC_AdditiveAim), mAimType(0) {}
+  explicit CBCAdditiveAimCmd(bool aimType) : CBodyStateCmd(kBSC_AdditiveAim), mAimType(aimType) {}
 
   int GetAimType() const { return mAimType; } // Guessed name
 
@@ -551,6 +552,16 @@ public:
   void DeliverCmd(const CBCHurledCmd& cmd) {
     DeliverCmd(cmd.GetCommandId());
     mHurled = cmd;
+  }
+
+  void DeliverCmd(const CBCCoverCmd& cmd) {
+    DeliverCmd(cmd.GetCommandId());
+    mCover = cmd;
+  }
+
+  void DeliverCmd(const CBCWallHangCmd& cmd) {
+    DeliverCmd(cmd.GetCommandId());
+    mWallHang = cmd;
   }
 
   void DeliverCmd(const CBCSlideCmd& cmd) {
