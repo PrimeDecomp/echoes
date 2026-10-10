@@ -1504,7 +1504,6 @@ bool CSpacePirate::CoverFind(CStateManager& mgr, const CTriggerData& data) const
   bool result = false;
   float minDistSq = mPirateData.mSearchRadius * mPirateData.mSearchRadius;
   const CScriptCoverPoint* closest = nullptr;
-  CSpacePirate* self = const_cast< CSpacePirate* >(this);
   const CObjectList& list = mgr.GetObjectListById(kOL_AiWaypoint);
   for (int i = list.GetFirstObjectIndex(); i != -1; i = list.GetNextObjectIndex(i)) {
     if (const CScriptCoverPoint* coverPoint = TCastToConstPtr< CScriptCoverPoint >(list[i])) {
@@ -1513,7 +1512,8 @@ bool CSpacePirate::CoverFind(CStateManager& mgr, const CTriggerData& data) const
           coverPoint->GetCurrentAreaId() == GetCurrentAreaId() &&
           coverPoint->GetUniqueId() != mPreviousCoverPoint) {
         const float distSq = (GetTranslation() - coverPoint->GetTranslation()).MagSquared();
-        if (distSq < minDistSq && !coverPoint->Blown(self->GetTargetPos(mgr))) {
+        if (distSq < minDistSq &&
+            !coverPoint->Blown(const_cast< CSpacePirate* >(this)->GetTargetPos(mgr))) {
           minDistSq = distSq;
           closest = coverPoint;
         }
@@ -1521,13 +1521,13 @@ bool CSpacePirate::CoverFind(CStateManager& mgr, const CTriggerData& data) const
     }
   }
   if (closest) {
-    self->ReleaseCoverPoint(mgr, self->mCoverPoint, true);
+    const_cast< CSpacePirate* >(this)->ReleaseCoverPoint(mgr, mCoverPoint, true);
     if (CScriptCoverPoint* coverPoint =
             TCastToPtr< CScriptCoverPoint >(mgr.ObjectById(closest->GetUniqueId()))) {
-      self->SetCoverPoint(coverPoint, self->mCoverPoint);
+      const_cast< CSpacePirate* >(this)->SetCoverPoint(coverPoint, mCoverPoint);
       result = true;
-      self->mPreviousCoverPoint = mCoverPoint;
-      self->mCoverPointRearDir = -closest->GetTransform().GetForward();
+      mPreviousCoverPoint = mCoverPoint;
+      mCoverPointRearDir = -closest->GetTransform().GetForward();
     }
   }
   return result;
@@ -1535,8 +1535,7 @@ bool CSpacePirate::CoverFind(CStateManager& mgr, const CTriggerData& data) const
 
 bool CSpacePirate::CoverBlown(CStateManager& mgr, const CTriggerData& data) const {
   bool result = true;
-  CSpacePirate* self = const_cast< CSpacePirate* >(this);
-  CVector3f target = self->GetTargetPos(mgr);
+  CVector3f target = const_cast< CSpacePirate* >(this)->GetTargetPos(mgr);
   CVector3f toTarget = target - GetTranslation();
   if (toTarget.MagSquared() > mMinAttackRange * mMinAttackRange) {
     if (CScriptCoverPoint* coverPoint = GetCoverPoint(mgr, mCoverPoint)) {
@@ -1799,7 +1798,7 @@ bool CSpacePirate::ShouldStrafe(CStateManager& mgr, const CTriggerData& data) co
     if (CVector3f::Dot(toTarget, GetTransform().GetForward()) > 0.f) {
       if ((mLowHealthFrenzyTimer < 0.66f || mTimeSinceHitByPlayer < 0.66f) &&
           mStrafeDelayTimer == 0.f) {
-        CVector3f center = const_cast< CSpacePirate* >(this)->GetBoundingBox().GetCenterPoint();
+        CVector3f center = GetBoundingBox().GetCenterPoint();
         CVector3f delta =
             (const_cast< CSpacePirate* >(this)->GetTargetPos(mgr) - center).AsNormalized();
         if (CVector3f::Dot(delta, GetTransform().GetForward()) > 0.707f) {
@@ -2170,21 +2169,20 @@ bool CSpacePirate::ShouldRetreat(CStateManager& mgr, const CTriggerData& data) c
       }
     }
     if (wp) {
-      const_cast< CSpacePirate* >(this)->mDestObj = wpId;
+      mDestObj = wpId;
       const_cast< CSpacePirate* >(this)->SetDestPos(wp->GetTranslation());
     } else {
-      const_cast< CSpacePirate* >(this)->mDestObj = kInvalidUniqueId;
+      mDestObj = kInvalidUniqueId;
       const_cast< CSpacePirate* >(this)->SetDestPos(GetTranslation());
     }
     const_cast< CSpacePirate* >(this)->mEnableRetreat = false;
-    const_cast< CSpacePirate* >(this)->mReflectedDestPos = GetTranslation();
-    const_cast< CSpacePirate* >(this)->mInPosition = false;
+    mReflectedDestPos = GetTranslation();
+    mInPosition = false;
     result = true;
-    const_cast< CSpacePirate* >(this)->ReleaseCoverPoint(
-        mgr, const_cast< CSpacePirate* >(this)->mCoverPoint, true);
-    const_cast< CSpacePirate* >(this)->mHearNoise = false;
-    const_cast< CSpacePirate* >(this)->mEnableAim = false;
-    const_cast< CSpacePirate* >(this)->mHitByPlayerProjectile = false;
+    const_cast< CSpacePirate* >(this)->ReleaseCoverPoint(mgr, mCoverPoint, true);
+    mHearNoise = false;
+    mEnableAim = false;
+    mHitByPlayerProjectile = false;
   }
   return result;
 }
@@ -2209,9 +2207,9 @@ bool CSpacePirate::HasTargetingPoint(CStateManager& mgr, const CTriggerData& dat
   if (player || !actor || !actor->GetActive()) {
     result = false;
     if (!player) {
-      const_cast< CSpacePirate* >(this)->mTargetId = ChooseTarget(mgr);
+      mTargetId = ChooseTarget(mgr);
       const_cast< CSpacePirate* >(this)->SetTeamMemberTarget(mgr);
-      const_cast< CSpacePirate* >(this)->mBoneTracking.SetTarget(mTargetId);
+      mBoneTracking.SetTarget(mTargetId);
     }
     float scale = 1.f;
     float margin = mPirateData.mSearchRadius * scale;
@@ -2226,9 +2224,9 @@ bool CSpacePirate::HasTargetingPoint(CStateManager& mgr, const CTriggerData& dat
       if (point && point->GetActive() && point->GetCurrentAreaId() == GetCurrentAreaId() &&
           !point->GetLocked()) {
         result = true;
-        const_cast< CSpacePirate* >(this)->mTargetId = point->GetUniqueId();
+        mTargetId = point->GetUniqueId();
         const_cast< CSpacePirate* >(this)->SetTeamMemberTarget(mgr);
-        const_cast< CSpacePirate* >(this)->mBoneTracking.SetTarget(mTargetId);
+        mBoneTracking.SetTarget(mTargetId);
         break;
       }
     }
@@ -2623,9 +2621,9 @@ bool CSpacePirate::BounceFind(CStateManager& mgr, const CTriggerData& data) cons
             TCastToConstPtr< CScriptWaypoint >(mgr.GetObjectById(best->GetJumpPoint()))) {
       const_cast< CSpacePirate* >(this)->SetDestPos(best->GetTranslation());
       result = true;
-      const_cast< CSpacePirate* >(this)->mJumpPoint = best->GetUniqueId();
-      const_cast< CSpacePirate* >(this)->mJumpHeight = best->GetJumpApex();
-      const_cast< CSpacePirate* >(this)->mPatrolDestPos = wp->GetTranslation();
+      mJumpPoint = best->GetUniqueId();
+      mJumpHeight = best->GetJumpApex();
+      mPatrolDestPos = wp->GetTranslation();
     }
   }
   return result;

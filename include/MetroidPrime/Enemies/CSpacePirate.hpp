@@ -378,7 +378,7 @@ private:
   bool mShuffleClose : 1;
   bool mInAttackState : 1;
   bool mEnablePatrol : 1;
-  bool mEnableAim : 1; // Guessed Prime name; read by flying pirate taunts.
+  mutable bool mEnableAim : 1; // Guessed Prime name; read by flying pirate taunts.
   bool mHearPlayerFire : 1;
   bool mInProjectilePath : 1;
   bool mNoPlayerLos : 1;
@@ -411,11 +411,11 @@ private:
   bool mWallDetaching : 1; // Guessed name; set while in WallDetach, blocks velocity for jump.
 
   int mFrenzyFrames;
-  TUniqueId mCoverPoint;
-  TUniqueId mPreviousCoverPoint;
+  mutable TUniqueId mCoverPoint;
+  mutable TUniqueId mPreviousCoverPoint;
   float mSteeringSpeed;
   CVector3f mTargetDelta;
-  CVector3f mCoverPointRearDir;
+  mutable CVector3f mCoverPointRearDir;
   CPathFindSearch mPathFindSearch;
   float mUnkTimer; // Guessed Prime name; the constructor leaves it uninitialized.
   float mSteeringDelayTimer;
@@ -425,7 +425,7 @@ private:
   CSegId mHeadSeg;
   uint xa24_; // Unknown; set to Random % 6 on create and never read (x75c_ in Prime).
   pas::ETauntType mTaunt;
-  CBoneTracking mBoneTracking;
+  mutable CBoneTracking mBoneTracking;
   pas::ECoverDirection mCoverDir;
   uchar xa6c_[4]; // Unknown; uninitialized and never accessed (padding before mIntoJumpDist).
   float mIntoJumpDist;
@@ -442,14 +442,14 @@ private:
   CSegId mRightHipSeg; // Guessed name.
   CSegId mCollarSeg;   // Guessed name.
   float mAttackRemTime;
-  TUniqueId mTargetId;
+  mutable TUniqueId mTargetId;
   CBurstFire mBurstFire;
-  float mJumpHeight;
-  CVector3f mPatrolDestPos;
+  mutable float mJumpHeight;
+  mutable CVector3f mPatrolDestPos;
   mutable pas::EStepDirection mSkidDir;
   float mStrafeDelayTimer;
   pas::ESeverity mMeleeSeverity;
-  TUniqueId mJumpPoint;
+  mutable TUniqueId mJumpPoint;
   pas::EStepDirection mDodgeDir;
   float mDodgeDist;
   float mBreakDodgeDist;

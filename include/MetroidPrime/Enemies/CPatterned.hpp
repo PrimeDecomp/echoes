@@ -320,10 +320,10 @@ public:
   const CAiKnockBackMgr& GetKnockBackController() const { return mKnockBackController; }
 
 protected:
-  TUniqueId mDestObj;
+  mutable TUniqueId mDestObj;
   CVector3f mDestPos;
-  CVector3f mReflectedDestPos;
-  bool mInPosition : 1;
+  mutable CVector3f mReflectedDestPos;
+  mutable bool mInPosition : 1;
   bool mVerticalMovement : 1;
   bool mSolidCollision : 1;
   bool mBlockingCollision : 1; // Guessed name
@@ -369,7 +369,7 @@ protected:
   float mPendingShockDamage;
   float mBurnThinkRateTimer;
   EFlavorType mFlavor;
-  uint mHitByPlayerProjectile : 1;
+  mutable uint mHitByPlayerProjectile : 1;
   uint mAlive : 1;
   uint x420_26_ : 1;
   uint mFadeToDeath : 1;
