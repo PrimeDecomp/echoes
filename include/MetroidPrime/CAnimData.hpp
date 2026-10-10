@@ -135,6 +135,7 @@ public:
   void SetEffectComponentExternalParam(const rstl::string& name, int index, float value);
   void SetKeepJSPose(bool keep);
   void AddAnimatedScale();
+  bool HasAnimatedScale() const { return mAnimatedScale; } // Guessed name
   void SetModelScale(const CVector3f& scale); // Guessed name.
   void SetAnimationTreeLimit(int limit);      // Guessed name.
   void SetPhase(float phase);

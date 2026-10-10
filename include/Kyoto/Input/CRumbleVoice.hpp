@@ -21,7 +21,8 @@ enum ERumbleFxId {
   kRFX_Twenty = 20,
   kRFX_TwentyOne = 21,
   kRFX_TwentyTwo = 22,
-  kRFX_TwentyThree = 23
+  kRFX_TwentyThree = 23,
+  kRFX_TwentyFour = 24
 };
 
 enum ERumblePriority {

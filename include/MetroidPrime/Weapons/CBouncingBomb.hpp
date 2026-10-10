@@ -29,6 +29,7 @@ public:
   void Touch(CActor& actor, CStateManager& mgr) override;
 
   void ApplyGravity();
+  void SetVelocity(const CVector3f& velocity) { mVelocity = velocity; }
 
 private:
   // Guessed names.

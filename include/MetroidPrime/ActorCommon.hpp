@@ -174,6 +174,7 @@ enum EUserEventType {
   kUE_Unknown41 = 41, // Guessed name
   kUE_Unknown42 = 42, // Guessed name
   kUE_Unknown43 = 43, // Guessed name
+  kUE_Unknown44 = 44, // Guessed name
   kUE_Unknown45 = 45, // Guessed name
   kUE_Unknown46 = 46, // Guessed name
 };
