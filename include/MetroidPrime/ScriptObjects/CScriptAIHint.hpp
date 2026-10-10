@@ -16,6 +16,7 @@ public:
     kHT_SplinterPad = 18, // Guessed name
     kHT_ShadowDashPoint = 19, // Guessed name; DarkCommando shadow dash destinations.
     kHT_Maneuver = 20, // Guessed name
+    kHT_SwampBossTongue = 21, // Guessed name; SwampBossStage1 tongue attack bounds.
     kHT_GrenadeLauncherRaisedAim = 23,
     kHT_SplinterAttackBlock = 24, // Guessed name
     kHT_SplinterHide = 25,        // Guessed name
